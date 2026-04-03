@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>حافظة دفتر تبرعات - الجمعية الشرعية</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0; padding: 0;
+            background-color: #555;
+        }
+
+        .page {
+            background-color: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 10mm auto;
+            position: relative;
+            padding: 10mm;
+        }
+
+        .islamic-frame {
+            border: 6px double #000;
+            min-height: 277mm;
+            width: 100%;
+            position: relative;
+            padding: 5mm; 
+        }
+
+        .islamic-frame::before, .islamic-frame::after,
+        .frame-inner-decoration::before, .frame-inner-decoration::after {
+            content: "";
+            position: absolute;
+            width: 30px; height: 30px;
+            border: 2px solid #000;
+            background-color: #fff;
+            transform: rotate(45deg);
+            z-index: 2;
+        }
+        .islamic-frame::before { top: -16px; right: -16px; }
+        .islamic-frame::after { bottom: -16px; left: -16px; }
+        .frame-inner-decoration::before { top: -16px; left: -16px; }
+        .frame-inner-decoration::after { bottom: -16px; right: -16px; }
+
+        .bismi-center {
+            position: absolute;
+            top: 5mm; left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold; font-size: 19pt;
+            font-family: 'Andalus', serif;
+        }
+
+        .header-right {
+            position: absolute;
+            top: 12mm; right: 5mm;
+            text-align: center;
+            font-family: 'Andalus', serif;
+            font-size: 12pt; line-height: 1.4;
+            font-weight: bold;
+        }
+
+        /* [تحديث] توسعة مساحة الأرقام السبعة */
+        .header-left-info {
+            position: absolute;
+            top: 12mm; left: 5mm;
+            text-align: left;
+            font-size: 11pt;
+            font-weight: bold;
+            line-height: 1.7;
+        }
+
+        .num-space {
+            display: inline-block;
+            min-width: 80px; /* مساحة كافية لـ 7 أرقام */
+            text-align: center;
+        }
+
+        .logo-section {
+            position: absolute;
+            top: 38mm; left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo-box {
+            width: 80px; height: 80px;
+            border: 1.5px solid #000;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8pt; background: #fff;
+        }
+
+        .main-content {
+            margin-top: 62mm;
+            width: 100%;
+        }
+
+        .doc-title-area {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .doc-title {
+            font-size: 18pt;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin-top: 10px;
+            border: 4px double #000 !important; 
+        }
+
+        th, td {
+            border: 1px solid #000;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+            font-size: 10pt;
+            height: 30px;
+        }
+
+        th { background-color: #e8e8e8 !important; }
+
+        select {
+            border: none; background: transparent;
+            font-family: 'Times New Roman';
+            font-weight: bold; font-size: 13pt;
+            appearance: none; text-align: center;
+        }
+
+        /* [تحديث] إزالة سطر التفقيط والخط القطري */
+        .total-display-cell {
+            text-align: right;
+            padding-right: 15px;
+            font-size: 12pt;
+            background: white;
+        }
+
+        .signatures-area {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .sig-column { width: 30%; }
+        .parentheses { font-size: 20pt; display: block; margin-bottom: -5px; }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; width: 210mm; height: 297mm; box-shadow: none; }
+            .print-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div class="islamic-frame">
+        <div class="frame-inner-decoration"></div>
+        <div class="bismi-center">بسم الله الرحمن الرحيم</div>
+
+        <div class="header-right">
+            <div>الجمعية الشرعية الرئيسية</div>
+            <div>لتعاون العاملين بالكتاب والسنة المحمدية</div>
+            <div>فرع الرحمن بمساكن حجازي</div>
+            <div style="text-decoration: underline;">مكتب : عمر بن الخطاب بالعبور</div>
+        </div>
+
+        <div class="header-left-info">
+            <div>(وتعاونوا على البر والتقوى)</div>
+            <div>دفتر رقم : ( <span class="num-space"></span> )</div>
+            <div>من رقم : ( <span class="num-space"></span> )</div>
+            <div>إلى رقم : ( <span class="num-space"></span> )</div>
+            <div>جزء من : ( <span class="num-space"></span> )</div>
+        </div>
+        
+        <div class="logo-section">
+            <div class="logo-box">شعار الجمعية</div>
+        </div>
+
+        <div class="main-content">
+            <div class="doc-title-area">
+                <h2 class="doc-title">حافظة دفتر تبرعات</h2>
+                <div style="margin-top: 8px; font-weight: bold;">
+                    عن شهر: <select id="hMonth"></select> لعام: <select id="hYear"></select> هـ
+                    الموافق: <select id="gMonth"></select> لعام: <select id="gYear"></select> م
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">القيمة</th>
+                        <th rowspan="2" style="width: 100px;">رقم الإيصال</th>
+                        <th colspan="2">القيمة</th>
+                        <th rowspan="2" style="width: 100px;">رقم الإيصال</th>
+                        <th rowspan="2">ملاحظات</th>
+                    </tr>
+                    <tr>
+                        <th style="width: 60px;">جنية</th>
+                        <th style="width: 30px;">ق</th>
+                        <th style="width: 60px;">جنية</th>
+                        <th style="width: 30px;">ق</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+                <tfoot>
+                    <tr style="height: 45px;">
+                        <td></td><td></td>
+                        <th style="background:#e8e8e8">الإجمالـــــــــي</th>
+                        <td colspan="4" class="total-display-cell">
+                             فقط وقدره:
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="signatures-area">
+                <div class="sig-column">
+                    <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                    <b style="font-size: 11pt;">الأمين العام</b><br>
+                    <span>ناصر سيد ابراهيم أبو العلا</span>
+                </div>
+                <div class="sig-column">
+                    <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                    <b style="font-size: 11pt;">أمين الصندوق</b><br>
+                    <span>سعود محمد هانى</span>
+                </div>
+                <div class="sig-column">
+                    <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                    <b style="font-size: 11pt;">رئيس مجلس الإدارة</b><br>
+                    <span>شعبان على ابراهيم أبو العلا</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin: 20px;">
+    <button class="print-btn" onclick="window.print()" style="padding: 10px 40px; font-weight: bold; cursor: pointer;">طباعة الحافظة</button>
+</div>
+
+<script>
+    const hMonths = ["محرم", "صفر", "ربيع أول", "ربيع ثاني", "جمادى أول", "جمادى ثاني", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
+    const gMonths = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+
+    function setup() {
+        const hm = document.getElementById('hMonth');
+        const gm = document.getElementById('gMonth');
+        hMonths.forEach(m => hm.options.add(new Option(m, m)));
+        gMonths.forEach(m => gm.options.add(new Option(m, m)));
+
+        const y = new Date().getFullYear();
+        const gy = document.getElementById('gYear');
+        const hy = document.getElementById('hYear');
+        for (let i = y - 2; i <= y + 2; i++) {
+            gy.options.add(new Option(i, i, i === y, i === y));
+            hy.options.add(new Option(i - 579, i - 579, i === y, i === y));
+        }
+
+        const tbody = document.getElementById('tableBody');
+        for (let i = 0; i < 18; i++) {
+            tbody.innerHTML += `<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+        }
+    }
+    window.onload = setup;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قسم الرأي والتوثيق</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .page {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        .input-clean {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .dotted-line {
+            border-bottom: 2px dotted #999;
+            margin: 20px 0;
+        }
+
+        .donor-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .upload-box {
+            padding: 20px;
+            border: 2px dashed #007bff;
+            background-color: #f0f8ff;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        @media print {
+            body { background-color: white; }
+            .page { box-shadow: none; border: 1px solid #ccc; page-break-after: always; }
+            .print-hide { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        <h3 style="text-align:center;">الرأي</h3>
+        
+        <div class="dotted-line"></div>
+        
+        <input class="input-clean" placeholder="اكتب الرأي هنا..." 
+        oninput="if(document.getElementById('out_donor')) document.getElementById('out_donor').innerText=this.value">
+        
+        <div class="dotted-line"></div>
+        
+        <div class="donor-footer">
+            <div class="approve-left">يعتمد</div>
+            <div class="date-center">
+                التاريخ :
+                <input type="date" style="border:none; outline:none; font-family:inherit;">
+            </div>
+        </div>
+    </div>
+
+    <div class="page print-hide">
+        <div class="upload-box">
+            <b>توثيق البحث</b><br><br>
+            رفع صورة البحث موقع من المتبرع<br><br>
+            <input type="file" accept="image/*">
+        </div>
+    </div>
+
+</body>
+</html>

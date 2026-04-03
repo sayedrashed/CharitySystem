@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>محضر اجتماع - مسجد عمر بن الخطاب</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0; padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        /* [1] تطبيق الإطار المزدوج والزوايا */
+        .page-container {
+            width: 210mm; min-height: 297mm;
+            margin: 10mm auto;
+            background: white; box-sizing: border-box;
+            position: relative;
+            padding: 20mm; 
+            border: 6px double black; /* الإطار المزدوج المطلوب */
+        }
+
+        /* رسم المربعات في الزوايا الأربعة */
+        .page-container::before, .page-container::after,
+        .frame-inner-decoration::before, .frame-inner-decoration::after {
+            content: "";
+            position: absolute;
+            width: 30px; height: 30px;
+            border: 2px solid #000;
+            background-color: #fff;
+            transform: rotate(45deg);
+            z-index: 2;
+        }
+
+        /* إحداثيات الزوايا */
+        .page-container::before { top: -16px; right: -16px; }
+        .page-container::after { bottom: -16px; left: -16px; }
+        .frame-inner-decoration::before { top: -16px; left: -16px; }
+        .frame-inner-decoration::after { bottom: -16px; right: -16px; }
+
+        /* --- منطقة الهيدر (تحكم يدوي بالأماكن) --- */
+
+        .bismi-top {
+            position: absolute;
+            top: 7mm; 
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20pt;
+            font-family: 'Andalus', serif;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .header-right {
+            position: absolute;
+            top: 10mm; 
+            right: 5mm; 
+            text-align: center;
+            line-height: 1.5;
+            font-weight: bold;
+            font-size: 11pt;
+            white-space: nowrap;
+        }
+
+        .logo-center {
+            position: absolute;
+            top: 38mm; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px; height: 150px;
+            border: 1.5px solid #000;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8pt; font-weight: bold;
+            background: white;
+        }
+
+        /* --- المحتوى الرئيسي --- */
+        .main-content {
+            margin-top: 65mm; /* ترك مساحة للهيدر */
+        }
+
+        .doc-title { text-align: center; margin-bottom: 20px; }
+        .doc-title h2 { font-size: 17pt; text-decoration: underline; margin: 5px; }
+        
+        .date-select {
+            font-size: 14pt; font-family: 'Times New Roman';
+            font-weight: bold; border: 1px solid #ccc; background: transparent;
+        }
+
+        .content-body {
+            font-size: 16pt; line-height: 1.9;
+            text-align: justify;
+        }
+
+        .president-line {
+            display: block;
+            margin-top: 10px;
+            text-indent: 0;
+        }
+
+        .section-header {
+            text-align: center; font-weight: bold; font-size: 15pt;
+            text-decoration: underline; margin: 15px 0 5px;
+        }
+
+        .signatures {
+            margin-top: 40px; display: flex;
+            justify-content: space-between; text-align: center;
+        }
+        .sig-item { width: 32%; }
+        .parentheses { font-size: 20pt; display: block; }
+        .name { font-size: 11pt; font-weight: bold; display: block; }
+        .job { font-size: 11pt; display: block; }
+
+        .footer-note {
+            position: absolute; bottom: 15mm; left: 15mm;
+            font-size: 10pt; font-weight: bold;
+        }
+
+        @media print {
+            .print-btn { display: none; }
+            .date-select { border: none; appearance: none; -webkit-appearance: none; color: black; }
+            .page-container { margin: 0; border: 6px double black; height: 296mm; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+    <div class="frame-inner-decoration"></div>
+    
+    <div class="bismi-top">بسم الله الرحمن الرحيم</div>
+
+    <div class="header-right">
+        <div>الجمعية الشرعية الرئيسية</div>
+        <div>لتعاون العاملين بالكتاب والسنة المحمدية</div>
+        <div>فرع الرحمن بحجازي</div>
+        <div>المشهرة برقم 986 لسنة 2005 قليوبية</div>
+        <div style="text-decoration: underline;">مكتب: عمر بن الخطاب بالعبور</div>
+    </div>
+
+    <div class="logo-center">شعار الجمعية</div>
+
+    <div class="main-content">
+        <div class="doc-title">
+            <h3 style="margin: 0;">مكتب/ مسجد عمر بن الخطاب بالعبور المنطقة الصناعية</h3>
+            <h2>محضر اجتماع رقم 
+                <select class="date-select">
+                    <script>for(let i=1;i<=12;i++) document.write(`<option>${i}</option>`)</script>
+                </select>
+            </h2>
+            <h3>شهر 
+                <select class="date-select">
+                    <option selected>أكتوبر</option><option>نوفمبر</option><option>ديسمبر</option>
+                </select> / 
+                <select class="date-select">
+                    <script>for(let y=2026;y<=2030;y++) document.write(`<option>${y}</option>`)</script>
+                </select>
+            </h3>
+        </div>
+
+        <div class="content-body">
+            إنه في يوم <b>24 / 03 / 2026</b> الموافق <b>05</b> 
+            <select class="date-select"><option selected>شوال</option></select> 
+            سنة <select class="date-select"><option selected>1447</option></select> هـ
+            
+            <span style="display: block; margin-top: 10px;">
+                اجتمع مجلس إدارة مكتب عمر بن الخطاب بالعبور الساعة بعد صلاة الظهر بمقر المسجد
+            </span>
+            
+            <span class="president-line">
+                برئاسة السيد/ <b>شعبان علي إبراهيم أبو العلا</b> وسكرتارية السيد/ <b>ناصر سيد إبراهيم أبو العلا</b>.
+            </span>
+            
+            <br>
+            <b>وبحضور السادة:</b><br>
+            1- سيد علي إبراهيم &nbsp;&nbsp;&nbsp;&nbsp; 2- إبراهيم علي إبراهيم &nbsp;&nbsp;&nbsp;&nbsp; 3- سعود محمد هاني<br>
+            4- عادل عبد العزيز السيد &nbsp;&nbsp;&nbsp; 5- حمدي محمد حسن
+        </div>
+
+        <div class="section-header">جدول الأعمال</div>
+        <div class="content-body">
+            1- قراءة محضر الجلسة السابقة والتصديق عليه.<br>
+            2- النظر في الأعمال الاعتيادية للمسجد.<br>
+            3- عرض الإيرادات والمصروفات.<br>
+            4- ما يستجد من أعمال.
+        </div>
+
+        <div class="section-header">القرارات</div>
+        <div class="content-body">
+            1- تم قراءة محضر الجلسة السابقة والتصديق عليه.<br>
+            2- وجد أن الأعمال تسير على ما يرام.
+        </div>
+
+        <div class="signatures">
+            <div class="sig-item">
+                <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                <span class="name">ناصر سيد إبراهيم أبو العلا</span>
+                <span class="job">الأمين العام</span>
+            </div>
+            <div class="sig-item">
+                <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                <span class="name">سعود محمد هاني</span>
+                <span class="job">أمين صندوق</span>
+            </div>
+            <div class="sig-item">
+                <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                <span class="name">شعبان علي إبراهيم أبو العلا</span>
+                <span class="job">رئيس مجلس الإدارة</span>
+            </div>
+        </div>
+
+        <div class="footer-note">ملحوظة هامة: يرفق التحليل الشهري بالمحضر</div>
+    </div>
+</div>
+
+<div style="text-align: center; margin: 20px;">
+    <button class="print-btn" onclick="window.print()" style="padding: 10px 40px; cursor: pointer; background: #000; color: #fff; border: none; font-weight: bold; border-radius: 5px;">طباعة المحضر</button>
+</div>
+
+</body>
+</html>

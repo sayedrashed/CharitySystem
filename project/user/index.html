@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الباحث - نظام إدارة البحث الاجتماعي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0F1117;
+            --bg-secondary: #1A1D27;
+            --bg-card: #1A1D27;
+            --border: #2E3250;
+            --text-primary: #E8EBF4;
+            --text-secondary: #6B7280;
+            --accent: #4F8EF7;
+            --success: #2DD4BF;
+            --warning: #F59E0B;
+            --danger: #F87171;
+            --gold: #F5C842;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-area h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .logo-area p { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+        .user-area { display: flex; align-items: center; gap: 15px; }
+        .theme-toggle {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+        .stat-card .value { font-size: 32px; font-weight: 800; color: var(--accent); }
+        .stat-card .label { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+
+        .modules-nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .module-nav-btn {
+            padding: 8px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-primary);
+        }
+        .module-nav-btn:hover { border-color: var(--accent); }
+
+        .assistant-card {
+            background: linear-gradient(135deg, rgba(79,142,247,0.1), rgba(46,202,171,0.05));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 24px 24px;
+        }
+        .assistant-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .assistant-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .assistant-name { font-weight: 700; font-size: 16px; }
+        .assistant-role { font-size: 11px; color: var(--text-secondary); }
+        .assistant-bubble {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 16px;
+            position: relative;
+        }
+        .msg-line { display: flex; gap: 10px; margin-bottom: 10px; }
+        .msg-icon { font-size: 18px; }
+        .msg-text { font-size: 13px; line-height: 1.5; flex: 1; }
+
+        .recent-list {
+            padding: 0 24px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .recent-item:hover { border-color: var(--accent); }
+        .recent-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .recent-info { flex: 1; }
+        .recent-name { font-weight: 600; font-size: 14px; }
+        .recent-date { font-size: 11px; color: var(--text-secondary); }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .modules-nav { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo-area">
+        <h1>🔍 لوحة الباحث</h1>
+        <p>نظام إدارة البحث الاجتماعي</p>
+    </div>
+    <div class="user-area">
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">👤</div>
+            <div>
+                <div class="user-name" id="userName"></div>
+                <div class="user-role">باحث</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modules-nav" id="modulesNav"></div>
+
+<div class="stats-grid">
+    <div class="stat-card" onclick="navigateTo('/modules/cases/index.html')">
+        <div class="value" id="myCases">0</div>
+        <div class="label">حالاتي</div>
+    </div>
+    <div class="stat-card" onclick="navigateTo('/modules/cases/visit_management/index.html')">
+        <div class="value" id="myVisits">0</div>
+        <div class="label">زياراتي هذا الأسبوع</div>
+    </div>
+    <div class="stat-card" onclick="navigateTo('/modules/cases/index.html?filter=pending')">
+        <div class="value" id="pendingCases">0</div>
+        <div class="label">قيد المراجعة</div>
+    </div>
+    <div class="stat-card" onclick="navigateTo('/modules/hr/index.html')">
+        <div class="value" id="mySalary">0</div>
+        <div class="label">مرتب هذا الشهر</div>
+    </div>
+</div>
+
+<div class="assistant-card">
+    <div class="assistant-header">
+        <div class="assistant-avatar">🤖</div>
+        <div>
+            <div class="assistant-name">المساعد الذكي</div>
+            <div class="assistant-role">مساعدك الشخصي</div>
+        </div>
+    </div>
+    <div class="assistant-bubble" id="assistantBubble"></div>
+</div>
+
+<div class="recent-list" id="recentList"></div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    let currentUser = { id: 1, name: "بشرى أحمد", role: "researcher", avatar: "👩" };
+    let stats = { myCases: 45, myVisits: 6, pendingCases: 12, mySalary: 4200 };
+    let recentCases = [
+        { name: "أحمد محمود علي", date: "23 مارس", status: "قيد المراجعة" },
+        { name: "فاطمة حسن إبراهيم", date: "22 مارس", status: "مقبولة" },
+        { name: "محمود سامي خليل", date: "22 مارس", status: "قيد المراجعة" }
+    ];
+
+    const researcherModules = [
+        { name: "إدارة الحالات", icon: "🏠", link: "/modules/cases/index.html" },
+        { name: "خطط الزيارات", icon: "🗺️", link: "/modules/cases/visit_management/index.html" },
+        { name: "الموظفين (HR)", icon: "👥", link: "/modules/hr/index.html" },
+        { name: "الحسابات", icon: "💰", link: "/modules/accounting/index.html" }
+    ];
+
+    function loadModules() {
+        document.getElementById('modulesNav').innerHTML = researcherModules.map(m => 
+            `<button class="module-nav-btn" onclick="navigateTo('${m.link}')"><span>${m.icon}</span> ${m.name}</button>`
+        ).join('');
+    }
+
+    function loadStats() {
+        document.getElementById('myCases').innerText = stats.myCases;
+        document.getElementById('myVisits').innerText = stats.myVisits;
+        document.getElementById('pendingCases').innerText = stats.pendingCases;
+        document.getElementById('mySalary').innerText = stats.mySalary.toLocaleString('ar-EG');
+    }
+
+    function loadRecent() {
+        document.getElementById('recentList').innerHTML = recentCases.map(c => `
+            <div class="recent-item" onclick="openCase('${c.name}')">
+                <div class="recent-avatar">${c.name.charAt(0)}</div>
+                <div class="recent-info">
+                    <div class="recent-name">${c.name}</div>
+                    <div class="recent-date">${c.date} - ${c.status}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function loadAssistant() {
+        document.getElementById('assistantBubble').innerHTML = `
+            <div class="msg-line"><span class="msg-icon">👋</span><span class="msg-text">مرحباً ${currentUser.name}</span></div>
+            <div class="msg-line"><span class="msg-icon">📌</span><span class="msg-text">لديك ${stats.pendingCases} حالة تحتاج مراجعة</span></div>
+            <div class="msg-line"><span class="msg-icon">🗺️</span><span class="msg-text">لديك ${stats.myVisits} زيارة هذا الأسبوع</span></div>
+        `;
+    }
+
+    function loadUserInfo() {
+        document.getElementById('userAvatar').innerText = currentUser.avatar;
+        document.getElementById('userName').innerText = currentUser.name;
+    }
+
+    function navigateTo(link) { window.location.href = link; }
+    function openCase(name) { alert(`فتح حالة: ${name}`); }
+    function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
+    function toggleTheme() { let html = document.documentElement; let newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; html.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); document.querySelector('.theme-toggle').textContent = newTheme === 'light' ? '🌙' : '☀️'; }
+
+    function init() {
+        loadUserInfo();
+        loadModules();
+        loadStats();
+        loadRecent();
+        loadAssistant();
+        let savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
+    }
+    init();
+</script>
+</body>
+</html>

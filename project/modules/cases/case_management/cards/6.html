@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>بطاقة التقرير البشري - الباحث</title>
+
+<style>
+body {
+    font-family: Arial;
+    direction: rtl;
+    margin: 0;
+}
+
+/* تقسيم الشاشة */
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* الإدخال */
+.input-section {
+    height: 50%;
+    padding: 15px;
+    background: #f5f5f5;
+}
+
+/* العرض */
+.view-section {
+    height: 50%;
+    padding: 15px;
+    background: #ffffff;
+    border-top: 2px solid #ccc;
+}
+
+/* عناصر الإدخال */
+textarea {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px;
+    background: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* بطاقة العرض */
+.card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- شاشة الإدخال -->
+    <div class="input-section">
+
+        <h3>تقرير الباحث</h3>
+
+        <textarea id="reportInput" placeholder="اكتب وصف الحالة..."></textarea>
+
+        <h3>التوصية</h3>
+
+        <textarea id="recommendationInput" placeholder="اكتب التوصية..."></textarea>
+
+        <h3>قيمة المساعدة</h3>
+
+        <input type="number" id="amountInput" placeholder="مثال: 500">
+
+        <h3>حالة الرأي</h3>
+
+        <select id="statusInput">
+            <option>قيد الدراسة</option>
+            <option>موافق</option>
+            <option>غير موافق</option>
+        </select>
+
+        <button onclick="updateView()">حفظ وعرض</button>
+
+    </div>
+
+    <!-- شاشة العرض -->
+    <div class="view-section">
+
+        <div class="card">
+            <h3>عرض التقرير</h3>
+
+            <p id="reportView"></p>
+            <p id="recommendationView"></p>
+            <p id="amountView"></p>
+            <p id="statusView"></p>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function updateView() {
+    document.getElementById("reportView").innerText =
+        "التقرير: " + document.getElementById("reportInput").value;
+
+    document.getElementById("recommendationView").innerText =
+        "التوصية: " + document.getElementById("recommendationInput").value;
+
+    document.getElementById("amountView").innerText =
+        "قيمة المساعدة: " + document.getElementById("amountInput").value + " جنيه";
+
+    document.getElementById("statusView").innerText =
+        "الحالة: " + document.getElementById("statusInput").value;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تحليل الإيرادات والمصروفات - الجمعية الشرعية</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0; padding: 0;
+            background-color: #555;
+        }
+
+        .page {
+            background-color: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 10mm auto;
+            position: relative;
+            padding: 10mm;
+        }
+
+        /* [1] الإطار الإسلامي المزدوج الموحد */
+        .islamic-frame {
+            border: 6px double #000;
+            min-height: 277mm;
+            width: 100%;
+            position: relative;
+            padding: 5mm; 
+        }
+
+        .islamic-frame::before, .islamic-frame::after,
+        .frame-inner-decoration::before, .frame-inner-decoration::after {
+            content: "";
+            position: absolute;
+            width: 30px; height: 30px;
+            border: 2px solid #000;
+            background-color: #fff;
+            transform: rotate(45deg);
+            z-index: 2;
+        }
+        .islamic-frame::before { top: -16px; right: -16px; }
+        .islamic-frame::after { bottom: -16px; left: -16px; }
+        .frame-inner-decoration::before { top: -16px; left: -16px; }
+        .frame-inner-decoration::after { bottom: -16px; right: -16px; }
+
+        /* [2] الترويسة الموحدة */
+        .bismi-center {
+            position: absolute;
+            top: 5mm; left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold; font-size: 19pt;
+            font-family: 'Andalus', serif;
+        }
+
+        .header-right {
+            position: absolute;
+            top: 12mm; right: 5mm;
+            text-align: center;
+            font-family: 'Andalus', serif;
+            font-size: 12pt; line-height: 1.4;
+            font-weight: bold;
+        }
+
+        .logo-section {
+            position: absolute;
+            top: 38mm; left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo-box {
+            width: 80px; height: 80px;
+            border: 1.5px solid #000;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8pt; background: #fff;
+        }
+
+        /* [3] الجداول */
+        .main-content {
+            margin-top: 62mm;
+            width: 100%;
+        }
+
+        .doc-title {
+            text-align: center;
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* تنسيق القوائم المنسدلة لتظهر كجزء من النص */
+        .dropdown-style {
+            border: 1px dashed #ccc;
+            background: transparent;
+            font-family: 'Times New Roman';
+            font-weight: bold;
+            font-size: 16pt;
+            appearance: none;
+            -webkit-appearance: none;
+            padding: 2px 10px;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .dropdown-style:hover { border: 1px solid #000; }
+
+        .main-table, .bottom-table {
+            border: 4px double #000 !important;
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            table-layout: fixed;
+        }
+
+        .main-table th, .main-table td, .bottom-table th, .bottom-table td {
+            border: 1px solid #000;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+            font-size: 10pt;
+            height: 32px;
+        }
+
+        .vertical-text {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            white-space: nowrap;
+        }
+
+        .grey-bg { background-color: #e8e8e8 !important; }
+
+        .signatures-area {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .sig-column { width: 40%; }
+        .parentheses { font-size: 20pt; display: block; margin-bottom: -5px; }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; width: 210mm; height: 297mm; box-shadow: none; }
+            .print-btn { display: none; }
+            .dropdown-style { border: none; } /* إخفاء إطار القائمة عند الطباعة */
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div class="islamic-frame">
+        <div class="frame-inner-decoration"></div>
+        
+        <div class="bismi-center">بسم الله الرحمن الرحيم</div>
+
+        <div class="header-right">
+            <div>الجمعية الشرعية الرئيسية</div>
+            <div>لتعاون العاملين بالكتاب والسنة المحمدية</div>
+            <div>فرع الرحمن بمساكن حجازي</div>
+            <div>المشهرة برقم 986 لسنة 2005 قليوبية</div>
+            <div style="text-decoration: underline;">مكتب : عمر بن الخطاب بالعبور</div>
+        </div>
+        
+        <div class="logo-section">
+            <div class="logo-box">شعار الجمعية</div>
+        </div>
+
+        <div class="main-content">
+            <div class="doc-title">
+                إيرادات والمصروفات عن شهر 
+                <select id="monthSel" class="dropdown-style">
+                    <option value="1">يناير</option>
+                    <option value="2">فبراير</option>
+                    <option value="3">مارس</option>
+                    <option value="4">أبريل</option>
+                    <option value="5">مايو</option>
+                    <option value="6">يونيو</option>
+                    <option value="7">يوليو</option>
+                    <option value="8">أغسطس</option>
+                    <option value="9">سبتمبر</option>
+                    <option value="10">أكتوبر</option>
+                    <option value="11">نوفمبر</option>
+                    <option value="12">ديسمبر</option>
+                </select> / 
+                <select id="yearSel" class="dropdown-style"></select>
+            </div>
+
+            <table class="main-table">
+                <thead>
+                    <tr class="grey-bg">
+                        <th colspan="4">مصروفات</th>
+                        <th rowspan="2" class="vertical-text" style="width:30px">القيد</th>
+                        <th rowspan="2">أوجه النشاط</th>
+                        <th rowspan="2" class="vertical-text" style="width:30px">القيد</th>
+                        <th colspan="4">إيرادات</th>
+                    </tr>
+                    <tr class="grey-bg">
+                        <th colspan="2">كلى</th><th colspan="2">جزئي</th>
+                        <th colspan="2">جزئي</th><th colspan="2">كلى</th>
+                    </tr>
+                    <tr>
+                        <th style="width:60px">جنية</th><th style="width:25px">ق</th>
+                        <th style="width:60px">جنية</th><th style="width:25px">ق</th>
+                        <th colspan="2">البيان</th>
+                        <th style="width:60px">جنية</th><th style="width:25px">ق</th>
+                        <th style="width:60px">جنية</th><th style="width:25px">ق</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td><td></td><td></td><td></td>
+                        <td rowspan="8" class="vertical-text">مصروفات عامة</td>
+                        <td>تبرعات وإعانات</td>
+                        <td rowspan="6" class="vertical-text">إيرادات عامة</td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td></td><td></td><td></td><td></td>
+                        <td>إعانة زواج</td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td></td><td></td><td></td><td></td>
+                        <td>مشتريات</td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td></td><td></td><td></td><td></td>
+                        <td>أدوات مكتبية وورقيات</td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td></td><td></td><td></td><td></td>
+                        <td>أجهزة</td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td></td><td></td><td></td><td></td>
+                        <td>مصروفات نثرية</td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr class="grey-bg">
+                        <td></td><td></td><td></td><td></td>
+                        <td>انتقالات عامة</td>
+                        <td colspan="5"></td>
+                    </tr>
+                    <tr>
+                        <td></td><td></td><td></td><td></td>
+                        <td>نشر دعوة وعاظ</td>
+                        <td rowspan="2" class="vertical-text">نشر دعوة</td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr class="grey-bg">
+                        <td></td><td></td><td></td><td></td>
+                        <td colspan="2">الإجمالــــــــــــــــي</td>
+                        <td></td><td></td><td></td><td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="bottom-table">
+                <thead>
+                    <tr class="grey-bg">
+                        <th style="width: 25%;">البيان</th>
+                        <th>الرصيد السابق</th>
+                        <th>الإيرادات</th>
+                        <th>المجموع</th>
+                        <th>المصروفات</th>
+                        <th>الرصيد الحالي والمرحل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>المكتب / المسجد</td><td></td><td></td><td></td><td></td><td rowspan="3" style="font-size: 25pt;">ـ</td></tr>
+                    <tr><td>إعانة الزواج</td><td></td><td></td><td></td><td></td></tr>
+                    <tr class="grey-bg"><td>الإجمالي العام</td><td></td><td></td><td></td><td></td></tr>
+                </tbody>
+            </table>
+
+            <div style="text-align: right; font-weight: bold; margin-top: 10px; font-size: 11pt;">
+                ملحوظة هامة: يرفق بالمحضر التحليل المالي
+            </div>
+
+            <div class="signatures-area">
+                <div class="sig-column">
+                    <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                    <b style="font-size: 12pt;">سعود محمد هانى</b><br>
+                    <span>أمين صندوق</span>
+                </div>
+                <div class="sig-column">
+                    <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                    <b style="font-size: 12pt;">شعبان على ابراهيم أبو العلا</b><br>
+                    <span>رئيس مجلس الإدارة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin: 20px;">
+    <button class="print-btn" onclick="window.print()" style="padding: 10px 50px; font-weight: bold; cursor: pointer; background: #333; color: #fff; border: none; border-radius: 5px;">طباعة الصفحة</button>
+</div>
+
+<script>
+    function setup() {
+        // توليد السنوات تلقائياً (السنة الحالية +/- 5 سنوات)
+        const currentYear = new Date().getFullYear();
+        const yearSel = document.getElementById('yearSel');
+        for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+            let option = document.createElement("option");
+            option.value = i;
+            option.text = i;
+            if (i === currentYear) option.selected = true;
+            yearSel.appendChild(option);
+        }
+        
+        // اختيار الشهر الحالي افتراضياً
+        const currentMonth = new Date().getMonth() + 1;
+        document.getElementById('monthSel').value = currentMonth;
+    }
+    window.onload = setup;
+</script>
+
+</body>
+</html>

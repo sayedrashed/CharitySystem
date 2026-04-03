@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - نظام إدارة البحث الاجتماعي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0F1117;
+            --bg-secondary: #1A1D27;
+            --bg-card: #1A1D27;
+            --border: #2E3250;
+            --text-primary: #E8EBF4;
+            --text-secondary: #6B7280;
+            --accent: #4F8EF7;
+            --success: #2DD4BF;
+            --warning: #F59E0B;
+            --danger: #F87171;
+            --gold: #F5C842;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        .back-btn:hover { border-color: var(--accent); transform: translateX(-4px); }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-badge {
+            background: var(--danger);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .user-area { display: flex; align-items: center; gap: 15px; }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .settings-tabs {
+            display: flex;
+            gap: 5px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn:hover { color: var(--accent); }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .settings-content { padding: 24px; max-width: 1400px; margin: 0 auto; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-title { font-size: 18px; font-weight: 700; color: var(--gold); }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: var(--text-secondary); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-secondary { background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: #0F1117; }
+        .btn-sm { padding: 4px 12px; font-size: 12px; }
+        .btn:hover { transform: translateY(-1px); opacity: 0.9; }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .list-item:last-child { border-bottom: none; }
+        .list-item-actions { display: flex; gap: 8px; }
+
+        .form-builder {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .form-field {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+        .form-field:last-child { border-bottom: none; }
+        .field-info { display: flex; align-items: center; gap: 12px; }
+        .drag-icon { cursor: grab; color: var(--text-secondary); }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            width: 600px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-close { cursor: pointer; font-size: 20px; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .settings-tabs { padding: 0 12px; }
+            .tab-btn { padding: 10px 12px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <button class="back-btn" onclick="goBack()"><span>←</span> العودة</button>
+    <div class="page-title">⚙️ الإعدادات المتقدمة</div>
+    <div class="user-area">
+        <div class="admin-badge">👑 للمدير فقط</div>
+        <div class="user-avatar" id="userAvatar">👑</div>
+        <div class="user-name" id="userName"></div>
+    </div>
+</div>
+
+<div class="settings-tabs">
+    <button class="tab-btn active" onclick="switchTab('forms')">📄 قوالب الاستمارات</button>
+    <button class="tab-btn" onclick="switchTab('modules')">🧩 إدارة الموديولات</button>
+    <button class="tab-btn" onclick="switchTab('system')">⚙️ إعدادات النظام</button>
+    <button class="tab-btn" onclick="switchTab('users')">👥 إدارة المستخدمين</button>
+    <button class="tab-btn" onclick="switchTab('database')">🗄️ إدارة قاعدة البيانات</button>
+</div>
+
+<div class="settings-content">
+    <!-- قوالب الاستمارات -->
+    <div id="tab-forms" class="tab-pane active">
+        <div class="card">
+            <div class="card-header"><div class="card-title">📄 قوالب الاستمارات</div><button class="btn btn-primary" onclick="openAddTemplateModal()">➕ استمارة جديدة</button></div>
+            <div id="templates-list"></div>
+        </div>
+    </div>
+
+    <!-- إدارة الموديولات -->
+    <div id="tab-modules" class="tab-pane">
+        <div class="card">
+            <div class="card-header"><div class="card-title">🧩 الموديولات المتاحة</div><button class="btn btn-primary" onclick="openAddModuleModal()">➕ موديول جديد</button></div>
+            <div id="modules-list"></div>
+        </div>
+    </div>
+
+    <!-- إعدادات النظام -->
+    <div id="tab-system" class="tab-pane">
+        <div class="grid-2">
+            <div class="card"><div class="card-header"><div class="card-title">🏢 بيانات الجمعية</div></div>
+                <div class="form-group"><label>اسم الجمعية</label><input type="text" id="orgName" placeholder="اسم الجمعية"></div>
+                <div class="form-group"><label>رقم الإشهار</label><input type="text" id="orgReg" placeholder="رقم الإشهار"></div>
+                <div class="form-group"><label>العنوان</label><input type="text" id="orgAddress" placeholder="العنوان"></div>
+                <div class="form-group"><label>رقم الهاتف</label><input type="text" id="orgPhone" placeholder="رقم الهاتف"></div>
+                <button class="btn btn-primary" onclick="saveOrgSettings()">💾 حفظ</button>
+            </div>
+            <div class="card"><div class="card-header"><div class="card-title">⚙️ إعدادات عامة</div></div>
+                <div class="form-group"><label>الوضع الافتراضي</label><select id="defaultTheme"><option value="dark">داكن</option><option value="light">فاتح</option></select></div>
+                <div class="form-group"><label>حجم الخط</label><select id="defaultFontSize"><option value="small">صغير</option><option value="medium">متوسط</option><option value="large">كبير</option></select></div>
+                <div class="form-group"><label>عدد العناصر في الصفحة</label><input type="number" id="itemsPerPage" value="10" min="5" max="50"></div>
+                <button class="btn btn-primary" onclick="saveGeneralSettings()">💾 حفظ</button>
+            </div>
+            <div class="card"><div class="card-header"><div class="card-title">🖨️ إعدادات الطباعة</div></div>
+                <div class="form-group"><label>الطابعة الافتراضية</label><select id="defaultPrinter"></select></div>
+                <div class="form-group"><label>هامش الصفحة (ملم)</label><input type="number" id="printMargin" value="15"></div>
+                <button class="btn btn-primary" onclick="savePrintSettings()">💾 حفظ</button>
+            </div>
+            <div class="card"><div class="card-header"><div class="card-title">🔔 الإشعارات</div></div>
+                <div class="form-group"><label><input type="checkbox" id="notifyNewCase"> تنبيه عند إضافة حالة جديدة</label></div>
+                <div class="form-group"><label><input type="checkbox" id="notifyPendingReview"> تنبيه عند حالات تحتاج مراجعة</label></div>
+                <div class="form-group"><label><input type="checkbox" id="notifyBirthday"> تنبيه بأعياد الميلاد</label></div>
+                <button class="btn btn-primary" onclick="saveNotificationSettings()">💾 حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- إدارة المستخدمين -->
+    <div id="tab-users" class="tab-pane">
+        <div class="card"><div class="card-header"><div class="card-title">👥 المستخدمين</div><button class="btn btn-primary" onclick="openAddUserModal()">➕ مستخدم جديد</button></div>
+            <div id="users-list"></div>
+        </div>
+    </div>
+
+    <!-- إدارة قاعدة البيانات -->
+    <div id="tab-database" class="tab-pane">
+        <div class="grid-2">
+            <div class="card"><div class="card-header"><div class="card-title">💾 نسخ احتياطي</div></div>
+                <button class="btn btn-primary" onclick="createBackup()">📀 إنشاء نسخة احتياطية</button>
+                <div id="backups-list" style="margin-top:15px;"></div>
+            </div>
+            <div class="card"><div class="card-header"><div class="card-title">🔄 استعادة بيانات</div></div>
+                <input type="file" id="restoreFile" accept=".json,.db,.sqlite">
+                <button class="btn btn-warning" onclick="restoreBackup()">📂 استعادة</button>
+            </div>
+            <div class="card"><div class="card-header"><div class="card-title">🗑️ تنظيف قاعدة البيانات</div></div>
+                <button class="btn btn-danger" onclick="cleanDatabase()">🧹 تنظيف السجلات القديمة</button>
+                <p style="font-size:12px;color:var(--text-secondary);margin-top:10px;">سيتم حذف السجلات الأقدم من سنة واحدة</p>
+            </div>
+            <div class="card"><div class="card-header"><div class="card-title">📊 إحصائيات قاعدة البيانات</div></div>
+                <div id="dbStats"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    let currentUser = { id: 1, name: "سيد راشد", role: "admin", avatar: "👑" };
+    let templates = [
+        { id: 1, name: "استمارة البحث المكتبي", type: "office_search", version: "1.0", fields: 12 },
+        { id: 2, name: "استمارة الزيارة المنزلية", type: "home_visit", version: "1.0", fields: 15 },
+        { id: 3, name: "استمارة إحصاءات", type: "statistics", version: "1.0", fields: 8 }
+    ];
+    let modules = [
+        { id: 1, name: "إدارة الحالات", icon: "🏠", enabled: true, order: 1 },
+        { id: 2, name: "الموظفين (HR)", icon: "👥", enabled: true, order: 2 },
+        { id: 3, name: "الحسابات", icon: "💰", enabled: true, order: 3 },
+        { id: 4, name: "التقارير", icon: "📊", enabled: false, order: 4 }
+    ];
+    let users = [
+        { id: 1, name: "سيد راشد", username: "admin", role: "admin", email: "admin@charity.com", active: true },
+        { id: 2, name: "بشرى", username: "boshra", role: "researcher", email: "boshra@charity.com", active: true },
+        { id: 3, name: "أشرف", username: "ashraf", role: "researcher", email: "ashraf@charity.com", active: true },
+        { id: 4, name: "علي", username: "ali", role: "researcher", email: "ali@charity.com", active: true }
+    ];
+
+    function renderTemplates() {
+        let container = document.getElementById('templates-list');
+        if (templates.length === 0) { container.innerHTML = '<div class="list-item" style="text-align:center;color:var(--text-secondary);">لا توجد استمارات</div>'; return; }
+        container.innerHTML = templates.map(t => `<div class="list-item"><div><strong>${t.name}</strong><span style="color:var(--text-secondary);margin-right:10px;">الإصدار ${t.version}</span><span style="color:var(--text-secondary);margin-right:10px;">${t.fields} حقلاً</span></div><div class="list-item-actions"><button class="btn btn-secondary btn-sm" onclick="editTemplate(${t.id})">✏️ تعديل</button><button class="btn btn-secondary btn-sm" onclick="previewTemplate(${t.id})">👁️ معاينة</button><button class="btn btn-danger btn-sm" onclick="deleteTemplate(${t.id})">🗑️ حذف</button></div></div>`).join('');
+    }
+    function editTemplate(id) { showToast(`فتح تعديل الاستمارة رقم ${id}`); openFormBuilder(id); }
+    function previewTemplate(id) { showToast(`معاينة الاستمارة رقم ${id}`); }
+    function deleteTemplate(id) { if (confirm('حذف هذه الاستمارة؟')) { templates = templates.filter(t => t.id !== id); renderTemplates(); showToast('تم حذف الاستمارة'); } }
+    function openAddTemplateModal() { showToast('فتح إضافة استمارة جديدة'); }
+
+    function openFormBuilder(templateId) {
+        let template = templates.find(t => t.id === templateId);
+        if (!template) return;
+        let modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.innerHTML = `<div class="modal-content" style="width:700px;"><div class="modal-header"><h3>✏️ تعديل الاستمارة: ${template.name}</h3><span class="modal-close" onclick="this.closest('.modal').remove()">✕</span></div><div class="form-group"><label>اسم الاستمارة</label><input type="text" id="formName" value="${template.name}"></div><div class="form-group"><label>الحقول (اسحب لإعادة الترتيب)</label><div class="form-builder" id="formFieldsList"><div class="form-field"><div class="field-info"><span class="drag-icon">☰</span><span>الاسم الكامل (نص - من قاعدة البيانات)</span></div><div><button class="btn btn-secondary btn-sm" onclick="editField()">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteField(this)">🗑️</button></div></div><div class="form-field"><div class="field-info"><span class="drag-icon">☰</span><span>الرقم القومي (نص - من قاعدة البيانات)</span></div><div><button class="btn btn-secondary btn-sm" onclick="editField()">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteField(this)">🗑️</button></div></div><div class="form-field"><div class="field-info"><span class="drag-icon">☰</span><span>نقاط التركيز (قائمة - من سجل الحالة)</span></div><div><button class="btn btn-secondary btn-sm" onclick="editField()">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteField(this)">🗑️</button></div></div></div></div><button class="btn btn-secondary" onclick="addField()">➕ إضافة حقل جديد</button><div class="modal-buttons"><button class="btn btn-primary" onclick="saveFormTemplate()">💾 حفظ</button><button class="btn btn-secondary" onclick="this.closest('.modal').remove()">إلغاء</button></div></div>`;
+        document.body.appendChild(modal);
+        let fieldsList = document.getElementById('formFieldsList');
+        let dragSrc = null;
+        fieldsList.querySelectorAll('.form-field').forEach(field => {
+            field.setAttribute('draggable', 'true');
+            field.addEventListener('dragstart', (e) => { dragSrc = field; e.dataTransfer.effectAllowed = 'move'; field.classList.add('dragging'); });
+            field.addEventListener('dragend', (e) => { field.classList.remove('dragging'); });
+            field.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+            field.addEventListener('drop', (e) => { e.preventDefault(); if (dragSrc && dragSrc !== field) fieldsList.insertBefore(dragSrc, field.nextSibling); dragSrc = null; });
+        });
+    }
+    function addField() { showToast('فتح نافذة إضافة حقل جديد'); }
+    function editField() { showToast('فتح تعديل الحقل'); }
+    function deleteField(btn) { btn.closest('.form-field').remove(); showToast('تم حذف الحقل'); }
+    function saveFormTemplate() { showToast('تم حفظ التعديلات'); document.querySelector('.modal.active')?.remove(); }
+
+    function renderModules() {
+        let container = document.getElementById('modules-list');
+        if (modules.length === 0) { container.innerHTML = '<div class="list-item" style="text-align:center;color:var(--text-secondary);">لا توجد موديولات</div>'; return; }
+        container.innerHTML = modules.map(m => `<div class="list-item"><div><span style="font-size:20px;">${m.icon}</span><strong style="margin-right:10px;">${m.name}</strong><span style="color:var(--text-secondary);margin-right:10px;">${m.enabled ? '🟢 مفعل' : '🔴 غير مفعل'}</span></div><div class="list-item-actions"><button class="btn btn-secondary btn-sm" onclick="toggleModule(${m.id})">${m.enabled ? 'إيقاف' : 'تفعيل'}</button><button class="btn btn-secondary btn-sm" onclick="editModule(${m.id})">✏️ تعديل</button><button class="btn btn-danger btn-sm" onclick="deleteModule(${m.id})">🗑️ حذف</button></div></div>`).join('');
+    }
+    function toggleModule(id) { let m = modules.find(m => m.id === id); if (m) { m.enabled = !m.enabled; renderModules(); showToast(`تم ${m.enabled ? 'تفعيل' : 'إيقاف'} موديول ${m.name}`); } }
+    function editModule(id) { showToast(`فتح تعديل موديول ${id}`); }
+    function deleteModule(id) { if (confirm('حذف هذا الموديول؟')) { modules = modules.filter(m => m.id !== id); renderModules(); showToast('تم حذف الموديول'); } }
+    function openAddModuleModal() { showToast('فتح إضافة موديول جديد'); }
+
+    function renderUsers() {
+        let container = document.getElementById('users-list');
+        if (users.length === 0) { container.innerHTML = '<div class="list-item" style="text-align:center;color:var(--text-secondary);">لا توجد مستخدمين</div>'; return; }
+        container.innerHTML = users.map(u => `<div class="list-item"><div><strong>${u.name}</strong><span style="color:var(--text-secondary);margin-right:10px;">${u.username}</span><span style="color:var(--text-secondary);margin-right:10px;">${u.role === 'admin' ? '👑 مدير' : '👤 باحث'}</span><span style="color:var(--text-secondary);margin-right:10px;">${u.active ? '🟢 نشط' : '🔴 غير نشط'}</span></div><div class="list-item-actions"><button class="btn btn-secondary btn-sm" onclick="toggleUserStatus(${u.id})">${u.active ? 'تعطيل' : 'تفعيل'}</button><button class="btn btn-secondary btn-sm" onclick="editUser(${u.id})">✏️ تعديل</button><button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})">🗑️ حذف</button></div></div>`).join('');
+    }
+    function toggleUserStatus(id) { let u = users.find(u => u.id === id); if (u) { u.active = !u.active; renderUsers(); showToast(`تم ${u.active ? 'تفعيل' : 'تعطيل'} المستخدم ${u.name}`); } }
+    function editUser(id) { showToast(`فتح تعديل المستخدم ${id}`); }
+    function deleteUser(id) { if (confirm('حذف هذا المستخدم؟')) { users = users.filter(u => u.id !== id); renderUsers(); showToast('تم حذف المستخدم'); } }
+    function openAddUserModal() { showToast('فتح إضافة مستخدم جديد'); }
+
+    function loadOrgSettings() {
+        document.getElementById('orgName').value = localStorage.getItem('orgName') || 'جمعية الرحمة الخيرية';
+        document.getElementById('orgReg').value = localStorage.getItem('orgReg') || '986 لسنة 2005';
+        document.getElementById('orgAddress').value = localStorage.getItem('orgAddress') || 'شبرا الخيمة - مساكن حجازي';
+        document.getElementById('orgPhone').value = localStorage.getItem('orgPhone') || '01111878692';
+    }
+    function saveOrgSettings() { localStorage.setItem('orgName', document.getElementById('orgName').value); localStorage.setItem('orgReg', document.getElementById('orgReg').value); localStorage.setItem('orgAddress', document.getElementById('orgAddress').value); localStorage.setItem('orgPhone', document.getElementById('orgPhone').value); showToast('تم حفظ بيانات الجمعية'); }
+    function loadGeneralSettings() { document.getElementById('defaultTheme').value = localStorage.getItem('theme') || 'dark'; document.getElementById('defaultFontSize').value = localStorage.getItem('fontSize') || 'medium'; document.getElementById('itemsPerPage').value = localStorage.getItem('itemsPerPage') || '10'; }
+    function saveGeneralSettings() { localStorage.setItem('theme', document.getElementById('defaultTheme').value); localStorage.setItem('fontSize', document.getElementById('defaultFontSize').value); localStorage.setItem('itemsPerPage', document.getElementById('itemsPerPage').value); document.documentElement.setAttribute('data-theme', document.getElementById('defaultTheme').value); document.body.style.fontSize = document.getElementById('defaultFontSize').value === 'small' ? '12px' : (document.getElementById('defaultFontSize').value === 'large' ? '16px' : '14px'); showToast('تم حفظ الإعدادات العامة'); }
+    function loadPrintSettings() { let printerSelect = document.getElementById('defaultPrinter'); printerSelect.innerHTML = '<option value="default">الطابعة الافتراضية</option><option value="HP LaserJet">HP LaserJet M402</option><option value="Canon">Canon IR-ADV</option>'; printerSelect.value = localStorage.getItem('defaultPrinter') || 'default'; document.getElementById('printMargin').value = localStorage.getItem('printMargin') || '15'; }
+    function savePrintSettings() { localStorage.setItem('defaultPrinter', document.getElementById('defaultPrinter').value); localStorage.setItem('printMargin', document.getElementById('printMargin').value); showToast('تم حفظ إعدادات الطباعة'); }
+    function loadNotificationSettings() { document.getElementById('notifyNewCase').checked = localStorage.getItem('notifyNewCase') === 'true'; document.getElementById('notifyPendingReview').checked = localStorage.getItem('notifyPendingReview') === 'true'; document.getElementById('notifyBirthday').checked = localStorage.getItem('notifyBirthday') === 'true'; }
+    function saveNotificationSettings() { localStorage.setItem('notifyNewCase', document.getElementById('notifyNewCase').checked); localStorage.setItem('notifyPendingReview', document.getElementById('notifyPendingReview').checked); localStorage.setItem('notifyBirthday', document.getElementById('notifyBirthday').checked); showToast('تم حفظ إعدادات الإشعارات'); }
+
+    function createBackup() { showToast('جاري إنشاء نسخة احتياطية...'); setTimeout(() => showToast('✅ تم إنشاء النسخة الاحتياطية بنجاح'), 1500); }
+    function restoreBackup() { let file = document.getElementById('restoreFile').files[0]; if (!file) { showToast('الرجاء اختيار ملف للاستعادة'); return; } showToast('جاري استعادة البيانات...'); setTimeout(() => showToast('✅ تم استعادة البيانات بنجاح'), 1500); }
+    function cleanDatabase() { if (confirm('⚠️ تحذير: سيتم حذف السجلات القديمة. هل أنت متأكد؟')) { showToast('جاري تنظيف قاعدة البيانات...'); setTimeout(() => showToast('✅ تم تنظيف قاعدة البيانات بنجاح'), 1500); } }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
+    function goBack() { window.location.href = '/index.html'; }
+    function updateUserInfo() { document.getElementById('userAvatar').innerText = currentUser.avatar; document.getElementById('userName').innerText = currentUser.name; }
+
+    function init() {
+        updateUserInfo(); renderTemplates(); renderModules(); renderUsers();
+        loadOrgSettings(); loadGeneralSettings(); loadPrintSettings(); loadNotificationSettings();
+        let savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('defaultTheme').value = savedTheme;
+        document.body.style.fontSize = localStorage.getItem('fontSize') === 'small' ? '12px' : (localStorage.getItem('fontSize') === 'large' ? '16px' : '14px');
+    }
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

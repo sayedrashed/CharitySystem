@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>البطاقة الديموغرافية الشاملة - النسخة المعتمدة</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+
+    <style>
+        :root { --primary: #2563eb; --success: #10b981; --danger: #ef4444; --border: #cbd5e1; --meeza: #b59410; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f1f5f9; padding: 20px; direction: rtl; }
+        .card-container { max-width: 1000px; margin: auto; background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 8px solid var(--primary); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 25px; }
+        .main-layout { display: grid; grid-template-columns: 220px 1fr; gap: 30px; }
+        .img-preview { width: 140px; height: 175px; border: 2px dashed var(--border); border-radius: 8px; overflow: hidden; background: #f8fafc; position: relative; margin: 0 auto; }
+        .img-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .upload-hint { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); color: white; text-align: center; padding: 5px; font-size: 11px; cursor: pointer; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
+        label { font-weight: 700; color: #334155; font-size: 14px; }
+        input, select, textarea { padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; }
+        .location-box { background: #f0f9ff; padding: 15px; border-radius: 12px; border: 1px solid #bae6fd; margin-top: 10px; }
+        .badge-print { font-size: 10px; background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; margin-right: 5px; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-add { background: var(--success); color: white; margin-bottom: 10px; }
+        .btn-gps { background: #334155; color: white; }
+        .btn-meeza { background: var(--meeza); color: white; font-size: 11px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 10px; border-radius: 8px; margin-top: auto; }
+        .btn-next { background: var(--primary); color: white; padding: 15px 40px; font-size: 16px; width: 100%; margin-top: 20px; }
+        .phone-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 80px 40px; gap: 10px; background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0; align-items: end; }
+        @media print { .visa-section, .no-print, .private-field { display: none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="card-container">
+    <div class="section-header">
+        <h2>📍 البطاقة الديموغرافية الشاملة</h2>
+        <span style="color: var(--primary); font-weight: bold;">تكوين ملف الحالة</span>
+    </div>
+
+    <div class="main-layout">
+        <div class="photo-area">
+            <div class="img-preview">
+                <img src="https://via.placeholder.com/140x175?text=صورة+الحالة" id="profileDisplay">
+                <div class="upload-hint" onclick="document.getElementById('fileInp').click()">📷 رفع صورة</div>
+            </div>
+            <input type="file" id="fileInp" hidden accept="image/*" onchange="previewImg(event)">
+            <div class="form-group" style="margin-top: 20px;">
+                <label>الغرض من البحث <span class="badge-print">يطبع</span></label>
+                <select id="purpose">
+                    <option>مساعدة مالية</option>
+                    <option>مساعدة طبية</option>
+                    <option>تجهيز عرائس</option>
+                    <option>غارمين / ديون</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="data-area">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>الاسم الكامل <span class="badge-print">يطبع</span></label>
+                    <input type="text" id="fullName" placeholder="الاسم رباعي">
+                </div>
+                <div class="form-group">
+                    <label>الرقم القومي <span class="badge-print">يطبع</span></label>
+                    <input type="text" id="natId" maxlength="14" placeholder="14 رقم" oninput="valId(this)">
+                </div>
+            </div>
+
+            <div class="location-box">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>المحافظة <span class="badge-print">يطبع</span></label>
+                        <input type="text" id="gov" placeholder="مثال: الجيزة">
+                    </div>
+                    <div class="form-group">
+                        <label>الحي / المركز <span class="badge-print">يطبع</span></label>
+                        <input type="text" id="city" placeholder="مثال: كرداسة">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>العنوان المختصر <span class="badge-print">يطبع</span></label>
+                        <input type="text" id="address" placeholder="الشارع - رقم المنزل - علامة مميزة">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>رابط Google Maps (للجدولة)</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="gpsLink" style="flex:1" placeholder="انسخ الرابط هنا">
+                            <button type="button" class="btn btn-gps" onclick="analyzeGPS()">تحليل</button>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 8px;">
+                            <input type="text" id="lat" readonly placeholder="خط العرض">
+                            <input type="text" id="lng" readonly placeholder="خط الطول">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-grid" style="margin-top: 20px;">
+        <div class="form-group private-field">
+            <label style="color:#64748b">العنوان الوصفي (للباحث فقط)</label>
+            <textarea rows="2" placeholder="بجوار علامة مميزة، لون العقار..."></textarea>
+        </div>
+        <div class="form-group private-field">
+            <label style="color:#64748b">وصف السكن (للباحث فقط)</label>
+            <textarea rows="2" placeholder="تفاصيل الحالة الإنشائية، عدد الغرف..."></textarea>
+        </div>
+    </div>
+
+    <div style="margin-top: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label>سجل الهواتف والمحافظ <span class="badge-print">يطبع</span></label>
+            <button type="button" class="btn btn-add" onclick="addPhone()">+ إضافة رقم</button>
+        </div>
+        <div id="phoneList"></div>
+    </div>
+
+    <div class="visa-section" style="margin-top: 20px; padding: 20px; background: #fff5f5; border-radius: 12px; border: 1px solid #feb2b2;">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>رقم الفيزا (16 رقم) <span style="color:red; font-size:10px;">(سري - لا يطبع)</span></label>
+                <input type="text" id="visa" maxlength="19" placeholder="xxxx xxxx xxxx xxxx" oninput="valVisa(this)">
+            </div>
+            <div class="form-group">
+                <label>جهة الصرف</label>
+                <select id="visaType">
+                    <option>ميزة</option>
+                    <option>تكافل وكرامة</option>
+                    <option>البريد المصري</option>
+                    <option>بنك ناصر</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-next" onclick="finalSave()">حفظ والانتقال لجدول الأسرة ←</button>
+</div>
+
+<script>
+    function addPhone() {
+        const phoneList = document.getElementById('phoneList');
+        const div = document.createElement('div');
+        div.className = 'phone-row';
+        div.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:4px">
+                <label style="font-size:11px">رقم الموبايل</label>
+                <input type="tel" placeholder="01xxxxxxxxx" maxlength="11">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px">
+                <label style="font-size:11px">اسم المحفظة</label>
+                <input type="text" placeholder="مثلاً: فودافون كاش">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px">
+                <label style="font-size:11px">الصلة</label>
+                <input type="text" placeholder="صاحب الحالة">
+            </div>
+            <a href="https://managewallet.meeza.eg/Ar" target="_blank" class="btn-meeza" title="استعلام ميزة">
+                🔎 ميزة
+            </a>
+            <button type="button" style="background:none; border:none; color:red; font-weight:bold; cursor:pointer; height:38px" onclick="this.parentElement.remove()">×</button>
+        `;
+        phoneList.appendChild(div);
+    }
+
+    function valVisa(el) {
+        let val = el.value.replace(/\D/g, '');
+        if (val.length > 16) val = val.substring(0, 16);
+        el.value = val.match(/.{1,4}/g)?.join(' ') || val;
+        el.style.borderColor = (val.length === 16) ? '#10b981' : '#ef4444';
+    }
+
+    function valId(el) {
+        el.value = el.value.replace(/\D/g, '');
+        el.style.color = (el.value.length === 14) ? 'green' : 'red';
+    }
+
+    function analyzeGPS() {
+        const link = document.getElementById('gpsLink').value;
+        const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+        const match = link.match(regex);
+        if (match) {
+            document.getElementById('lat').value = match[1];
+            document.getElementById('lng').value = match[2];
+            Swal.fire('تم الاستخراج', 'الموقع جاهز لجدولة الزيارة', 'success');
+        } else {
+            Swal.fire('تنبيه', 'يرجى وضع رابط خرائط جوجل يحتوي على إحداثيات @', 'warning');
+        }
+    }
+
+    let cropper;
+    function previewImg(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                Swal.fire({
+                    title: 'ضبط الصورة الشخصية',
+                    html: '<div id="crop-area" style="height:300px;"></div>',
+                    confirmButtonText: 'اعتماد',
+                    didOpen: () => {
+                        cropper = new Croppie(document.getElementById('crop-area'), {
+                            viewport: { width: 140, height: 175, type: 'square' },
+                            boundary: { width: 250, height: 250 },
+                            showZoomer: true
+                        });
+                        cropper.bind({ url: event.target.result });
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        cropper.result('base64').then(base => {
+                            document.getElementById('profileDisplay').src = base;
+                        });
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function finalSave() {
+        Swal.fire({
+            title: 'تم الحفظ بنجاح',
+            text: 'هل تريد الانتقال لجدول الأسرة؟',
+            icon: 'success',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، هيا بنا'
+        });
+    }
+
+    window.onload = addPhone;
+</script>
+
+</body>
+</html>

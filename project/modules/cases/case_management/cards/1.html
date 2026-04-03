@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>بطاقة مقدمة البحث الاجتماعي - النسخة النهائية</title>
+    <style>
+        :root {
+            --primary-new: #059669; 
+            --primary-re: #1e40af;  
+            --bg-body: #f1f5f9;
+            --accent: #e11d48;
+            --text-main: #1e293b;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg-body); padding: 20px; direction: rtl; color: var(--text-main); }
+        
+        .main-card {
+            max-width: 950px;
+            margin: auto;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border-top: 10px solid #ccc;
+        }
+
+        .mode-new { border-top-color: var(--primary-new); }
+        .mode-re { border-top-color: var(--primary-re); }
+
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        
+        .mode-switcher { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .btn-mode {
+            padding: 12px; text-align: center; cursor: pointer; border-radius: 8px;
+            font-weight: bold; border: 1px solid #cbd5e1; background: #fff; transition: 0.2s;
+        }
+        .active-new { background: var(--primary-new) !important; color: white; border-color: var(--primary-new); }
+        .active-re { background: var(--primary-re) !important; color: white; border-color: var(--primary-re); }
+
+        .grid-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-weight: bold; color: #475569; font-size: 13px; }
+        
+        input, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
+        input:focus, select:focus { border-color: #64748b; }
+        .hidden { display: none; }
+        
+        /* قسم التاريخ التطوري */
+        #historySection {
+            background: #fff1f2;
+            border: 2px solid #fda4af;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        .history-table th, .history-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .history-table th { background: #be123c; color: white; font-size: 12px; }
+
+        .add-row-btn {
+            background: #059669; color: white; border: none; padding: 8px 20px; 
+            border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold; font-size: 13px;
+        }
+
+        .next-btn {
+            background: #94a3b8; color: white; padding: 15px; border: none;
+            border-radius: 8px; cursor: not-allowed; font-weight: bold; width: 100%; margin-top: 20px;
+            font-size: 16px; transition: 0.3s;
+        }
+        .btn-ready { background: #0f172a !important; cursor: pointer !important; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+
+<div id="mainCard" class="main-card mode-new">
+    <div class="header-row">
+        <h2>📑 مقدمة البحث الاجتماعي</h2>
+        <div id="caseIdInfo" style="font-weight: bold; color: #0369a1;">رقم تتبع: <span id="idValue">TMP-2026-005</span></div>
+        <div class="form-group">
+            <input type="date" id="searchDate" value="2026-03-07" style="border:none; font-weight:bold;">
+        </div>
+    </div>
+
+    <div class="mode-switcher">
+        <div id="tabNew" class="btn-mode active-new" onclick="switchMode('new')">🆕 حالة جديدة</div>
+        <div id="tabRe" class="btn-mode" onclick="switchMode('re')">🔄 إعادة تقييم</div>
+    </div>
+
+    <div class="grid-row">
+        <div class="form-group">
+            <label>إجراءات البحث</label>
+            <select id="caseAction" onchange="handleActionChange()" style="border: 2px solid #64748b;"></select>
+        </div>
+        <div class="form-group">
+            <label>الفئة</label>
+            <select id="category" onchange="validateForm()">
+                <option value="">--- اختر ---</option>
+                <option>شبرا</option><option>النهضة</option><option>معاقين</option><option>الشركة</option>
+            </select>
+        </div>
+        <div class="form-group" id="serialsRow" style="visibility: hidden;">
+            <label>المسلسلات (م.ع / م.م)</label>
+            <div style="display: flex; gap: 5px;">
+                <input type="text" id="maInput" placeholder="م.ع" style="width: 50%;" oninput="validateForm()">
+                <input type="text" id="mmInput" placeholder="م.م" style="width: 50%;" oninput="validateForm()">
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-row">
+        <div class="form-group">
+            <label>تاريخ آخر زيارة</label>
+            <input type="date" id="lastVisitDate" onchange="validateForm()">
+        </div>
+        <div id="startPaymentBox" class="form-group hidden">
+            <label>تاريخ بداية الصرف</label>
+            <input type="date" id="startPaymentDate" onchange="validateForm()">
+        </div>
+        <div class="form-group">
+            <label>طريقة البحث</label>
+            <select id="searchMethod" onchange="updateStaffList()">
+                <option value="visit">زيارة منزلية</option>
+                <option value="phone">تليفونياً</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid-row">
+        <div class="form-group">
+            <label>الباحث المكتبي (ب.م)</label>
+            <select id="bmAnalyst" onchange="validateForm()">
+                <option value="">--- اختر ---</option>
+                <option>علي</option><option>أشرف</option><option>محمود</option><option>بشرى</option><option>آية</option><option>ريهام</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>الباحث المسئول عن الحالة</label>
+            <select id="respAnalyst" onchange="validateForm()">
+                <option value="">--- اختر ---</option>
+                <option>علي</option><option>أشرف</option><option>محمود</option><option>بشرى</option><option>آية</option><option>ريهام</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>فريق الزيارة (ز.م)</label>
+            <select id="staffVisit" onchange="validateForm()"></select>
+        </div>
+    </div>
+
+    <div id="historySection" class="hidden">
+        <h4 style="color: var(--accent); margin-bottom: 10px;">📜 التاريخ التطوري (مطلوب إدراج الزيارات السابقة)</h4>
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>تاريخ الزيارة</th>
+                    <th>عدد الأفراد</th>
+                    <th>إجمالي الدخل</th>
+                    <th>نصيب الفرد</th>
+                    <th>من قام بالزيارة (سابق/حالي)</th>
+                    <th>حذف</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+        <button type="button" class="add-row-btn" onclick="addHistoryRow()">+ إضافة زيارة سابقة</button>
+    </div>
+
+    <button id="nextBtn" class="next-btn" disabled onclick="goNext()">الانتقال للبطاقة الديموغرافية ←</button>
+</div>
+
+<script>
+    let currentMode = 'new';
+    const actionsNew = ["تحت الدراسة", "في انتظار الزيارة", "معلقة", "مرفوضة", "في انتظار التوقيع", "مقبولة (منح أرقام رسمية)"];
+    const actionsRe = ["مؤقتة (مع تاريخ انتهاء)", "استمرار", "إلغاء (تحرير الأرقام)", "معلقة", "موقوفة (تعليق مالي)"];
+    const staffList = ["علي", "أشرف", "محمود", "بشرى", "آية", "ريهام"];
+
+    function switchMode(mode) {
+        currentMode = mode;
+        const card = document.getElementById('mainCard');
+        const actionSelect = document.getElementById('caseAction');
+        const idVal = document.getElementById('idValue');
+        
+        actionSelect.innerHTML = '<option value="">--- اختر الإجراء ---</option>';
+        
+        if (mode === 'new') {
+            card.className = 'main-card mode-new';
+            document.getElementById('tabNew').className = 'btn-mode active-new';
+            document.getElementById('tabRe').className = 'btn-mode';
+            document.getElementById('serialsRow').style.visibility = 'hidden';
+            actionsNew.forEach(a => actionSelect.add(new Option(a)));
+            document.getElementById('startPaymentBox').classList.add('hidden');
+            idVal.innerText = "TMP-2026-005";
+        } else {
+            card.className = 'main-card mode-re';
+            document.getElementById('tabRe').className = 'btn-mode active-re';
+            document.getElementById('tabNew').className = 'btn-mode';
+            document.getElementById('serialsRow').style.visibility = 'visible';
+            actionsRe.forEach(a => actionSelect.add(new Option(a)));
+            document.getElementById('startPaymentBox').classList.remove('hidden');
+            idVal.innerText = "بحث معتمد مسبقاً";
+        }
+        validateForm();
+        updateStaffList();
+    }
+
+    function handleActionChange() {
+        const action = document.getElementById('caseAction').value;
+        const startPayBox = document.getElementById('startPaymentBox');
+        if (currentMode === 'new' && action === "مقبولة (منح أرقام رسمية)") {
+            startPayBox.classList.remove('hidden');
+        } else if (currentMode === 'new') {
+            startPayBox.classList.add('hidden');
+        }
+        validateForm();
+    }
+
+    function addHistoryRow() {
+        const tbody = document.getElementById('historyBody');
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td><input type="date" class="h-input" onchange="validateForm()"></td>
+            <td><input type="number" class="h-input" style="width:50px" onchange="validateForm()"></td>
+            <td><input type="number" class="h-input" style="width:70px" onchange="validateForm()"></td>
+            <td><input type="number" class="h-input" style="width:70px" onchange="validateForm()"></td>
+            <td><input type="text" class="h-input" placeholder="اسم الباحث" onchange="validateForm()"></td>
+            <td><button onclick="this.parentElement.parentElement.remove(); validateForm();" style="color:red; border:none; background:none; cursor:pointer;">✖</button></td>
+        `;
+        validateForm();
+    }
+
+    function updateStaffList() {
+        const select = document.getElementById('staffVisit');
+        select.innerHTML = '<option value="">--- اختر الباحث ---</option>';
+        staffList.forEach(s => select.add(new Option(s)));
+    }
+
+    function validateForm() {
+        const act = document.getElementById('caseAction').value;
+        const bm = document.getElementById('bmAnalyst').value;
+        const cat = document.getElementById('category').value;
+        const lastV = document.getElementById('lastVisitDate').value;
+        const btn = document.getElementById('nextBtn');
+        
+        let isValid = (act && bm && cat && lastV);
+
+        // شرط الصرف
+        const spBox = document.getElementById('startPaymentBox');
+        if (!spBox.classList.contains('hidden') && !document.getElementById('startPaymentDate').value) {
+            isValid = false;
+        }
+
+        // شرط التاريخ التطوري في إعادة التقييم
+        const histSection = document.getElementById('historySection');
+        if (currentMode === 're') {
+            histSection.classList.remove('hidden');
+            const hInputs = document.querySelectorAll('.h-input');
+            if (hInputs.length === 0) isValid = false;
+            hInputs.forEach(input => { if(!input.value) isValid = false; });
+        } else {
+            histSection.classList.add('hidden');
+        }
+
+        if (isValid) {
+            btn.disabled = false;
+            btn.classList.add('btn-ready');
+        } else {
+            btn.disabled = true;
+            btn.classList.remove('btn-ready');
+        }
+    }
+
+    function goNext() {
+        alert("تم حفظ البيانات بنجاح. سننتقل الآن للبطاقة الديموغرافية لمقارنة البيانات المكتسبة.");
+        // هنا يمكن ربط الكود بالصفحة التالية
+    }
+
+    window.onload = () => switchMode('new');
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>صفحة المصروفات - تدوير كامل</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0; padding: 0;
+            background-color: #555;
+        }
+
+        .page {
+            background-color: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 10mm auto;
+            position: relative;
+            padding: 10mm;
+            display: flex;
+        }
+
+        .islamic-frame {
+            border: 6px double #000;
+            flex-grow: 1;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* زوايا الإطار */
+        .islamic-frame::before, .islamic-frame::after,
+        .frame-inner-decoration::before, .frame-inner-decoration::after {
+            content: "";
+            position: absolute;
+            width: 30px; height: 30px;
+            border: 2px solid #000;
+            background-color: #fff;
+            transform: rotate(45deg);
+            z-index: 2;
+        }
+        .islamic-frame::before { top: -16px; right: -16px; }
+        .islamic-frame::after { bottom: -16px; left: -16px; }
+        .frame-inner-decoration::before { top: -16px; left: -16px; }
+        .frame-inner-decoration::after { bottom: -16px; right: -16px; }
+
+        /* [تحديث] تدوير الكلمة بدلاً من الكتابة الرأسية لمنع تقطع الحروف */
+        .main-word-rotated {
+            font-size: 150pt; /* حجم ضخم جداً */
+            font-weight: bold;
+            font-family: 'Amiri', 'Times New Roman', serif;
+            transform: rotate(-90deg); /* تدوير الكلمة لتصبح رأسية */
+            white-space: nowrap; /* منع انقسام الكلمة على سطرين */
+            color: #000;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; width: 210mm; height: 297mm; box-shadow: none; }
+            .print-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div class="islamic-frame">
+        <div class="frame-inner-decoration"></div>
+        
+        <h1 class="main-word-rotated">المصروفات</h1>
+
+    </div>
+</div>
+
+<div style="text-align: center; margin: 20px;">
+    <button class="print-btn" onclick="window.print()" style="padding: 10px 40px; font-weight: bold; cursor: pointer;">طباعة الصفحة</button>
+</div>
+
+</body>
+</html>

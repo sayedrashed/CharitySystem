@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>حافظة مستندات - الجمعية الشرعية</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0; padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        /* [1] الإطار المزدوج المتميز مع الزوايا */
+        .page-border {
+            width: 210mm; min-height: 297mm;
+            margin: 10mm auto;
+            background: white; box-sizing: border-box;
+            border: 6px double black; /* الإطار المزدوج */
+            position: relative;
+            padding: 15mm; 
+        }
+
+        /* رسم المربعات في الزوايا الأربعة */
+        .page-border::before, .page-border::after,
+        .frame-inner-decoration::before, .frame-inner-decoration::after {
+            content: "";
+            position: absolute;
+            width: 30px; height: 30px;
+            border: 2px solid #000;
+            background-color: #fff;
+            transform: rotate(45deg);
+            z-index: 2;
+        }
+
+        /* أماكن الزوايا */
+        .page-border::before { top: -16px; right: -16px; }
+        .page-border::after { bottom: -16px; left: -16px; }
+        .frame-inner-decoration::before { top: -16px; left: -16px; }
+        .frame-inner-decoration::after { bottom: -16px; right: -16px; }
+
+        /* --- منطقة التحكم اليدوي في الهيدر (كما هي دون تغيير) --- */
+
+        .bismi-center {
+            position: absolute;
+            top: 5mm;        
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold; font-size: 18pt;
+            font-family: 'Andalus', serif;
+            white-space: nowrap;
+        }
+
+        .header-right {
+            position: absolute;
+            top: 10mm;       
+            right: 3mm;     
+            text-align: center;
+            font-family: 'Andalus', serif;
+            font-size: 14pt; font-weight: bold; line-height: 1.5;
+            white-space: nowrap;
+        }
+
+        .logo-section {
+            position: absolute;
+            top: 35mm;       
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo-box {
+            width: 80px; height: 80px;
+            border: 1px solid #000;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9pt; color: #999; background: white;
+        }
+
+        .doc-title { 
+            text-align: center; 
+            margin-top: 45mm; 
+        }
+
+        .doc-title h2 { text-decoration: underline; margin: 5px; font-size: 17pt; }
+
+        select {
+            font-family: 'Times New Roman';
+            font-size: 11pt; border: 1px solid #ccc;
+            background: #fff;
+        }
+
+        .main-table {
+            width: 100%; border-collapse: collapse;
+            table-layout: fixed; margin-top: 15px;
+            border: 3px double black; 
+        }
+        .main-table th, .main-table td {
+            border: 1px solid black; padding: 3px;
+            text-align: center; font-size: 11pt; height: 25px;
+        }
+
+        .signatures-area {
+            margin-top: 30px;
+            display: flex; justify-content: space-between;
+            text-align: center;
+        }
+        .sig-column { width: 32%; }
+        .parentheses { font-size: 16pt; display: block; margin-bottom: -5px; }
+        .official-title { font-weight: bold; font-size: 12pt; display: block; }
+        .official-name { font-size: 12pt; display: block; margin-top: 2px; }
+
+        @media print {
+            body { background: none; }
+            .page-border { margin: 0; border: 6px double black; height: 296mm; }
+            .print-btn { display: none; }
+            select { border: none; appearance: none; -webkit-appearance: none; color: black; font-weight: bold; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-border">
+    <div class="frame-inner-decoration"></div>
+
+    <span class="bismi-center">بسم الله الرحمن الرحيم</span>
+
+    <div class="header-right">
+        <div>الجمعية الشرعية الرئيسية</div>
+        <div>لتعاون العاملين بالكتاب والسنة المحمدية</div>
+        <div>فرع الرحمن بمساكن حجازي</div>
+        <div style="text-decoration: underline;">مكتب : عمر بن الخطاب بالعبور</div>
+    </div>
+
+    <div class="logo-section">
+        <div class="logo-box">مكان اللوجو</div>
+    </div>
+
+    <div class="doc-title">
+        <h2>حافظة مستندات مصروفات عام 
+            <select>
+                <script>for(let y=2026; y<=2035; y++) document.write(`<option>${y}</option>`);</script>
+            </select> م
+        </h2>
+        
+        <div style="margin-top: 8px; font-weight: bold;">
+            عن شهر 
+            <select>
+                <option value="">--- اختر ---</option>
+                <option>محرم</option><option>صفر</option><option>ربيع أول</option><option>ربيع ثاني</option>
+                <option>جماد أول</option><option>جماد ثاني</option><option>رجب</option><option>شعبان</option>
+                <option>رمضان</option><option>شوال</option><option>ذو القعدة</option><option>ذو الحجة</option>
+            </select>
+            عام 
+            <select>
+                <script>for(let h=1447; h<=1460; h++) document.write(`<option>${h}</option>`);</script>
+            </select> هـ 
+            &nbsp; الموافق : 
+            <select>
+                <option value="">--- اختر ---</option>
+                <option>يناير</option><option>فبراير</option><option>مارس</option><option>أبريل</option>
+                <option>مايو</option><option>يونيو</option><option>يوليو</option><option>أغسطس</option>
+                <option>سبتمبر</option><option>أكتوبر</option><option>نوفمبر</option><option>ديسمبر</option>
+            </select>
+            <select>
+                <script>for(let y=2026; y<=2035; y++) document.write(`<option>${y}</option>`);</script>
+            </select> م
+        </div>
+    </div>
+
+    <table class="main-table">
+        <thead>
+            <tr style="background-color: #f9f9f9;">
+                <th style="width: 8%;">رقم القيد</th>
+                <th style="width: 12%;">المبلغ</th>
+                <th>البيــــــــــــــــــــــــان</th>
+                <th style="width: 8%;">رقم القيد</th>
+                <th style="width: 12%;">المبلغ</th>
+                <th>البيــــــــــــــــــــــــان</th>
+            </tr>
+        </thead>
+        <tbody>
+            <script>
+                for(let i=1; i<=20; i++) {
+                    document.write(`<tr><td>${i}</td><td></td><td></td><td>${i+20}</td><td></td><td></td></tr>`);
+                }
+            </script>
+        </tbody>
+        <tfoot>
+            <tr style="border-top: 3px double black; font-weight: bold; background-color: #f9f9f9;">
+                <td>الإجمالي</td>
+                <td></td>
+                <td colspan="4" style="height: 35px; text-align: left; padding-left: 15px;">فقط وقدره: </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="signatures-area">
+        <div class="sig-column">
+            <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+            <span class="official-title">الأمين العام</span>
+            <span class="official-name">ناصر سيد ابراهيم</span>
+        </div>
+        <div class="sig-column">
+            <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+            <span class="official-title">أمين الصندوق</span>
+            <span class="official-name">سعود محمد هاني</span>
+        </div>
+        <div class="sig-column">
+            <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+            <span class="official-title">رئيس مجلس الإدارة</span>
+            <span class="official-name">شعبان علي إبراهيم</span>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin: 20px;">
+    <button class="print-btn" onclick="window.print()" style="padding: 10px 40px; font-weight: bold; cursor: pointer; background: #333; color: #fff; border: none; border-radius: 5px;">طباعة الحافظة</button>
+</div>
+
+</body>
+</html>

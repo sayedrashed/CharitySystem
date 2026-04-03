@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة المدير - نظام إدارة البحث الاجتماعي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0F1117;
+            --bg-secondary: #1A1D27;
+            --bg-card: #1A1D27;
+            --border: #2E3250;
+            --text-primary: #E8EBF4;
+            --text-secondary: #6B7280;
+            --accent: #4F8EF7;
+            --success: #2DD4BF;
+            --warning: #F59E0B;
+            --danger: #F87171;
+            --gold: #F5C842;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-area h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .logo-area p { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+        .user-area { display: flex; align-items: center; gap: 15px; }
+        .theme-toggle {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .admin-badge { background: var(--danger); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+        .admin-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .admin-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+        .admin-card .icon { font-size: 48px; margin-bottom: 15px; }
+        .admin-card .title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .admin-card .desc { font-size: 12px; color: var(--text-secondary); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card .value { font-size: 32px; font-weight: 800; color: var(--accent); }
+        .stat-card .label { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .admin-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo-area">
+        <h1>👑 لوحة تحكم المدير</h1>
+        <p>نظام إدارة البحث الاجتماعي</p>
+    </div>
+    <div class="user-area">
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        <div class="admin-badge">مدير النظام</div>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">👑</div>
+            <div>
+                <div class="user-name" id="userName"></div>
+                <div class="user-role">مدير</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card"><div class="value" id="totalCases">0</div><div class="label">إجمالي الحالات</div></div>
+    <div class="stat-card"><div class="value" id="totalResearchers">0</div><div class="label">الباحثين</div></div>
+    <div class="stat-card"><div class="value" id="totalSpecial">0</div><div class="label">حالات خاصة</div></div>
+    <div class="stat-card"><div class="value" id="totalAmount">0</div><div class="label">إجمالي المصروفات</div></div>
+</div>
+
+<div class="admin-grid">
+    <div class="admin-card" onclick="navigateTo('/modules/settings/index.html')">
+        <div class="icon">⚙️</div>
+        <div class="title">الإعدادات العامة</div>
+        <div class="desc">إعدادات النظام والجمعية</div>
+    </div>
+    <div class="admin-card" onclick="navigateTo('/modules/settings/index.html?tab=forms')">
+        <div class="icon">📄</div>
+        <div class="title">قوالب الاستمارات</div>
+        <div class="desc">تعديل قوالب الطباعة</div>
+    </div>
+    <div class="admin-card" onclick="navigateTo('/modules/settings/index.html?tab=modules')">
+        <div class="icon">🧩</div>
+        <div class="title">إدارة الموديولات</div>
+        <div class="desc">تفعيل/إيقاف الموديولات</div>
+    </div>
+    <div class="admin-card" onclick="navigateTo('/modules/settings/index.html?tab=users')">
+        <div class="icon">👥</div>
+        <div class="title">إدارة المستخدمين</div>
+        <div class="desc">إضافة/تعديل/حذف مستخدمين</div>
+    </div>
+    <div class="admin-card" onclick="navigateTo('/modules/cases/special_cases/index.html')">
+        <div class="icon">⭐</div>
+        <div class="title">حالات خاصة</div>
+        <div class="desc">مساعدات خاصة خارج الكاش</div>
+    </div>
+    <div class="admin-card" onclick="navigateTo('/modules/settings/index.html?tab=database')">
+        <div class="icon">💾</div>
+        <div class="title">النسخ الاحتياطي</div>
+        <div class="desc">نسخ واستعادة قاعدة البيانات</div>
+    </div>
+    <div class="admin-card" onclick="navigateTo('/modules/cases/index.html')">
+        <div class="icon">🏠</div>
+        <div class="title">إدارة الحالات</div>
+        <div class="desc">إدارة الحالات العادية</div>
+    </div>
+    <div class="admin-card" onclick="navigateTo('/modules/hr/index.html')">
+        <div class="icon">👥</div>
+        <div class="title">الموظفين (HR)</div>
+        <div class="desc">إدارة الموظفين والحضور</div>
+    </div>
+    <div class="admin-card" onclick="navigateTo('/modules/accounting/index.html')">
+        <div class="icon">💰</div>
+        <div class="title">الحسابات</div>
+        <div class="desc">الحسابات والخزينة</div>
+    </div>
+    <div class="admin-card" onclick="navigateTo('/modules/cases/visit_management/index.html')">
+        <div class="icon">🗺️</div>
+        <div class="title">خطط الزيارات</div>
+        <div class="desc">توليد خطط الزيارات</div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    let currentUser = { name: "سيد راشد", avatar: "👑", role: "admin" };
+    let stats = { total: 1250, researchers: 12, special: 15, amount: 243000 };
+
+    function loadUserInfo() {
+        document.getElementById('userAvatar').innerText = currentUser.avatar;
+        document.getElementById('userName').innerText = currentUser.name;
+    }
+    function loadStats() {
+        document.getElementById('totalCases').innerText = stats.total;
+        document.getElementById('totalResearchers').innerText = stats.researchers;
+        document.getElementById('totalSpecial').innerText = stats.special;
+        document.getElementById('totalAmount').innerText = stats.amount.toLocaleString('ar-EG');
+    }
+    function navigateTo(link) { window.location.href = link; }
+    function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
+    function toggleTheme() { let html = document.documentElement; let newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; html.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); document.querySelector('.theme-toggle').textContent = newTheme === 'light' ? '🌙' : '☀️'; }
+
+    function init() {
+        loadUserInfo();
+        loadStats();
+        let savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
+    }
+    init();
+</script>
+</body>
+</html>

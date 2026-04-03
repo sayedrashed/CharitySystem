@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خطط الزيارات - نظام إدارة البحث الاجتماعي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0F1117;
+            --bg-secondary: #1A1D27;
+            --bg-card: #1A1D27;
+            --border: #2E3250;
+            --text-primary: #E8EBF4;
+            --text-secondary: #6B7280;
+            --accent: #4F8EF7;
+            --success: #2DD4BF;
+            --warning: #F59E0B;
+            --danger: #F87171;
+            --gold: #F5C842;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .user-area { display: flex; align-items: center; gap: 10px; }
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .filter-bar {
+            padding: 12px 20px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .filter-group label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .filter-group select, .filter-group input {
+            padding: 6px 10px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 12px;
+        }
+        .btn-filter, .btn-generate {
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            border: none;
+        }
+        .btn-filter { background: var(--accent); color: white; }
+        .btn-generate { background: var(--success); color: #0F1117; }
+
+        .main-layout {
+            display: flex;
+            height: calc(100vh - 105px);
+        }
+        .plans-section {
+            width: 40%;
+            overflow-y: auto;
+            padding: 15px;
+            border-left: 1px solid var(--border);
+        }
+        .map-section {
+            width: 60%;
+            position: relative;
+            background: var(--bg-secondary);
+        }
+        #mapContainer {
+            width: 100%;
+            height: 100%;
+        }
+
+        .plan-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .plan-card:hover { transform: translateX(-4px); border-color: var(--accent); }
+        .plan-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(79,142,247,0.3); }
+        .plan-header {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+        .plan-number { font-weight: 700; color: var(--gold); }
+        .plan-area { font-size: 12px; color: var(--text-secondary); }
+        .plan-researchers { padding: 8px 12px; display: flex; gap: 10px; border-bottom: 1px solid var(--border); }
+        .researcher-tag { background: var(--bg-primary); padding: 2px 8px; border-radius: 16px; font-size: 11px; }
+        .plan-stats { padding: 8px 12px; font-size: 12px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+        .cases-preview { padding: 8px 12px; max-height: 150px; overflow-y: auto; }
+        .case-preview-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+        .case-preview-name { flex: 1; }
+        .case-preview-serial { color: var(--accent); margin-left: 10px; }
+        .plan-footer {
+            padding: 10px 12px;
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid var(--border);
+        }
+        .btn-plan {
+            padding: 4px 10px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-primary);
+        }
+        .btn-plan:hover { border-color: var(--accent); background: var(--accent); color: white; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            width: 500px;
+            max-width: 90%;
+        }
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            padding: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
+        .btn-save { background: var(--accent); color: white; padding: 6px 16px; border-radius: 6px; cursor: pointer; border: none; }
+        .btn-cancel { background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); padding: 6px 16px; border-radius: 6px; cursor: pointer; }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 20px;
+            display: none;
+            z-index: 1000;
+            font-size: 13px;
+        }
+
+        @media (max-width: 900px) {
+            .plans-section { width: 50%; }
+            .map-section { width: 50%; }
+        }
+        @media (max-width: 700px) {
+            .main-layout { flex-direction: column; }
+            .plans-section { width: 100%; height: 50%; border-left: none; border-bottom: 1px solid var(--border); }
+            .map-section { width: 100%; height: 50%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <button class="back-btn" onclick="goBack()"><span>←</span> العودة</button>
+    <div class="page-title">🗺️ خطط الزيارات</div>
+    <div class="user-area"><div class="user-avatar" id="userAvatar">👤</div><span id="userName"></span></div>
+</div>
+
+<div class="filter-bar">
+    <div class="filter-group"><label>المحافظة</label><select id="filterGovernorate"><option value="">الكل</option><option>القاهرة</option><option>الجيزة</option><option>القليوبية</option></select></div>
+    <div class="filter-group"><label>الفئة</label><select id="filterCategory"><option value="">الكل</option><option>شبرا</option><option>النهضة</option><option>معاقين</option><option>الشركة</option></select></div>
+    <div class="filter-group"><label>نوع الزيارة</label><select id="filterType"><option value="all">الكل</option><option value="reeval">إعادة تقييم</option><option value="new">جديدة</option></select></div>
+    <div class="filter-group"><label>المدى الزمني</label><select id="planDuration"><option value="week">أسبوع</option><option value="month" selected>شهر</option><option value="year">سنة</option></select></div>
+    <div class="filter-group"><label>حجم الخطة</label><input type="number" id="planSize" value="6" min="4" max="10" style="width:70px"></div>
+    <button class="btn-filter" onclick="applyFilters()">🔍 بحث</button>
+    <button class="btn-generate" onclick="generatePlans()">🔄 توليد خطط</button>
+</div>
+
+<div class="main-layout">
+    <div class="plans-section" id="plansSection"><div style="text-align:center;padding:40px;color:var(--text-secondary);">اضغط "توليد خطط" لبدء التخطيط</div></div>
+    <div class="map-section"><div id="mapContainer" style="width:100%;height:100%;"></div></div>
+</div>
+
+<div id="editModal" class="modal"><div class="modal-content"><h3>✏️ تعديل الخطة</h3><div id="editModalContent"></div><div class="modal-buttons"><button class="btn-save" onclick="savePlanEdit()">حفظ</button><button class="btn-cancel" onclick="closeModal()">إلغاء</button></div></div></div>
+<div id="toast" class="toast"></div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&language=ar&region=EG" async defer></script>
+<script>
+    let allCases = [
+        { id:1, name:"أحمد محمود", serial:101, category:"شبرا", governorate:"القليوبية", area:"شبرا الخيمة", address:"شارع محمد فريد", lat:30.12, lng:31.25, type:"reeval", focus:"تحديث البطاقة" },
+        { id:2, name:"سارة علي", serial:102, category:"النهضة", governorate:"القليوبية", area:"النهضة", address:"شارع الجيش", lat:30.13, lng:31.26, type:"reeval", focus:"إيصال كهرباء" },
+        { id:3, name:"محمود خالد", serial:103, category:"معاقين", governorate:"القاهرة", area:"مدينة نصر", address:"عباس العقاد", lat:30.04, lng:31.32, type:"reeval", focus:"تقرير طبي" },
+        { id:4, name:"فاطمة حسن", serial:104, category:"شبرا", governorate:"القليوبية", area:"شبرا الخيمة", address:"شارع الترعة", lat:30.12, lng:31.24, type:"reeval", focus:"" },
+        { id:5, name:"علي إبراهيم", serial:105, category:"الشركة", governorate:"القاهرة", area:"العبور", address:"المنطقة الصناعية", lat:30.17, lng:31.48, type:"new", focus:"جديدة" },
+        { id:6, name:"نورا أحمد", serial:106, category:"النهضة", governorate:"القليوبية", area:"النهضة", address:"شارع المدارس", lat:30.13, lng:31.27, type:"reeval", focus:"تغيير عنوان" },
+        { id:7, name:"يوسف سامي", serial:107, category:"معاقين", governorate:"القاهرة", area:"المقطم", address:"شارع 9", lat:30.02, lng:31.28, type:"new", focus:"" },
+        { id:8, name:"ليلى محمود", serial:108, category:"شبرا", governorate:"القليوبية", area:"شبرا الخيمة", address:"شارع بورسعيد", lat:30.12, lng:31.23, type:"reeval", focus:"تغيير دخل" },
+        { id:9, name:"كريم أحمد", serial:109, category:"النهضة", governorate:"القليوبية", area:"النهضة", address:"شارع الجمهورية", lat:30.14, lng:31.27, type:"new", focus:"" },
+        { id:10, name:"منى خالد", serial:110, category:"شبرا", governorate:"القليوبية", area:"شبرا الخيمة", address:"شارع النصر", lat:30.11, lng:31.25, type:"reeval", focus:"" }
+    ];
+    let researchers = [{name:"علي",gender:"male"},{name:"بشرى",gender:"female"},{name:"أشرف",gender:"male"},{name:"آية",gender:"female"},{name:"ريهام",gender:"female"}];
+    let currentPlans = [], currentFilter = {governorate:"",category:"",type:"all",planSize:6,duration:"month"}, selectedPlan = null, map = null, markers = [], currentEditPlanId = null;
+
+    function calculateDistance(lat1,lng1,lat2,lng2){ let R=6371; let dLat=(lat2-lat1)*Math.PI/180; let dLng=(lng2-lng1)*Math.PI/180; let a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2); let c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); return R*c; }
+    function groupByLocation(cases,maxDist=2){ let groups=[]; let used=new Set(); for(let i=0;i<cases.length;i++){ if(used.has(i)) continue; let group=[cases[i]]; used.add(i); for(let j=i+1;j<cases.length;j++){ if(used.has(j)) continue; let dist=calculateDistance(cases[i].lat,cases[i].lng,cases[j].lat,cases[j].lng); if(dist<=maxDist){ group.push(cases[j]); used.add(j); } } groups.push(group); } return groups; }
+    function splitToPlans(groups,planSize){ let plans=[]; for(let group of groups){ for(let i=0;i<group.length;i+=planSize){ let planCases=group.slice(i,i+planSize); if(planCases.length){ let male=researchers.filter(r=>r.gender==='male')[Math.floor(Math.random()*researchers.filter(r=>r.gender==='male').length)]; let female=researchers.filter(r=>r.gender==='female')[Math.floor(Math.random()*researchers.filter(r=>r.gender==='female').length)]; plans.push({ id:plans.length+1, cases:planCases, area:planCases[0].area, governorate:planCases[0].governorate, researchers:[male.name,female.name] }); } } } return plans; }
+    function getDaysByDuration(duration){ if(duration==='week') return 6; if(duration==='month') return 24; return 288; }
+    function calculateNeededPlans(totalCases,planSize,duration){ let days=getDaysByDuration(duration); let maxPlans=days; let casesPerDay=Math.ceil(totalCases/days); let neededPlans=Math.ceil(totalCases/planSize); return Math.min(neededPlans,maxPlans); }
+
+    function generatePlans(){
+        let filtered=allCases.filter(c=>{ if(currentFilter.governorate && c.governorate!==currentFilter.governorate) return false; if(currentFilter.category && c.category!==currentFilter.category) return false; if(currentFilter.type==='reeval' && c.type!=='reeval') return false; if(currentFilter.type==='new' && c.type!=='new') return false; return true; });
+        if(filtered.length===0){ showToast("لا توجد حالات"); renderPlans([]); return; }
+        let needed=calculateNeededPlans(filtered.length,currentFilter.planSize,currentFilter.duration);
+        let groups=groupByLocation(filtered);
+        let plans=splitToPlans(groups,currentFilter.planSize);
+        if(plans.length>needed) plans=plans.slice(0,needed);
+        currentPlans=plans;
+        renderPlans(plans);
+        if(plans.length>0) selectPlan(plans[0].id);
+        showToast(`تم توليد ${plans.length} خطة`);
+    }
+
+    function renderPlans(plans){
+        let container=document.getElementById('plansSection');
+        if(!plans.length){ container.innerHTML='<div style="text-align:center;padding:40px;">لا توجد خطط</div>'; return; }
+        container.innerHTML=plans.map(p=>`<div class="plan-card ${selectedPlan?.id===p.id?'selected':''}" data-plan-id="${p.id}" onclick="selectPlan(${p.id})"><div class="plan-header"><span class="plan-number">🗺️ خطة رقم ${p.id}</span><span class="plan-area">📍 ${p.area}</span></div><div class="plan-researchers"><span class="researcher-tag">👨 ${p.researchers[0]}</span><span class="researcher-tag">👩 ${p.researchers[1]}</span></div><div class="plan-stats">📊 ${p.cases.length} حالة | ${p.cases.filter(c=>c.type==='reeval').length} إعادة تقييم | ${p.cases.filter(c=>c.type==='new').length} جديدة</div><div class="cases-preview">${p.cases.slice(0,4).map(c=>`<div class="case-preview-item"><span class="case-preview-serial">${c.serial}</span><span class="case-preview-name">${c.name}</span></div>`).join('')}${p.cases.length>4?'<div style="font-size:11px;color:var(--text-secondary);padding:4px;">+'+(p.cases.length-4)+' حالات أخرى...</div>':''}</div><div class="plan-footer"><button class="btn-plan" onclick="event.stopPropagation();viewOnMap(${p.id})"><span>🗺️</span> عرض على الخريطة</button><button class="btn-plan" onclick="event.stopPropagation();editPlan(${p.id})"><span>✏️</span> تعديل</button><button class="btn-plan" onclick="event.stopPropagation();printPlan(${p.id})"><span>🖨️</span> طباعة</button></div></div>`).join('');
+    }
+
+    function selectPlan(planId){ selectedPlan=currentPlans.find(p=>p.id===planId); renderPlans(currentPlans); viewOnMap(planId); }
+
+    function viewOnMap(planId){
+        let plan=currentPlans.find(p=>p.id===planId);
+        if(!plan || !plan.cases.length) return;
+        if(!map){ initMap(); setTimeout(()=>showOnMap(plan),500); } else showOnMap(plan);
+    }
+    function showOnMap(plan){
+        if(!map) return;
+        markers.forEach(m=>m.setMap(null)); markers=[];
+        let bounds=new google.maps.LatLngBounds();
+        plan.cases.forEach((c,idx)=>{ let pos={lat:c.lat,lng:c.lng}; let marker=new google.maps.Marker({position:pos,map:map,title:`${c.name} (${c.serial})`,label:{text:`${idx+1}`,color:'white',fontWeight:'bold'}}); marker.addListener('click',()=>{ let info=new google.maps.InfoWindow({content:`<div dir="rtl"><strong>${c.name}</strong><br>م.ع ${c.serial}<br>${c.address}<br><button onclick="removeFromPlan(${c.id},${plan.id})">❌ إزالة</button></div>`}); info.open(map,marker); }); markers.push(marker); bounds.extend(pos); });
+        map.fitBounds(bounds);
+        if(plan.cases.length===1) map.setZoom(14);
+    }
+    function removeFromPlan(caseId,planId){ let plan=currentPlans.find(p=>p.id===planId); if(plan){ plan.cases=plan.cases.filter(c=>c.id!==caseId); if(plan.cases.length===0) currentPlans=currentPlans.filter(p=>p.id!==planId); renderPlans(currentPlans); if(currentPlans.length) selectPlan(currentPlans[0].id); showToast("تم إزالة الحالة"); } }
+    function editPlan(planId){ let plan=currentPlans.find(p=>p.id===planId); if(plan){ document.getElementById('editModalContent').innerHTML=`<div class="form-group"><label>تعديل الباحثين</label><input type="text" id="editResearcher1" value="${plan.researchers[0]}"><input type="text" id="editResearcher2" value="${plan.researchers[1]}"></div><div class="form-group"><label>ملاحظات الخطة</label><textarea id="planNotes" rows="3"></textarea></div>`; document.getElementById('editModal').classList.add('active'); currentEditPlanId=planId; } }
+    function savePlanEdit(){ let plan=currentPlans.find(p=>p.id===currentEditPlanId); if(plan){ plan.researchers=[document.getElementById('editResearcher1').value,document.getElementById('editResearcher2').value]; renderPlans(currentPlans); showToast("تم حفظ التعديلات"); } closeModal(); }
+    function printPlan(planId){ let plan=currentPlans.find(p=>p.id===planId); if(!plan) return; let win=window.open('','_blank'); win.document.write(`<html dir="rtl"><head><meta charset="UTF-8"><title>خطة زيارة ${planId}</title><style>body{font-family:'Times New Roman';margin:20px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #000;padding:8px;text-align:center;}th{background:#f0f0f0;}</style></head><body><h2>خطة الزيارات رقم ${planId}</h2><p>المنطقة: ${plan.area} | المحافظة: ${plan.governorate}</p><p>الباحثون: ${plan.researchers.join(' - ')}</p><table><thead><tr><th>م.ع</th><th>الاسم</th><th>العنوان</th><th>نوع الزيارة</th><th>ملاحظات</th></tr></thead><tbody>${plan.cases.map(c=>`<tr><td>${c.serial}</td><td>${c.name}</td><td>${c.address}</td><td>${c.type==='reeval'?'إعادة تقييم':'جديدة'}</td><td>${c.focus||'—'}</td></tr>`).join('')}</tbody></table></body></html>`); win.document.close(); win.print(); }
+    function applyFilters(){ currentFilter.governorate=document.getElementById('filterGovernorate').value; currentFilter.category=document.getElementById('filterCategory').value; currentFilter.type=document.getElementById('filterType').value; currentFilter.planSize=parseInt(document.getElementById('planSize').value); currentFilter.duration=document.getElementById('planDuration').value; generatePlans(); }
+    function initMap(){ map=new google.maps.Map(document.getElementById('mapContainer'),{center:{lat:30.1,lng:31.3},zoom:10,mapTypeId:'roadmap'}); if(selectedPlan) showOnMap(selectedPlan); }
+    function showToast(msg){ let t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',3000); }
+    function closeModal(){ document.getElementById('editModal').classList.remove('active'); }
+    function goBack(){ window.location.href='/index.html'; }
+    function updateUserInfo(){ let user=JSON.parse(localStorage.getItem('currentUser')||'{"name":"باحث","avatar":"👤"}'); document.getElementById('userName').innerText=user.name; document.getElementById('userAvatar').innerText=user.avatar; }
+    document.addEventListener('DOMContentLoaded',()=>{ updateUserInfo(); generatePlans(); });
+</script>
+</body>
+</html>

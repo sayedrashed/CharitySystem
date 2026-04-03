@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>نظام طباعة كروت القبض</title>
+    <style>
+        /* إعدادات الطباعة والخطوط */
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        body {
+            font-family: "Times New Roman", Times, serif;
+            font-weight: bold;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        /* تنسيق الأدوات (لا يظهر في الطباعة) */
+        .no-print-zone {
+            background: #fff;
+            padding: 20px;
+            border-bottom: 3px solid #000;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .btn-print {
+            padding: 12px 40px;
+            font-size: 20px;
+            font-family: "Times New Roman", serif;
+            font-weight: bold;
+            cursor: pointer;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+
+        /* حاوية الكروت A4 */
+        .page-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10mm;
+            justify-content: center;
+        }
+
+        .card-wrapper {
+            background: #fff;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            text-align: center;
+        }
+
+        /* مقاس الكارت البنكي الرسمي 85.6mm x 54mm */
+        .card-pair { display: flex; gap: 4mm; }
+
+        .card {
+            width: 85.6mm;
+            height: 54mm;
+            border: 1px solid #000;
+            border-radius: 3mm;
+            overflow: hidden;
+            background: #fff;
+            display: flex;
+        }
+
+        /* === الوجه الأمامي === */
+        .card-front { display: flex; width: 100%; height: 100%; }
+        
+        .front-right {
+            flex: 1;
+            padding: 5px 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-left: 1px solid #000;
+        }
+        
+        .front-left {
+            width: 28mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .serial-no { font-size: 20pt; text-align: right; line-height: 1; }
+        .case-name { font-size: 15pt; margin: 2px 0; border-bottom: 1px solid #000; padding-bottom: 2px; }
+        .details { font-size: 10.5pt; line-height: 1.3; }
+        
+        /* مربع صورة 2*3 سم */
+        .photo-box {
+            width: 20mm;
+            height: 30mm;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+        }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* === الوجه الخلفي === */
+        .card-back {
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            padding: 6px;
+        }
+        
+        .org-logo-container { width: 100%; height: 18mm; display: flex; justify-content: center; align-items: center; }
+        .org-logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .org-title { font-size: 11pt; text-decoration: underline; margin-bottom: 2px; }
+        .address-text { font-size: 8pt; line-height: 1.1; margin-bottom: 2px; }
+        .phones-list { font-size: 9pt; direction: ltr; margin-top: 2px; }
+        
+        .ws-icon { width: 10px; height: 10px; vertical-align: middle; margin-left: 3px; }
+
+        /* === إعدادات الطباعة النهائية === */
+        @media print {
+            body { background: none; padding: 0; }
+            .no-print-zone, .card-checkbox { display: none !important; }
+            .card-wrapper:not(.selected) { display: none !important; }
+            .card-wrapper { border: none; padding: 0; margin-bottom: 8mm; page-break-inside: avoid; }
+            .card { border: 1px solid #000; }
+            @page { size: A4; margin: 10mm; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print-zone">
+        <button class="btn-print" onclick="window.print()">طباعة الكروت المحددة فقط</button>
+        <div style="margin-top: 10px;">
+            <label><input type="checkbox" id="selectAll" checked onclick="toggleAll(this)"> تحديد الكل</label>
+        </div>
+    </div>
+
+    <div id="cardsContainer" class="page-container">
+        </div>
+
+    <script>
+        /**
+         * دالة توليد الكروت من البيانات
+         * @param {Object} data - الكائن الذي يحتوي على الإعدادات والحالات
+         */
+        function renderCards(data) {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = ''; // مسح المحتوى الحالي
+
+            const wsSvg = `<svg class="ws-icon" viewBox="0 0 448 512"><path fill="#000" d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.4-8.6-44.6-27.5-16.5-14.7-27.6-32.8-30.8-38.4-3.2-5.6-.3-8.6 2.5-11.4 2.5-2.5 5.5-6.5 8.3-9.7 2.8-3.2 3.7-5.5 5.5-9.2 1.9-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.8 23.5 9.2 31.6 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.5 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>`;
+
+            data.cases.forEach((item, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'card-wrapper selected';
+                wrapper.id = `card-idx-${index}`;
+                
+                wrapper.innerHTML = `
+                    <div class="card-pair">
+                        <div class="card">
+                            <div class="card-front">
+                                <div class="front-right">
+                                    <div class="serial-no">م.م: ${item.serial_accounting}</div>
+                                    <div class="case-name">${item.case_name}</div>
+                                    <div class="details">
+                                        الفئة: ${item.category}<br>
+                                        ${item.governorate} / ${item.district}<br>
+                                        ${item.region}
+                                    </div>
+                                </div>
+                                <div class="front-left">
+                                    <div class="photo-box">
+                                        ${item.photo ? `<img src="${item.photo}">` : '<span style="font-size:8pt">صورة 2×3</span>'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card card-back">
+                            <div class="org-logo-container">
+                                <img src="${data.settings.logo}">
+                            </div>
+                            <div class="org-title">${data.settings.orgName}</div>
+                            <div class="address-text">
+                                ${data.settings.addresses[0]}<br>
+                                ${data.settings.addresses[1]}
+                            </div>
+                            <div class="phones-list">
+                                <div>${wsSvg} ${data.settings.phones[0]}</div>
+                                <div>${data.settings.phones[1]} - ${data.settings.phones[2]}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-checkbox" style="margin-top:5px;">
+                        <input type="checkbox" checked onchange="toggleSelection(${index}, this)"> طباعة هذا الكارت
+                    </div>
+                `;
+                container.appendChild(wrapper);
+            });
+        }
+
+        // دوال التحكم في الاختيار
+        function toggleSelection(index, cb) {
+            const el = document.getElementById(`card-idx-${index}`);
+            cb.checked ? el.classList.add('selected') : el.classList.remove('selected');
+        }
+
+        function toggleAll(cb) {
+            const checkboxes = document.querySelectorAll('.card-checkbox input');
+            checkboxes.forEach((item, i) => {
+                item.checked = cb.checked;
+                toggleSelection(i, item);
+            });
+        }
+
+        // --- مثال لكيفية تمرير البيانات من الـ Backend (Node.js) ---
+        // في مشروعك الفعلي، ستقوم بعمل Fetch للبيانات أو حقنها في الصفحة
+        const exampleData = {
+            settings: {
+                orgName: "الجمعية الشرعية - فرع الرحمن حجازي",
+                logo: "logo.png", // أو مسار base64
+                addresses: [
+                    "شبرا: مكتب عمر بن الخطاب بجوار محكمة شبرا الخيمة",
+                    "العبور: خلف مستشفى الفيومى مسجد عمر بن الخطاب"
+                ],
+                phones: ["01111876892", "01111876597", "01111876429"]
+            },
+            cases: [
+                {
+                    case_name: "أحمد علي محمد إبراهيم",
+                    category: "شبرا",
+                    serial_accounting: "105",
+                    governorate: "القليوبية",
+                    district: "شبرا الخيمة",
+                    region: "المنشية",
+                    photo: "" // مسار الصورة من قاعدة البيانات
+                }
+                // سيتم تكرار هذا الكائن لكل حالة قادمة من SQLite
+            ]
+        };
+
+        // استدعاء الدالة عند تحميل الصفحة
+        renderCards(exampleData);
+    </script>
+</body>
+</html>

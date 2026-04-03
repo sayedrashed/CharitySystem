@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>واجهة ظرف القبض الذكية</title>
+    <style>
+        @page { size: 15cm 18cm; margin: 0; }
+        body { margin: 0; padding: 0; font-family: "Times New Roman", Times, serif; font-weight: bold; background-color: #f0f0f0; }
+        .envelope { width: 15cm; height: 18cm; background-color: white; margin: 20px auto; padding: 12mm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #ccc; }
+        .header { text-align: center; }
+        .logo { max-width: 75px; max-height: 75px; margin-bottom: 5px; }
+        .org-name { font-size: 18pt; display: block; margin-bottom: 5px; }
+        .date-selectors { margin-top: 10px; font-size: 14pt; }
+        select { font-family: "Times New Roman", serif; font-weight: bold; font-size: 14pt; border: none; background: transparent; cursor: pointer; appearance: none; -webkit-appearance: none; text-align: center; }
+        .content-area { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        table { width: 100%; border-collapse: collapse; }
+        td { border: 2px solid #000; padding: 15px; text-align: center; vertical-align: middle; font-size: 16pt; }
+        .large-font { font-size: 26pt; }
+        .footer { text-align: center; font-size: 11pt; padding-bottom: 5mm; }
+        @media print {
+            body { background-color: white; }
+            .envelope { margin: 0; border: none; }
+            select { border: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="envelope">
+    <div class="header">
+        <img id="orgLogo" src="https://via.placeholder.com/75" class="logo">
+        <div id="orgName" class="org-name">جمعية البر والتقوى الخيرية</div>
+        <div class="date-selectors">
+            <select id="selectHijri">
+                <option>رمضان</option><option>شوال</option><option>ذو القعدة</option>
+            </select>
+            <select id="yearHijri"></select>
+            <span> | </span>
+            <select id="selectGregorian">
+                <option>مارس</option><option>أبريل</option><option>مايو</option>
+            </select>
+            <select id="yearGregorian"></select>
+        </div>
+    </div>
+
+    <div class="content-area">
+        <table>
+            <tr>
+                <td width="70%">م.م / <span class="large-font" id="serialAccounting">154</span></td>
+                <td>الفئة: <br> <span id="category">شبرا</span></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="large-font" style="padding: 25px;">محمد محمود عبد العزيز</td>
+            </tr>
+            <tr>
+                <td>المبلغ الشهري</td>
+                <td>1200 ج.م</td>
+            </tr>
+            <tr id="grantRow">
+                <td>منحة رمضان</td>
+                <td>300 ج.م</td>
+            </tr>
+            <tr style="background-color: #eee;">
+                <td>الإجمالي العام</td>
+                <td>1500 ج.م</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">رقم الصفحة: (1)</div>
+</div>
+
+<script>
+    // توليد السنوات ذكياً
+    function setupDate() {
+        const gregYear = document.getElementById('yearGregorian');
+        const hijriYear = document.getElementById('yearHijri');
+        const currentYear = new Date().getFullYear(); // 2026
+        
+        for (let i = currentYear; i <= currentYear + 1; i++) {
+            gregYear.innerHTML += `<option>${i}</option>`;
+        }
+        for (let i = 1447; i <= 1448; i++) {
+            hijriYear.innerHTML += `<option>${i}</option>`;
+        }
+    }
+    window.onload = setupDate;
+</script>
+
+</body>
+</html>

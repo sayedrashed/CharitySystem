@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بطاقة الفرد النهائية - النسخة الموحدة المطورة</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<style>
+/* ===== التنسيق الأصلي من person3 ===== */
+body { font-family: 'Times New Roman', Times, serif; font-weight:bold; font-size:14px; background:#f5f5f5; padding:20px; display:flex; justify-content:center; }
+.card { background:white; border-radius:10px; box-shadow:0 4px 6px rgba(0,0,0,0.1); padding:20px; width:720px; direction:rtl; text-align:right; display:none; }
+.card.active { display:block; }
+.card-header { text-align:center; color:#2c3e50; margin-bottom:20px; padding-bottom:10px; border-bottom:2px solid #eee; position: relative; }
+.section-title { background:#e8f4f8; padding:10px; margin:20px 0 10px 0; border-right:4px solid #3498db; font-size:16px; color:#2c3e50; }
+.form-group { margin-bottom:15px; }
+.form-group label { display:block; margin-bottom:5px; color:#555; }
+input, select, textarea { padding:8px; border:1px solid #ddd; border-radius:4px; width:100%; box-sizing:border-box; font-family:'Times New Roman', Times, serif; font-weight:bold; font-size:14px; }
+textarea { height:60px; resize:vertical; }
+button { background:#4CAF50; color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:bold; margin:10px 5px 0 0; }
+button:hover { background:#45a049; }
+button:disabled { background:#cccccc; cursor:not-allowed; }
+.hidden { display:none !important; }
+.red-star::after { content: " 🔴"; }
+.inline-group { display:flex; gap:10px; align-items:center; }
+.inline-group > div { flex:1; }
+
+/* ===== تنسيقات خاصة بالميزات الجديدة ===== */
+.card.is-head { border: 3px solid #d4af37 !important; background: #fffdf5; }
+.emergency-btn { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; float: left; font-size: 11px; }
+
+/* ===== تنسيقات قسم المعاش المطور (من x1) ===== */
+.pension-links-box { margin-top:8px; padding:8px; background:#eaf4fb; border-radius:6px; }
+.btn-link { background:#3498db; color:white; padding:5px 12px; border-radius:5px; text-decoration:none; font-size:13px; margin-left:8px; display:inline-block; }
+.btn-link:hover { background:#2980b9; }
+.our-side-box { background:#f0f7ff; padding:12px; border-radius:8px; border:1px solid #aed6f1; margin-top:8px; }
+.our-side-box label { color:#2471a3; }
+.plain-credentials { display:flex; gap:10px; margin-top:8px; }
+.plain-credentials input { font-family: monospace; background:#fffde7; border:1px dashed #f39c12; }
+
+/* ===== تنسيق تحذير التناسب ===== */
+.gender-warning { background:#fdecea; border:1px solid #e74c3c; color:#c0392b; padding:8px 12px; border-radius:6px; margin-top:5px; font-size:13px; }
+</style>
+</head>
+<body>
+<div id="cardIndividual" class="card active">
+
+<div class="card-header">
+    <button class="emergency-btn" onclick="document.getElementById('emergencySection').classList.toggle('hidden')">🆘 سجل طارئ</button>
+    <h2>📋 بطاقة بيانات الفرد</h2>
+</div>
+
+<div id="emergencySection" class="hidden" style="background:#fff5f5; border:1px solid #e74c3c; padding:15px; margin-bottom:15px; border-radius:8px;">
+    <label>نوع الطارئ (وفاة/سفر/مرض) وبيانات البديل المستلم:</label>
+    <textarea id="emergencyInfo" placeholder="سجل هنا أي حالة طارئة تخص الفرد..."></textarea>
+</div>
+
+<div class="section-title">1️⃣ البيانات الأساسية <span id="headIndicator" class="hidden" style="color:#d4af37; float:left;">🏠 رب الأسرة</span></div>
+
+<div class="form-group">
+    <label class="red-star">الاسم</label>
+    <input type="text" id="individualName" required>
+</div>
+
+<div class="form-group">
+    <div class="inline-group">
+        <div style="flex:2;">
+            <label class="red-star">الرقم القومي (14 رقم)</label>
+            <input type="text" id="nationalId" maxlength="14" pattern="[0-9]{14}"
+                   oninput="handleNationalId(this.value)">
+        </div>
+        <div style="flex:1;">
+            <label>تاريخ الانتهاء</label>
+            <input type="date" id="idExpiryDate">
+        </div>
+        <div style="flex:1;">
+            <label>مرفق البطاقة</label>
+            <input type="file" id="idAttachment" accept=".pdf,.jpg,.jpeg,.png">
+        </div>
+    </div>
+    <div id="idGenderInfo" class="hidden" style="margin-top:5px; padding:6px; background:#e8f8e8; border-radius:4px; font-size:13px; color:#27ae60;">
+        ✅ تم استخراج البيانات تلقائياً من الرقم القومي
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="red-star">صلة القرابة</label>
+    <select id="individualRelation"
+            onchange="checkHeadStatus(this.value); validateGenderMatch(); checkRequiredFields();" required>
+        <option value="">اختر من القائمة</option>
+        <option value="head">رب الاسرة</option>
+        <option>زوج</option><option>زوجة</option><option>ابن</option><option>ابنة</option>
+        <option>ابن الأخ</option><option>ابنة الأخ</option><option>ابن الأخت</option><option>ابنة الأخت</option>
+        <option>جد</option><option>جدة</option><option>زوج الأخت</option><option>زوجة الأخ</option>
+        <option>زوجة الأب</option><option>ابن العم</option><option>ابن الخال</option><option>ابنة العم</option>
+        <option>ابنة الخال</option><option>حفيد</option><option>حفيدة</option><option>أخ</option>
+        <option>أخت</option><option>والد</option><option>والدة</option><option>قريب</option><option>آخر</option>
+    </select>
+    <div id="relationWarning" class="gender-warning hidden"></div>
+</div>
+
+<div id="payeeSection" class="hidden" style="background:#fff9e6; border:1px solid #f1c40f; padding:15px; margin-bottom:15px; border-radius:8px;">
+    <label>هل رب الأسرة هو القائم بالصرف؟</label>
+    <select id="isPayeeSelf" onchange="document.getElementById('altPayeeDetails').classList.toggle('hidden', this.value === 'yes')">
+        <option value="yes">نعم (نفسه)</option>
+        <option value="no">لا (شخص آخر)</option>
+    </select>
+    <div id="altPayeeDetails" class="hidden" style="margin-top:10px;">
+        <label>اسم القائم بالصرف البديل</label><input type="text" placeholder="الاسم رباعي">
+        <label>صورة بطاقة القائم بالصرف</label><input type="file">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="red-star">النوع</label>
+    <select id="gender" onchange="validateGenderMatch(); checkRequiredFields();" required>
+        <option value="">اختر من القائمة</option>
+        <option>ذكر</option>
+        <option>أنثى</option>
+    </select>
+    <div id="genderWarning" class="gender-warning hidden"></div>
+</div>
+
+<div class="form-group">
+    <label class="red-star">تاريخ الميلاد</label>
+    <input type="date" id="birthDate" required>
+</div>
+
+<div class="form-group">
+    <label class="red-star">السن</label>
+    <input type="number" id="individualAge" min="0" required>
+</div>
+
+<div class="form-group">
+    <label class="red-star">الحالة الاجتماعية</label>
+    <select id="individualStatus"
+            onchange="updateStatusFields(); validateGenderMatch(); checkRequiredFields();" required>
+        <option value="">اختر من القائمة</option>
+        <option>متزوج</option>
+        <option>متزوجة</option>
+        <option>أعزب</option>
+        <option>أرمل</option>
+        <option>أرملة</option>
+        <option>مطلق</option>
+        <option>مطلقة</option>
+        <option value="آنسة">آنسة</option>
+    </select>
+    <div id="statusWarning" class="gender-warning hidden"></div>
+</div>
+
+<div id="statusAttachmentDiv" class="form-group hidden">
+    <label>مرفق إثبات الحالة (قسيمة طلاق / شهادة وفاة)</label>
+    <input type="file" id="statusAttachment" accept=".pdf,.jpg,.jpeg,.png">
+</div>
+
+<div id="missFields" class="hidden">
+    <div class="form-group">
+        <label>مخطوبة؟</label>
+        <select id="engaged" onchange="updateEngaged()">
+            <option value="">اختر</option><option>نعم</option><option>لا</option>
+        </select>
+    </div>
+    <div class="form-group hidden" id="marriageDateDiv">
+        <label>موعد الزواج التقريبي</label>
+        <input type="text" id="approxMarriageDate">
+    </div>
+</div>
+
+<div class="form-group">
+    <label>التعليم</label>
+    <select id="education">
+        <option value="">اختر من القائمة</option>
+        <option>أمي</option><option>يقرأ ويكتب</option><option>ابتدائي</option><option>إعدادي</option>
+        <option>ثانوي</option><option>فوق متوسط</option><option>جامعي</option><option>دراسات عليا</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label>المهنة</label>
+    <input type="text" id="profession" placeholder="مثل: معلم، مهندس، عامل...">
+</div>
+
+<div class="section-title">2️⃣ العمل والمعاش</div>
+
+<div class="form-group">
+    <label class="red-star">العمل</label>
+    <select id="individualJob" onchange="updateJobFields()" required>
+        <option value="">اختر من القائمة</option>
+        <option value="housewife">ربة منزل</option>
+        <option value="nojob">لا يعمل</option>
+        <option value="student">طالب</option>
+        <option value="studentf">طالبه</option>
+        <option value="femaleWorker">عاملة</option>
+        <option value="worker">عامل</option>
+        <option value="manager">مديرة منزل</option>
+        <option value="employee">موظف</option>
+        <option value="pension">بالمعاش</option>
+        <option value="soldier">مجند</option>
+        <option value="child">طفل</option>
+    </select>
+</div>
+
+<div id="jobAttachmentDiv" class="form-group hidden">
+    <label>مرفق إثبات (كارنيه / شهادة تجنيد / مفردات مرتب / بيان معاش)</label>
+    <input type="file" id="jobAttachment" accept=".pdf,.jpg,.jpeg,.png">
+</div>
+
+<div id="workFields" class="hidden">
+    <div class="form-group">
+        <label>نوع العمل</label>
+        <select id="workType" onchange="updateWorkType()">
+            <option value="">اختر من القائمة</option>
+            <option>منتظم</option><option>غير منتظم</option><option>موسمي</option>
+        </select>
+    </div>
+    <div class="form-group hidden" id="workAttachmentDiv">
+        <label>مرفق بيان مرتب (اختياري)</label>
+        <input type="file" id="workAttachment" accept=".pdf,.jpg,.jpeg,.png">
+    </div>
+</div>
+
+<div id="sideWorkSection" class="hidden">
+    <div class="form-group">
+        <label>هل لديه عمل جانبي؟</label>
+        <select id="hasSideWork" onchange="updateSideWork()">
+            <option value="">اختر</option><option value="yes">نعم</option><option value="no">لا</option>
+        </select>
+    </div>
+    <div id="sideWorkDetails" class="hidden">
+        <div class="form-group">
+            <label>نوع العمل الجانبي</label>
+            <select id="sideWorkType" onchange="updateSideWorkAttachment()">
+                <option value="">اختر من القائمة</option>
+                <option>عمل منتظم</option><option>عمل غير منتظم</option><option>عمل موسمي</option>
+            </select>
+        </div>
+        <div class="form-group hidden" id="sideWorkAttachmentDiv">
+            <label>مرفق بيان مرتب (إن وجد)</label>
+            <input type="file" id="sideWorkAttachment" accept=".pdf,.jpg,.jpeg,.png">
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label>هل لديه معاش؟</label>
+    <select id="hasPension" onchange="updatePensionFields()">
+        <option value="">اختر</option>
+        <option value="yes">نعم</option>
+        <option value="no">لا</option>
+    </select>
+</div>
+
+<div id="pensionSection" class="hidden">
+
+    <div class="form-group">
+        <label class="red-star">نوع المعاش</label>
+        <select id="pensionType" onchange="updatePensionType()">
+            <option value="">اختر</option>
+            <option value="ins">معاش تأمينات</option>
+            <option value="tk">معاش تكافل</option>
+            <option value="km">معاش كرامة</option>
+            <option value="tk_km">معاش تكافل وكرامة</option>
+            <option value="mix_tk">معاش تأمينات + تكافل</option>
+            <option value="mix_km">معاش تأمينات + كرامة</option>
+            <option value="special">معاش مقاولون العرب / قوات مسلحة</option>
+            <option value="private">معاش خاص</option>
+        </select>
+    </div>
+
+    <div id="pensionLinks" class="pension-links-box hidden">
+        <span style="font-size:13px; color:#555;">🌐 الوصول المباشر للبوابات:</span><br style="margin-bottom:5px;">
+        <a id="link-nosi" href="https://www.nosi.gov.eg/ar/Services/Pages/Info/GetPensionExpenses.aspx"
+           target="_blank" class="btn-link hidden">🏛️ بوابة التأمينات الاجتماعية</a>
+        <a id="link-tk" href="https://tk.moss.gov.eg/"
+           target="_blank" class="btn-link hidden">💚 بوابة تكافل وكرامة</a>
+    </div>
+
+    <div class="form-group" style="margin-top:12px;">
+        <label>قيمة المعاش (جنيه)</label>
+        <input type="number" id="pensionValue" min="0" step="0.01" placeholder="0.00">
+    </div>
+
+    <div id="insurancePensionFields" class="hidden" style="border:1px solid #aed6f1; padding:12px; border-radius:8px; margin-top:8px; background:#f4faff;">
+        <div style="font-weight:bold; color:#2471a3; margin-bottom:10px;">📋 بيانات معاش التأمينات</div>
+
+        <div class="form-group">
+            <label>مصدر بيان المعاش</label>
+            <select id="pensionSource" onchange="toggleOurSide()">
+                <option value="client">من طرف الحالة</option>
+                <option value="us">من طرفنا</option>
+            </select>
+        </div>
+
+        <div id="ourSideFields" class="our-side-box hidden">
+            <label>🔑 بيانات الدخول للبوابة (مكشوفة لسهولة المراجعة):</label>
+            <div class="plain-credentials">
+                <input type="text" id="pensionEmail" placeholder="البريد الإلكتروني">
+                <input type="text" id="pensionPassword" placeholder="الرقم السري">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top:10px;">
+            <label class="red-star">إرفاق بيان المعاش</label>
+            <input type="file" id="insurancePensionAttachment" accept=".pdf,.jpg,.jpeg,.png">
+        </div>
+    </div>
+
+    <div id="takafulPensionFields" class="hidden" style="border:1px solid #a9dfbf; padding:12px; border-radius:8px; margin-top:8px; background:#f4fff8;">
+        <div style="font-weight:bold; color:#1e8449; margin-bottom:10px;">💚 بيانات معاش تكافل / كرامة</div>
+        <div class="form-group">
+            <label class="red-star">إرفاق بيان المعاش</label>
+            <input type="file" id="takafulPensionAttachment" accept=".pdf,.jpg,.jpeg,.png">
+        </div>
+        <div class="form-group">
+            <label class="red-star">حالة المطابقة مع قاعدة البيانات الحكومية</label>
+            <select id="pensionMatch">
+                <option value="">اختر</option>
+                <option value="match">✅ مطابق</option>
+                <option value="nomatch">❌ غير مطابق</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="privatePensionFields" class="hidden" style="border:1px solid #d7bde2; padding:12px; border-radius:8px; margin-top:8px; background:#fdf4ff;">
+        <div style="font-weight:bold; color:#7d3c98; margin-bottom:10px;">📄 بيانات المعاش الخاص</div>
+        <div class="form-group">
+            <label>إرفاق بيان المعاش (اختياري)</label>
+            <input type="file" id="privatePensionAttachment" accept=".pdf,.jpg,.jpeg,.png">
+        </div>
+    </div>
+
+</div>
+<div id="studentFields" class="hidden">
+    <div class="section-title">📚 بيانات الطالب</div>
+    <div class="form-group">
+        <label>المرحلة التعليمية</label>
+        <select id="studentLevel" onchange="updateStudentDetails()">
+            <option value="">اختر من القائمة</option>
+            <option>ابتدائي</option><option>إعدادي</option><option>ثانوي</option>
+            <option>فوق متوسط</option><option>جامعي</option>
+        </select>
+    </div>
+    <div id="studentTypeDiv" class="form-group hidden">
+        <label>نوع التعليم</label>
+        <select id="studentType"></select>
+    </div>
+    <div id="studentBranchDiv" class="form-group hidden">
+        <label>الفرقة/المستوى</label>
+        <select id="studentBranch"></select>
+    </div>
+    <div id="schoolFeesStatusDiv" class="form-group hidden">
+        <label>حالة المصروفات المدرسية</label>
+        <select id="studentFeesStatus" onchange="updateSchoolFees()">
+            <option value="">اختر</option>
+            <option value="قيمة">قيمة</option>
+            <option value="معفى جزئي">معفى جزئي</option>
+            <option value="معفى">معفى</option>
+            <option value="مقسط على ترمين">مقسط على ترمين</option>
+            <option value="مقسط على سنة">مقسط على سنة</option>
+        </select>
+    </div>
+    <div id="schoolFeesValueDiv" class="form-group hidden">
+        <label>قيمة المصروفات المطلوبة</label>
+        <input type="number" id="studentFeesValue" min="0">
+    </div>
+    <div id="universityFields" class="hidden">
+        <div class="form-group"><label>معهد / كلية / دراسات عليا</label><select id="univType" onchange="updateUniversityFields()"><option value="">اختر</option><option>معهد</option><option>كلية</option><option>دراسات عليا</option></select></div>
+        <div id="collegeNameDiv" class="form-group hidden"><label>اسم الجامعة</label><input type="text" id="collegeName"></div>
+        <div class="form-group"><label>الفرقة الدراسية</label><select id="univBranch"><option value="">اختر الفرقة</option><option>الأولى</option><option>الثانية</option><option>الثالثة</option><option>الرابعة</option><option>الخامسة</option><option>السادسة</option><option>السابعة</option></select></div>
+        <div class="form-group"><label>المغترب / مقيم</label><select id="residenceStatus"><option value="">اختر</option><option>مقيم</option><option>مغترب</option></select></div>
+        <div class="form-group"><label>نوع الجامعة</label><select id="univTypeSelect"><option value="">اختر</option><option>حكومية</option><option>خاصة</option><option>معهد خاص</option></select></div>
+        <div class="form-group"><label>نظام التعليم</label><select id="univSystem"><option value="">اختر</option><option>انتظام</option><option>انتساب</option></select></div>
+        <div class="form-group"><label>قيمة المصروفات (الجامعية)</label><input type="number" id="univFees" min="0"></div>
+        <div class="form-group"><label>من يدفع المصروفات</label><select id="univFeesPayer" onchange="updateFeesPayer()"><option value="">اختر</option><option value="family">الأسرة</option><option value="donor">متبرع</option><option value="self">نفسه</option></select></div>
+        <div id="feesDonorDiv" class="form-group hidden"><label>اسم المتبرع أو صلة القرابة</label><input type="text" id="feesDonorName"></div>
+        <div class="form-group"><label>هل هناك قسط؟</label><select id="installmentToggle" onchange="updateInstallmentFields()"><option value="">اختر</option><option>نعم</option><option>لا</option></select></div>
+        <div id="installmentDiv" class="form-group hidden"><label>قيمة القسط</label><input type="number" id="installmentValue" min="0"></div>
+        <div class="form-group"><label>مصدر التمويل</label><input type="text" id="fundSource"></div>
+    </div>
+    <div class="form-group"><label>هل يتلقى دروس / كورسات؟</label><select id="coursesToggle" onchange="updateCoursesFields()"><option value="">اختر من القائمة</option><option value="no">لا</option><option value="yes">نعم</option></select></div>
+    <div id="coursesFields" class="hidden">
+        <div class="form-group"><label>قيمة الدروس / الكورسات</label><input type="number" id="coursesValue" min="0"></div>
+        <div class="form-group"><label>الدفع من</label><select id="coursesPayment" onchange="updateCoursesDonor()"><option value="">اختر من القائمة</option><option value="family">الأسرة</option><option value="donor">متبرع</option><option value="self">نفسه</option></select></div>
+        <div id="coursesDonorDiv" class="form-group hidden"><label>اسم المتبرع أو صلة القرابة</label><input type="text" id="coursesDonorName"></div>
+    </div>
+    <div class="form-group"><label>هل يعمل عمل جانبي بجانب الدراسة؟</label><select id="sideJobToggle" onchange="updateSideJobFields()"><option value="">اختر من القائمة</option><option value="no">لا</option><option value="yes">نعم</option></select></div>
+    <div id="sideJobFields" class="hidden">
+        <div class="form-group"><label>مسمى العمل الجانبي</label><input type="text" id="sideJobTitle"></div>
+        <div class="form-group"><label>قيمة الدخل من العمل الجانبي</label><input type="number" id="sideJobValue" min="0"></div>
+        <div class="form-group"><label>هل يساهم في دخل الأسرة؟</label><select id="sideJobContribution" onchange="updateSideJobContribution()"><option value="">اختر من القائمة</option><option value="no">لا</option><option value="yes">نعم</option></select></div>
+        <div id="sideJobContributionValueDiv" class="form-group hidden"><label>قيمة المساهمة في دخل الأسرة</label><input type="number" id="sideJobContributionValue" min="0"></div>
+    </div>
+</div>
+
+<div class="section-title">3️⃣ الدخل والمساهمة</div>
+<div class="form-group">
+    <label>هل له دخل؟</label>
+    <select id="hasIncome" onchange="updateIncomeFields()">
+        <option value="">اختر</option><option value="yes">نعم</option><option value="no">لا</option>
+    </select>
+</div>
+<div id="incomeFields" class="hidden">
+    <div class="form-group"><label>قيمة الدخل الشهري</label><input type="number" id="incomeValue" min="0" step="0.01"></div>
+    <div class="form-group"><label>مصدر الدخل</label><input type="text" id="incomeSource" placeholder="مثل: تجارة، عمل حر، إيجار..."></div>
+</div>
+<div class="form-group">
+    <label>هل يساهم في دخل الأسرة؟</label>
+    <select id="contributesToFamily" onchange="updateContributionFields()">
+        <option value="">اختر</option><option value="yes">نعم</option><option value="no">لا</option>
+    </select>
+</div>
+<div id="contributionFields" class="hidden">
+    <div class="form-group"><label>قيمة المساهمة الشهرية</label><input type="number" id="contributionValue" min="0" step="0.01"></div>
+</div>
+
+<div class="section-title">4️⃣ الحالة الصحية</div>
+<div class="form-group">
+    <label class="red-star">الحالة الصحية</label>
+    <select id="healthStatus" onchange="updateHealthFields()" required>
+        <option value="">اختر من القائمة</option>
+        <option value="healthy">صحيح</option>
+        <option value="sick">مريض (مرض عابر أو خفيف)</option>
+        <option value="chronic">مرض مزمن</option>
+    </select>
+</div>
+<div id="diseaseFields" class="hidden">
+    <div class="form-group"><label class="red-star">نوع المرض</label><input type="text" id="diseaseType" placeholder="اذكر نوع المرض"></div>
+</div>
+<div id="medicalReportDiv" class="hidden">
+    <div class="form-group"><label class="red-star">مرفق التقرير الطبي</label><input type="file" id="medicalReport" accept=".pdf,.jpg,.jpeg,.png" required></div>
+</div>
+<div id="medicalReportOptionalDiv" class="hidden">
+    <div class="form-group"><label>مرفق التقرير الطبي (اختياري)</label><input type="file" id="medicalReportOptional" accept=".pdf,.jpg,.jpeg,.png"></div>
+</div>
+
+<div class="section-title">5️⃣ الملاحظات والمرفقات</div>
+<div class="form-group">
+    <label>الملاحظات</label>
+    <textarea id="notes" placeholder="أي ملاحظات إضافية عن الفرد..."></textarea>
+</div>
+<div class="form-group">
+    <label>المرفقات الإضافية المتنوعة</label>
+    <input type="file" id="attachments" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+    <small style="color:#666; display:block; margin-top:5px;">يمكنك اختيار ملفات متعددة</small>
+</div>
+
+<div style="margin-top:30px; padding-top:20px; border-top:2px solid #eee;">
+    <button id="previousBtn" onclick="previousCard()">⬅️ السابق</button>
+    <button id="nextBtn" onclick="nextCard()" disabled>التالي ➡️</button>
+    <button onclick="validateForm()" style="background:#3498db;">✅ التحقق من البيانات</button>
+    <button onclick="generateMultiPDF()" style="background:#8e44ad; float:left;">📄 تجميع وتحميل المرفقات (PDF)</button>
+</div>
+
+</div><script>
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  1. استخراج البيانات من الرقم القومي (مطور)         ║
+// ╚══════════════════════════════════════════════════════╝
+function handleNationalId(id) {
+    if (id.length === 14) {
+        // استخراج تاريخ الميلاد
+        let century = (id[0] === '2') ? '19' : '20';
+        let year    = century + id.substring(1, 3);
+        let month   = id.substring(3, 5);
+        let day     = id.substring(5, 7);
+
+        document.getElementById('birthDate').value = `${year}-${month}-${day}`;
+        document.getElementById('individualAge').value = 2026 - parseInt(year);
+
+        // استخراج النوع من الرقم الثالث عشر (الخانة 12 بصفر-مرجعية)
+        document.getElementById('gender').value = (parseInt(id[12]) % 2 === 0) ? "أنثى" : "ذكر";
+
+        document.getElementById('idGenderInfo').classList.remove('hidden');
+        validateGenderMatch();
+        checkRequiredFields();
+    } else {
+        document.getElementById('idGenderInfo').classList.add('hidden');
+    }
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  2. التحقق من تناسب النوع (من x1 - مُكيَّف)        ║
+// ║     يعمل مع الحالة الاجتماعية النصية في person3     ║
+// ╚══════════════════════════════════════════════════════╝
+function validateGenderMatch() {
+    const id     = document.getElementById('nationalId').value;
+    const rel    = document.getElementById('individualRelation').value;
+    const stat   = document.getElementById('individualStatus').value;
+    const gender = document.getElementById('gender').value;
+
+    // مسح التحذيرات القديمة
+    ['relationWarning','genderWarning','statusWarning'].forEach(id => {
+        let el = document.getElementById(id);
+        el.classList.add('hidden');
+        el.innerText = '';
+    });
+
+    // إذا لم يكتمل الرقم القومي نكتفي بالتحقق من صلة القرابة مع النوع المحدد يدوياً
+    let isFemaleByID   = null;
+    if (id.length === 14) {
+        isFemaleByID = (parseInt(id[12]) % 2 === 0);
+    }
+
+    // قوائم صلة القرابة حسب الجنس
+    const malesRel   = ['رب الاسرة','زوج','ابن','ابن الأخ','ابن الأخت','جد','زوج الأخت',
+                        'ابن العم','ابن الخال','حفيد','أخ','والد'];
+    const femalesRel = ['زوجة','ابنة','ابنة الأخ','ابنة الأخت','جدة','زوجة الأخ',
+                        'زوجة الأب','ابنة العم','ابنة الخال','حفيدة','أخت','والدة'];
+
+    // الحالة الاجتماعية للمؤنث والمذكر
+    const femaleStatuses = ['متزوجة','آنسة','أرملة','مطلقة'];
+    const maleStatuses   = ['متزوج','أعزب','أرمل','مطلق'];
+
+    // التحقق من الرقم القومي مقابل صلة القرابة
+    if (isFemaleByID !== null && rel) {
+        if (isFemaleByID && malesRel.includes(rel)) {
+            showWarning('relationWarning', '⚠️ صلة القرابة المذكورة تخص ذكراً، لكن الرقم القومي يشير إلى أنثى!');
+        }
+        if (!isFemaleByID && femalesRel.includes(rel)) {
+            showWarning('relationWarning', '⚠️ صلة القرابة المذكورة تخص أنثى، لكن الرقم القومي يشير إلى ذكر!');
+        }
+    }
+
+    // التحقق من الرقم القومي مقابل النوع المحدد
+    if (isFemaleByID !== null && gender) {
+        if (isFemaleByID && gender === 'ذكر') {
+            showWarning('genderWarning', '⚠️ النوع المختار "ذكر" لا يتوافق مع الرقم القومي الذي يشير إلى أنثى!');
+        }
+        if (!isFemaleByID && gender === 'أنثى') {
+            showWarning('genderWarning', '⚠️ النوع المختار "أنثى" لا يتوافق مع الرقم القومي الذي يشير إلى ذكر!');
+        }
+    }
+
+    // التحقق من الرقم القومي مقابل الحالة الاجتماعية
+    if (isFemaleByID !== null && stat) {
+        if (isFemaleByID && maleStatuses.includes(stat)) {
+            showWarning('statusWarning', '⚠️ الحالة الاجتماعية المذكورة تخص ذكراً، لكن الرقم القومي يشير إلى أنثى!');
+        }
+        if (!isFemaleByID && femaleStatuses.includes(stat)) {
+            showWarning('statusWarning', '⚠️ الحالة الاجتماعية المذكورة تخص أنثى، لكن الرقم القومي يشير إلى ذكر!');
+        }
+    }
+
+    // التحقق من النوع المحدد يدوياً مقابل صلة القرابة (حتى بدون الرقم القومي)
+    if (gender && rel && isFemaleByID === null) {
+        if (gender === 'أنثى' && malesRel.includes(rel)) {
+            showWarning('relationWarning', '⚠️ صلة القرابة المذكورة تخص ذكراً، لكن النوع المحدد هو أنثى!');
+        }
+        if (gender === 'ذكر' && femalesRel.includes(rel)) {
+            showWarning('relationWarning', '⚠️ صلة القرابة المذكورة تخص أنثى، لكن النوع المحدد هو ذكر!');
+        }
+    }
+
+    // التحقق من النوع المحدد يدوياً مقابل الحالة الاجتماعية (حتى بدون الرقم القومي)
+    if (gender && stat && isFemaleByID === null) {
+        if (gender === 'أنثى' && maleStatuses.includes(stat)) {
+            showWarning('statusWarning', '⚠️ الحالة الاجتماعية المذكورة تخص ذكراً، لكن النوع المحدد هو أنثى!');
+        }
+        if (gender === 'ذكر' && femaleStatuses.includes(stat)) {
+            showWarning('statusWarning', '⚠️ الحالة الاجتماعية المذكورة تخص أنثى، لكن النوع المحدد هو ذكر!');
+        }
+    }
+
+    // إرجاع true إذا لم تكن هناك أخطاء ظاهرة
+    return document.getElementById('relationWarning').classList.contains('hidden') &&
+           document.getElementById('genderWarning').classList.contains('hidden') &&
+           document.getElementById('statusWarning').classList.contains('hidden');
+}
+
+function showWarning(elementId, message) {
+    const el = document.getElementById(elementId);
+    el.innerText = message;
+    el.classList.remove('hidden');
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  3. قسم المعاش المطور الموحد                        ║
+// ╚══════════════════════════════════════════════════════╝
+
+// الأنواع التي تحتاج بوابة التأمينات
+const INSURANCE_TYPES = ['ins', 'mix_tk', 'mix_km', 'special'];
+// الأنواع التي تحتاج بوابة تكافل/كرامة
+const TAKAFUL_TYPES   = ['tk', 'km', 'tk_km', 'mix_tk', 'mix_km'];
+
+function updatePensionFields() {
+    const hasPension = document.getElementById('hasPension').value;
+    document.getElementById('pensionSection').classList.toggle('hidden', hasPension !== 'yes');
+    checkRequiredFields();
+}
+
+function updatePensionType() {
+    const t = document.getElementById('pensionType').value;
+
+    // إخفاء كل الحقول الفرعية أولاً
+    document.getElementById('insurancePensionFields').classList.add('hidden');
+    document.getElementById('takafulPensionFields').classList.add('hidden');
+    document.getElementById('privatePensionFields').classList.add('hidden');
+    document.getElementById('pensionLinks').classList.add('hidden');
+    document.getElementById('link-nosi').classList.add('hidden');
+    document.getElementById('link-tk').classList.add('hidden');
+
+    if (!t) { checkRequiredFields(); return; }
+
+    // إظهار الحقول المناسبة
+    if (INSURANCE_TYPES.includes(t)) {
+        document.getElementById('insurancePensionFields').classList.remove('hidden');
+        document.getElementById('link-nosi').classList.remove('hidden');
+        document.getElementById('pensionLinks').classList.remove('hidden');
+    }
+    if (TAKAFUL_TYPES.includes(t)) {
+        document.getElementById('takafulPensionFields').classList.remove('hidden');
+        document.getElementById('link-tk').classList.remove('hidden');
+        document.getElementById('pensionLinks').classList.remove('hidden');
+    }
+    if (t === 'private') {
+        document.getElementById('privatePensionFields').classList.remove('hidden');
+    }
+
+    // إعادة ضبط حقل مصدر المعاش عند تغيير النوع
+    document.getElementById('ourSideFields').classList.add('hidden');
+    document.getElementById('pensionSource').value = 'client';
+
+    checkRequiredFields();
+}
+
+function toggleOurSide() {
+    document.getElementById('ourSideFields').classList.toggle(
+        'hidden',
+        document.getElementById('pensionSource').value !== 'us'
+    );
+    checkRequiredFields();
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  4. باقي دوال التحكم في الواجهة                    ║
+// ╚══════════════════════════════════════════════════════╝
+
+function checkHeadStatus(val) {
+    const isHead = (val === 'head');
+    document.getElementById('cardIndividual').classList.toggle('is-head', isHead);
+    document.getElementById('headIndicator').classList.toggle('hidden', !isHead);
+    document.getElementById('payeeSection').classList.toggle('hidden', !isHead);
+    checkRequiredFields();
+}
+
+function updateStatusFields() {
+    const val = document.getElementById("individualStatus").value;
+    document.getElementById("missFields").classList.toggle("hidden", val !== "آنسة");
+    
+    // إضافة إظهار حقل المرفق للحالات المطلوبة
+    const statusAttStatuses = ['مطلق', 'مطلقة', 'أرمل', 'أرملة'];
+    document.getElementById("statusAttachmentDiv").classList.toggle("hidden", !statusAttStatuses.includes(val));
+
+    checkRequiredFields();
+}
+
+function updateEngaged() {
+    document.getElementById("marriageDateDiv").classList.toggle("hidden",
+        document.getElementById("engaged").value !== "نعم");
+}
+
+function updateJobFields() {
+    const job = document.getElementById("individualJob").value;
+    document.getElementById("studentFields").classList.toggle("hidden",
+        !(job === "student" || job === "studentf"));
+    document.getElementById("workFields").classList.toggle("hidden",
+        !['employee', 'worker', 'femaleWorker'].includes(job));
+    document.getElementById("sideWorkSection").classList.toggle("hidden",
+        !['housewife', 'employee', 'pension', 'soldier'].includes(job));
+        
+    // إضافة إظهار حقل المرفق للأعمال المطلوبة
+    const jobAttJobs = ['student', 'studentf', 'employee', 'pension', 'soldier'];
+    document.getElementById("jobAttachmentDiv").classList.toggle("hidden", !jobAttJobs.includes(job));
+
+    checkRequiredFields();
+}
+
+function updateStudentDetails() {
+    const level  = document.getElementById("studentLevel").value;
+    const branch = document.getElementById("studentBranch");
+    const type   = document.getElementById("studentType");
+
+    branch.innerHTML = "";
+    type.innerHTML   = '<option value="">اختر</option>';
+    document.getElementById("studentBranchDiv").classList.add("hidden");
+    document.getElementById("studentTypeDiv").classList.add("hidden");
+    document.getElementById("schoolFeesStatusDiv").classList.add("hidden");
+    document.getElementById("schoolFeesValueDiv").classList.add("hidden");
+    document.getElementById("universityFields").classList.add("hidden");
+    document.getElementById("studentFeesStatus").value = "";
+
+    if (level === "ابتدائي") {
+        document.getElementById("studentBranchDiv").classList.remove("hidden");
+        document.getElementById("studentTypeDiv").classList.remove("hidden");
+        document.getElementById("schoolFeesStatusDiv").classList.remove("hidden");
+        ["الأولى","الثانية","الثالثة","الرابعة","الخامسة","السادسة"].forEach(v => { let o=document.createElement("option"); o.text=v; branch.add(o); });
+        ["عام","عام خاص","أزهري","أزهري خاص","تجريبي","خاص","دمج"].forEach(v => { let o=document.createElement("option"); o.text=v; type.add(o); });
+    } else if (level === "إعدادي") {
+        document.getElementById("studentBranchDiv").classList.remove("hidden");
+        document.getElementById("studentTypeDiv").classList.remove("hidden");
+        document.getElementById("schoolFeesStatusDiv").classList.remove("hidden");
+        ["الأولى","الثانية","الثالثة","تمريض"].forEach(v => { let o=document.createElement("option"); o.text=v; branch.add(o); });
+        ["عام","أزهري","تجريبي","أزهري خاص","عام خاص","مهني","دمج","خدمات"].forEach(v => { let o=document.createElement("option"); o.text=v; type.add(o); });
+    } else if (level === "ثانوي") {
+        document.getElementById("studentBranchDiv").classList.remove("hidden");
+        document.getElementById("studentTypeDiv").classList.remove("hidden");
+        document.getElementById("schoolFeesStatusDiv").classList.remove("hidden");
+        ["الأولى","الثانية","الثالثة","الرابعة","الخامسة"].forEach(v => { let o=document.createElement("option"); o.text=v; branch.add(o); });
+        ["عام","أزهري","عام خاص","أزهري خاص","تجريبي","صناعي","تجاري ٣ سنوات","تجاري ٥ سنوات","تمريض ٣ سنوات","تمريض ٥ سنوات","سياحة وفنادق ٣ سنوات","سياحة وفنادق ٥ سنوات","مهني","خدمات","دمج"].forEach(v => { let o=document.createElement("option"); o.text=v; type.add(o); });
+    } else if (level === "فوق متوسط") {
+        document.getElementById("studentBranchDiv").classList.remove("hidden");
+        ["الأولى","الثانية","الثالثة"].forEach(v => { let o=document.createElement("option"); o.text=v; branch.add(o); });
+    } else if (level === "جامعي") {
+        document.getElementById("universityFields").classList.remove("hidden");
+    }
+}
+
+function updateSchoolFees() {
+    const status = document.getElementById("studentFeesStatus").value;
+    document.getElementById("schoolFeesValueDiv").classList.toggle("hidden",
+        status === "معفى" || status === "");
+}
+
+function updateWorkType() {
+    document.getElementById("workAttachmentDiv").classList.toggle("hidden",
+        document.getElementById("workType").value !== "منتظم");
+}
+function updateSideWork() {
+    document.getElementById("sideWorkDetails").classList.toggle("hidden",
+        document.getElementById("hasSideWork").value !== "yes");
+}
+function updateSideWorkAttachment() {
+    document.getElementById("sideWorkAttachmentDiv").classList.toggle("hidden",
+        document.getElementById("sideWorkType").value !== "عمل منتظم");
+}
+function updateUniversityFields() {
+    document.getElementById("collegeNameDiv").classList.toggle("hidden",
+        document.getElementById("univType").value !== "كلية");
+}
+function updateFeesPayer() {
+    document.getElementById("feesDonorDiv").classList.toggle("hidden",
+        document.getElementById("univFeesPayer").value !== "donor");
+}
+function updateInstallmentFields() {
+    document.getElementById("installmentDiv").classList.toggle("hidden",
+        document.getElementById("installmentToggle").value !== "نعم");
+}
+function updateCoursesFields() {
+    document.getElementById("coursesFields").classList.toggle("hidden",
+        document.getElementById("coursesToggle").value !== "yes");
+}
+function updateCoursesDonor() {
+    document.getElementById("coursesDonorDiv").classList.toggle("hidden",
+        document.getElementById("coursesPayment").value !== "donor");
+}
+function updateSideJobFields() {
+    document.getElementById("sideJobFields").classList.toggle("hidden",
+        document.getElementById("sideJobToggle").value !== "yes");
+}
+function updateSideJobContribution() {
+    document.getElementById("sideJobContributionValueDiv").classList.toggle("hidden",
+        document.getElementById("sideJobContribution").value !== "yes");
+}
+function updateIncomeFields() {
+    document.getElementById("incomeFields").classList.toggle("hidden",
+        document.getElementById("hasIncome").value !== "yes");
+}
+function updateContributionFields() {
+    document.getElementById("contributionFields").classList.toggle("hidden",
+        document.getElementById("contributesToFamily").value !== "yes");
+}
+function updateHealthFields() {
+    const status = document.getElementById("healthStatus").value;
+    document.getElementById("diseaseFields").classList.add("hidden");
+    document.getElementById("medicalReportDiv").classList.add("hidden");
+    document.getElementById("medicalReportOptionalDiv").classList.add("hidden");
+    if (status === "sick") {
+        document.getElementById("diseaseFields").classList.remove("hidden");
+        document.getElementById("medicalReportOptionalDiv").classList.remove("hidden");
+    } else if (status === "chronic") {
+        document.getElementById("diseaseFields").classList.remove("hidden");
+        document.getElementById("medicalReportDiv").classList.remove("hidden");
+    }
+    checkRequiredFields();
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  5. التحقق من اكتمال الحقول الإلزامية              ║
+// ╚══════════════════════════════════════════════════════╝
+function checkRequiredFields() {
+    const required = ['individualName','individualRelation','gender','birthDate',
+                      'individualAge','individualStatus','individualJob','healthStatus'];
+    let allFilled = true;
+
+    for (let fid of required) {
+        const f = document.getElementById(fid);
+        if (f && !f.value) { allFilled = false; break; }
+    }
+
+    // التحقق من حقول المعاش
+    if (allFilled && document.getElementById('hasPension').value === 'yes') {
+        const pt = document.getElementById('pensionType').value;
+        if (!pt) { allFilled = false; }
+        else {
+            if (INSURANCE_TYPES.includes(pt)) {
+                if (!document.getElementById('pensionSource').value) allFilled = false;
+                if (document.getElementById('pensionSource').value === 'us') {
+                    if (!document.getElementById('pensionEmail').value) allFilled = false;
+                    if (!document.getElementById('pensionPassword').value) allFilled = false;
+                }
+                if (!document.getElementById('insurancePensionAttachment').files.length) allFilled = false;
+            }
+            if (TAKAFUL_TYPES.includes(pt)) {
+                if (!document.getElementById('takafulPensionAttachment').files.length) allFilled = false;
+                if (!document.getElementById('pensionMatch').value) allFilled = false;
+            }
+        }
+    }
+
+    // التحقق من الصحة
+    if (allFilled) {
+        const hs = document.getElementById('healthStatus').value;
+        if (hs === 'sick' || hs === 'chronic') {
+            if (!document.getElementById('diseaseType').value) allFilled = false;
+        }
+        if (hs === 'chronic') {
+            if (!document.getElementById('medicalReport').files.length) allFilled = false;
+        }
+    }
+
+    document.getElementById('nextBtn').disabled = !allFilled;
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  6. التحقق الكامل عند الضغط على زر التحقق          ║
+// ╚══════════════════════════════════════════════════════╝
+function validateForm() {
+    const errors = [];
+
+    if (!document.getElementById('individualName').value)      errors.push("• الاسم مطلوب");
+    if (!document.getElementById('nationalId').value)          errors.push("• الرقم القومي مطلوب");
+    if (!document.getElementById('individualRelation').value)  errors.push("• صلة القرابة مطلوبة");
+    if (!document.getElementById('gender').value)              errors.push("• النوع مطلوب");
+    if (!document.getElementById('birthDate').value)           errors.push("• تاريخ الميلاد مطلوب");
+    if (!document.getElementById('individualAge').value)       errors.push("• السن مطلوب");
+    if (!document.getElementById('individualStatus').value)    errors.push("• الحالة الاجتماعية مطلوبة");
+    if (!document.getElementById('individualJob').value)       errors.push("• العمل مطلوب");
+    if (!document.getElementById('healthStatus').value)        errors.push("• الحالة الصحية مطلوبة");
+
+    // التحقق من تناسب النوع
+    if (!validateGenderMatch()) {
+        errors.push("• يوجد تعارض في بيانات النوع / صلة القرابة / الحالة الاجتماعية - راجع التحذيرات باللون الأحمر");
+    }
+
+    // التحقق من المعاش
+    if (document.getElementById('hasPension').value === 'yes') {
+        const pt = document.getElementById('pensionType').value;
+        if (!pt) {
+            errors.push("• نوع المعاش مطلوب");
+        } else {
+            if (INSURANCE_TYPES.includes(pt)) {
+                if (!document.getElementById('pensionSource').value)
+                    errors.push("• مصدر بيان المعاش مطلوب");
+                if (document.getElementById('pensionSource').value === 'us') {
+                    if (!document.getElementById('pensionEmail').value)
+                        errors.push("• البريد الإلكتروني لجلب المعاش مطلوب");
+                    if (!document.getElementById('pensionPassword').value)
+                        errors.push("• الرقم السري مطلوب");
+                }
+                if (!document.getElementById('insurancePensionAttachment').files.length)
+                    errors.push("• مرفق بيان المعاش (تأمينات) مطلوب");
+            }
+            if (TAKAFUL_TYPES.includes(pt)) {
+                if (!document.getElementById('takafulPensionAttachment').files.length)
+                    errors.push("• مرفق بيان معاش التكافل / الكرامة مطلوب");
+                if (!document.getElementById('pensionMatch').value)
+                    errors.push("• حالة المطابقة مع قاعدة البيانات الحكومية مطلوبة");
+            }
+        }
+    }
+
+    // التحقق من الصحة
+    const hs = document.getElementById('healthStatus').value;
+    if (hs === 'sick' || hs === 'chronic') {
+        if (!document.getElementById('diseaseType').value) errors.push("• نوع المرض مطلوب");
+    }
+    if (hs === 'chronic') {
+        if (!document.getElementById('medicalReport').files.length)
+            errors.push("• مرفق التقرير الطبي مطلوب للمرض المزمن");
+    }
+
+    if (errors.length > 0) {
+        alert("⚠️ يرجى استكمال / تصحيح البيانات التالية:\n\n" + errors.join("\n"));
+        return false;
+    } else {
+        alert("✅ تم التحقق من البيانات بنجاح! جميع الحقول الإلزامية مكتملة.");
+        return true;
+    }
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  7. أزرار التنقل                                    ║
+// ╚══════════════════════════════════════════════════════╝
+function previousCard() {
+    alert("الانتقال إلى البطاقة السابقة (يتم ربطها بنظام البطاقات المتعددة)");
+}
+function nextCard() {
+    if (validateForm()) {
+        alert("الانتقال إلى البطاقة التالية (يتم ربطها بنظام البطاقات المتعددة)");
+    }
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  8. تجميع كل المرفقات في ملف PDF واحد               ║
+// ╚══════════════════════════════════════════════════════╝
+async function generateMultiPDF() {
+    if (typeof PDFLib === 'undefined') {
+        alert('مكتبة PDF غير محملة. يرجى التأكد من اتصالك بالإنترنت.');
+        return;
+    }
+
+    const personName = document.getElementById('individualName').value || 'فرد_بدون_اسم';
+    const { PDFDocument } = PDFLib;
+    const pdfDoc = await PDFDocument.create();
+
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    let hasFiles = false;
+
+    // المرور على جميع حقول الملفات في الصفحة
+    for (let input of fileInputs) {
+        if (input.files && input.files.length > 0) {
+            for (let file of input.files) {
+                hasFiles = true;
+                const arrayBuffer = await file.arrayBuffer();
+
+                if (file.type === 'application/pdf') {
+                    // دمج ملفات الـ PDF
+                    const donorPdfDoc = await PDFDocument.load(arrayBuffer);
+                    const copiedPages = await pdfDoc.copyPages(donorPdfDoc, donorPdfDoc.getPageIndices());
+                    copiedPages.forEach((page) => pdfDoc.addPage(page));
+                } else if (file.type.startsWith('image/')) {
+                    // دمج الصور
+                    let image;
+                    if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+                        image = await pdfDoc.embedJpg(arrayBuffer);
+                    } else if (file.type === 'image/png') {
+                        image = await pdfDoc.embedPng(arrayBuffer);
+                    }
+
+                    if (image) {
+                        const page = pdfDoc.addPage();
+                        const { width, height } = page.getSize();
+                        // ضبط أبعاد الصورة لتناسب الصفحة
+                        const imgDims = image.scaleToFit(width - 40, height - 40);
+                        page.drawImage(image, {
+                            x: page.getWidth() / 2 - imgDims.width / 2,
+                            y: page.getHeight() / 2 - imgDims.height / 2,
+                            width: imgDims.width,
+                            height: imgDims.height,
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    if (!hasFiles) {
+        alert('لا توجد مرفقات مدرجة لتجميعها.');
+        return;
+    }
+
+    // حفظ الملف وتنزيله
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = personName + '_المرفقات.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║  9. تهيئة الصفحة                                    ║
+// ╚══════════════════════════════════════════════════════╝
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('change', checkRequiredFields);
+        input.addEventListener('input',  checkRequiredFields);
+    });
+    checkRequiredFields();
+});
+
+</script>
+</body>
+</html>

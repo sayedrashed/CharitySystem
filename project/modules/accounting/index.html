@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الحسابات - نظام إدارة البحث الاجتماعي</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0F1117;
+            --bg-secondary: #1A1D27;
+            --bg-card: #1A1D27;
+            --border: #2E3250;
+            --text-primary: #E8EBF4;
+            --text-secondary: #6B7280;
+            --accent: #4F8EF7;
+            --success: #2DD4BF;
+            --warning: #F59E0B;
+            --danger: #F87171;
+            --gold: #F5C842;
+        }
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            min-height: 100vh;
+        }
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        .back-btn:hover { border-color: var(--accent); transform: translateX(-4px); }
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .user-area { display: flex; align-items: center; gap: 15px; }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card .value { font-size: 32px; font-weight: 800; color: var(--accent); }
+        .stat-card .label { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+        .actions-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 0 24px;
+            margin-bottom: 24px;
+        }
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .action-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .action-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+        .search-bar { padding: 0 24px; margin-bottom: 24px; }
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        .table-container { padding: 0 24px; overflow-x: auto; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .data-table th {
+            text-align: right;
+            padding: 15px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .data-table tr:hover { background: var(--bg-secondary); }
+        .transaction-type { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .type-income { background: rgba(46,202,171,0.15); color: var(--success); }
+        .type-expense { background: rgba(248,113,113,0.15); color: var(--danger); }
+        .action-icons { display: flex; gap: 12px; }
+        .action-icon { cursor: pointer; font-size: 18px; transition: all 0.3s ease; }
+        .action-icon:hover { transform: scale(1.1); }
+        .view-icon { color: var(--success); }
+        .edit-icon { color: var(--accent); }
+        .delete-icon { color: var(--danger); }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-close { cursor: pointer; font-size: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: var(--text-secondary); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .btn { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; border: none; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-secondary { background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: none;
+            z-index: 1000;
+        }
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .actions-bar { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <button class="back-btn" onclick="goBack()"><span>←</span> العودة</button>
+    <div class="page-title">💰 الحسابات</div>
+    <div class="user-area">
+        <div class="user-avatar" id="userAvatar">👤</div>
+        <div class="user-name" id="userName"></div>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card"><div class="value" id="totalBalance">0</div><div class="label">إجمالي الرصيد</div></div>
+    <div class="stat-card"><div class="value" id="totalIncome">0</div><div class="label">إجمالي الإيرادات</div></div>
+    <div class="stat-card"><div class="value" id="totalExpense">0</div><div class="label">إجمالي المصروفات</div></div>
+    <div class="stat-card"><div class="value" id="monthlyExpense">0</div><div class="label">مصروفات هذا الشهر</div></div>
+</div>
+
+<div class="actions-bar">
+    <button class="action-btn primary" onclick="openAddTransactionModal()"><span>➕</span> معاملة جديدة</button>
+    <button class="action-btn" onclick="openCashCardModal()"><span>💵</span> بطاقة الكاش</button>
+    <button class="action-btn" onclick="openZarfModal()"><span>📨</span> ظرف القبض</button>
+    <button class="action-btn" onclick="openTreasuryModal()"><span>🏦</span> الخزينة</button>
+    <button class="action-btn" onclick="exportAccountingReport()"><span>📊</span> تقرير</button>
+</div>
+
+<div class="search-bar">
+    <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث بالبيان..." onkeyup="searchTransactions()">
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead><tr><th>التاريخ</th><th>البيان</th><th>الفئة</th><th>النوع</th><th>المبلغ</th><th>الإجراءات</th></tr></thead>
+        <tbody id="transactionsTableBody"><tr><td colspan="6" style="text-align:center;">جاري التحميل...</td></tr></tbody>
+    </table>
+</div>
+
+<div id="addTransactionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>➕ معاملة جديدة</h3><span class="modal-close" onclick="closeModal('addTransactionModal')">✕</span></div>
+        <div class="form-group"><label>التاريخ</label><input type="date" id="transDate"></div>
+        <div class="form-group"><label>البيان</label><input type="text" id="transDescription" placeholder="البيان"></div>
+        <div class="form-group"><label>الفئة</label><select id="transCategory"><option value="إعانات">إعانات</option><option value="مرتبات">مرتبات</option><option value="مشتريات">مشتريات</option><option value="إيجار">إيجار</option><option value="كهرباء">كهرباء</option><option value="مياه">مياه</option></select></div>
+        <div class="form-group"><label>النوع</label><select id="transType"><option value="income">إيراد</option><option value="expense">مصروف</option></select></div>
+        <div class="form-group"><label>المبلغ</label><input type="number" id="transAmount" placeholder="المبلغ"></div>
+        <div class="form-group"><label>ملاحظات</label><textarea id="transNotes" rows="3" placeholder="ملاحظات"></textarea></div>
+        <div class="modal-buttons"><button class="btn btn-primary" onclick="saveTransaction()">حفظ</button><button class="btn btn-secondary" onclick="closeModal('addTransactionModal')">إلغاء</button></div>
+    </div>
+</div>
+
+<div id="cashCardModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>💵 بطاقة الكاش - شهر <span id="cashMonth"></span></h3><span class="modal-close" onclick="closeModal('cashCardModal')">✕</span></div>
+        <div style="max-height:400px; overflow-y:auto;">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead><tr style="background:var(--bg-primary);"><th>م</th><th>الاسم</th><th>المبلغ</th><th>التوقيع</th></tr></thead>
+                <tbody id="cashCardBody"></tbody>
+            </table>
+        </div>
+        <div class="modal-buttons"><button class="btn btn-primary" onclick="printCashCard()">🖨️ طباعة</button><button class="btn btn-secondary" onclick="closeModal('cashCardModal')">إغلاق</button></div>
+    </div>
+</div>
+
+<div id="zarfModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>📨 ظرف القبض</h3><span class="modal-close" onclick="closeModal('zarfModal')">✕</span></div>
+        <div class="form-group"><label>اختر الحالة</label><select id="zarfCase"></select></div>
+        <div class="form-group"><label>المبلغ</label><input type="number" id="zarfAmount" placeholder="المبلغ"></div>
+        <div class="form-group"><label>الشهر</label><select id="zarfMonth"><option value="1">يناير</option><option value="2">فبراير</option><option value="3">مارس</option><option value="4">أبريل</option><option value="5">مايو</option><option value="6">يونيو</option><option value="7">يوليو</option><option value="8">أغسطس</option><option value="9">سبتمبر</option><option value="10">أكتوبر</option><option value="11">نوفمبر</option><option value="12">ديسمبر</option></select></div>
+        <div class="modal-buttons"><button class="btn btn-primary" onclick="printZarf()">🖨️ طباعة</button><button class="btn btn-secondary" onclick="closeModal('zarfModal')">إلغاء</button></div>
+    </div>
+</div>
+
+<div id="treasuryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>🏦 الخزينة</h3><span class="modal-close" onclick="closeModal('treasuryModal')">✕</span></div>
+        <div class="form-group"><label>الرصيد الحالي</label><input type="text" id="treasuryBalance" readonly style="background:var(--bg-primary); font-size:20px; font-weight:bold; color:var(--success);"></div>
+        <div class="form-group"><label>إجمالي الإيرادات</label><input type="text" id="treasuryIncome" readonly></div>
+        <div class="form-group"><label>إجمالي المصروفات</label><input type="text" id="treasuryExpense" readonly></div>
+        <div class="form-group"><label>سلف الموظفين</label><input type="text" id="treasuryLoans" placeholder="سلف الموظفين"></div>
+        <div class="form-group"><label>ملاحظات</label><textarea id="treasuryNotes" rows="3" placeholder="ملاحظات"></textarea></div>
+        <div class="modal-buttons"><button class="btn btn-primary" onclick="saveTreasury()">حفظ</button><button class="btn btn-secondary" onclick="closeModal('treasuryModal')">إلغاء</button></div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    let currentUser = { id: 1, name: "سيد راشد", role: "admin", avatar: "👑" };
+    let transactions = [
+        { id: 1, date: "2026-03-01", description: "إعانة شهر مارس", category: "إعانات", type: "expense", amount: 200000, notes: "" },
+        { id: 2, date: "2026-03-05", description: "مرتبات الموظفين", category: "مرتبات", type: "expense", amount: 25000, notes: "" },
+        { id: 3, date: "2026-03-10", description: "إيجار المكتب", category: "إيجار", type: "expense", amount: 5000, notes: "" },
+        { id: 4, date: "2026-03-15", description: "تبرعات", category: "إعانات", type: "income", amount: 300000, notes: "" },
+        { id: 5, date: "2026-03-20", description: "كهرباء", category: "كهرباء", type: "expense", amount: 1500, notes: "" }
+    ];
+    let currentSearch = "";
+
+    function updateStats() {
+        let totalIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+        let totalExpense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+        let balance = totalIncome - totalExpense;
+        let currentMonth = new Date().getMonth() + 1;
+        let monthlyExpense = transactions.filter(t => t.type === "expense" && new Date(t.date).getMonth() + 1 === currentMonth).reduce((s, t) => s + t.amount, 0);
+        document.getElementById('totalBalance').innerText = balance.toLocaleString('ar-EG');
+        document.getElementById('totalIncome').innerText = totalIncome.toLocaleString('ar-EG');
+        document.getElementById('totalExpense').innerText = totalExpense.toLocaleString('ar-EG');
+        document.getElementById('monthlyExpense').innerText = monthlyExpense.toLocaleString('ar-EG');
+    }
+
+    function renderTransactions() {
+        let filtered = transactions;
+        if (currentSearch) filtered = transactions.filter(t => t.description.toLowerCase().includes(currentSearch.toLowerCase()) || t.category.toLowerCase().includes(currentSearch.toLowerCase()));
+        let tbody = document.getElementById('transactionsTableBody');
+        if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد معاملات</td></tr>'; return; }
+        tbody.innerHTML = filtered.map(t => `
+            <tr>
+                <td>${t.date}</td>
+                <td>${t.description}</td>
+                <td>${t.category}</td>
+                <td><span class="transaction-type ${t.type === 'income' ? 'type-income' : 'type-expense'}">${t.type === 'income' ? 'إيراد' : 'مصروف'}</span></td>
+                <td>${t.amount.toLocaleString('ar-EG')} ج.م</td>
+                <td class="action-icons"><span class="action-icon view-icon" onclick="viewTransaction(${t.id})" title="عرض">👁️</span><span class="action-icon edit-icon" onclick="editTransaction(${t.id})" title="تعديل">✏️</span><span class="action-icon delete-icon" onclick="deleteTransaction(${t.id})" title="حذف">🗑️</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function openAddTransactionModal() {
+        document.getElementById('transDate').value = new Date().toISOString().slice(0,10);
+        document.getElementById('transDescription').value = '';
+        document.getElementById('transCategory').value = 'إعانات';
+        document.getElementById('transType').value = 'expense';
+        document.getElementById('transAmount').value = '';
+        document.getElementById('transNotes').value = '';
+        document.getElementById('addTransactionModal').classList.add('active');
+    }
+
+    function saveTransaction() {
+        let date = document.getElementById('transDate').value;
+        let description = document.getElementById('transDescription').value.trim();
+        let category = document.getElementById('transCategory').value;
+        let type = document.getElementById('transType').value;
+        let amount = parseFloat(document.getElementById('transAmount').value);
+        let notes = document.getElementById('transNotes').value;
+        if (!description || !amount) { showToast('الرجاء ملء الحقول المطلوبة'); return; }
+        let newId = Math.max(...transactions.map(t => t.id), 0) + 1;
+        transactions.push({ id: newId, date, description, category, type, amount, notes });
+        updateStats(); renderTransactions(); closeModal('addTransactionModal'); showToast('تم إضافة المعاملة');
+    }
+
+    function viewTransaction(id) { showToast(`عرض المعاملة رقم ${id}`); }
+    function editTransaction(id) { showToast(`تعديل المعاملة رقم ${id}`); }
+    function deleteTransaction(id) { if (confirm('حذف هذه المعاملة؟')) { transactions = transactions.filter(t => t.id !== id); updateStats(); renderTransactions(); showToast('تم حذف المعاملة'); } }
+    function searchTransactions() { currentSearch = document.getElementById('searchInput').value; renderTransactions(); }
+
+    function openCashCardModal() {
+        let months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+        let currentMonth = months[new Date().getMonth()];
+        document.getElementById('cashMonth').innerText = currentMonth;
+        let body = document.getElementById('cashCardBody');
+        body.innerHTML = '';
+        for (let i = 1; i <= 10; i++) { body.innerHTML += `<tr><td>${i}</td><td><input type="text" placeholder="الاسم" style="width:100%; background:var(--bg-primary); border:1px solid var(--border); border-radius:4px; padding:5px;"></td><td><input type="number" placeholder="المبلغ" style="width:100%; background:var(--bg-primary); border:1px solid var(--border); border-radius:4px; padding:5px;"></td><td><input type="text" placeholder="التوقيع" style="width:100%; background:var(--bg-primary); border:1px solid var(--border); border-radius:4px; padding:5px;"></td></tr>`; }
+        document.getElementById('cashCardModal').classList.add('active');
+    }
+    function printCashCard() { showToast('جاري طباعة بطاقة الكاش...'); }
+
+    function openZarfModal() {
+        let select = document.getElementById('zarfCase');
+        select.innerHTML = '<option value="">-- اختر حالة --</option><option value="1">أحمد محمد (101)</option><option value="2">سارة علي (102)</option><option value="3">محمود خالد (103)</option>';
+        document.getElementById('zarfAmount').value = '';
+        document.getElementById('zarfModal').classList.add('active');
+    }
+    function printZarf() { showToast('جاري طباعة الظرف...'); }
+
+    function openTreasuryModal() {
+        let totalIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+        let totalExpense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+        let balance = totalIncome - totalExpense;
+        document.getElementById('treasuryBalance').value = balance.toLocaleString('ar-EG') + ' ج.م';
+        document.getElementById('treasuryIncome').value = totalIncome.toLocaleString('ar-EG') + ' ج.م';
+        document.getElementById('treasuryExpense').value = totalExpense.toLocaleString('ar-EG') + ' ج.م';
+        document.getElementById('treasuryLoans').value = '';
+        document.getElementById('treasuryNotes').value = '';
+        document.getElementById('treasuryModal').classList.add('active');
+    }
+    function saveTreasury() { showToast('تم حفظ بيانات الخزينة'); closeModal('treasuryModal'); }
+
+    function exportAccountingReport() { showToast('جاري تصدير التقرير...'); setTimeout(() => showToast('✅ تم تصدير التقرير'), 1500); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
+    function goBack() { window.location.href = '/index.html'; }
+    function updateUserInfo() { document.getElementById('userAvatar').innerText = currentUser.avatar; document.getElementById('userName').innerText = currentUser.name; }
+
+    function init() { updateUserInfo(); updateStats(); renderTransactions(); }
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>بطاقة الدخل والمصروفات الديناميكية المتكاملة</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; padding: 20px; color: #333; }
+        .container { max-width: 1200px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .section-title { background: #3498db; color: white; padding: 10px; margin-top: 25px; font-weight: bold; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: right; overflow: hidden; }
+        th { background-color: #f9f9f9; font-size: 13px; }
+        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .hidden { display: none; }
+        .btn-add { background: #27ae60; color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold; }
+        .btn-del { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-del:hover { background: #c0392b; }
+        .result-box { background: #2c3e50; color: white; padding: 20px; margin-top: 20px; border-radius: 8px; }
+        .status-label { font-weight: bold; padding: 5px 10px; border-radius: 4px; }
+        .balanced { background: #27ae60; }
+        .unbalanced { background: #e74c3c; }
+        .tooltip { cursor: help; color: #3498db; font-weight: bold; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>بطاقة تحليل الدخل والمصروفات (نسخة ميدانية)</h2>
+
+    <div class="section-title">المعاشات <button class="btn-add" onclick="addRow('pensionBody')">+</button></div>
+    <table id="pensionTable">
+        <thead><tr><th width="30%">نوع المعاش</th><th width="20%">القيمة</th><th width="40%">ملاحظات</th><th width="10%">حذف</th></tr></thead>
+        <tbody id="pensionBody">
+            <tr>
+                <td>
+                    <select onchange="checkOther(this)">
+                        <option value="">اختر نوع المعاش</option>
+                        <option>معاش تأمينات</option><option>معاش تكافل</option><option>معاش كرامة</option>
+                        <option>معاش تكافل وكرامة</option><option>معاش تأمينات + تكافل أو كرامة</option>
+                        <option>معاش مقاولون العرب</option><option>معاش قوات مسلحة</option>
+                        <option>معاش السادات</option><option value="other">أخرى</option>
+                    </select>
+                    <input type="text" class="hidden" placeholder="اسم المصدر" style="margin-top:5px;">
+                </td>
+                <td><input type="number" class="income-val" oninput="calculateAll()"></td>
+                <td><input type="text"></td>
+                <td><button class="btn-del" onclick="removeRow(this)">حذف</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">العمل <button class="btn-add" onclick="addRow('workBody')">+</button></div>
+    <table id="workTable">
+        <thead><tr><th width="20%">طبيعة العمل</th><th width="20%">القيمة</th><th width="25%">المسمى الوظيفي</th><th width="25%">ملاحظات</th><th width="10%">حذف</th></tr></thead>
+        <tbody id="workBody">
+            <tr>
+                <td><select><option>منتظم</option><option>غير منتظم</option><option>موسمي</option></select></td>
+                <td><input type="number" class="income-val" oninput="calculateAll()"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><button class="btn-del" onclick="removeRow(this)">حذف</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">الجمعيات والمساجد <button class="btn-add" onclick="addRow('charityBody')">+</button></div>
+    <table id="charityTable">
+        <thead><tr><th>اسم الجهة</th><th>المصدر</th><th>القيمة</th><th title="هل تعرف العنوان او التليفون">ع.ت</th><th>المنطقة</th><th>حذف</th></tr></thead>
+        <tbody id="charityBody">
+            <tr>
+                <td><input type="text"></td>
+                <td><select><option>جمعية</option><option>مسجد</option></select></td>
+                <td><input type="number" class="income-val" oninput="calculateAll()"></td>
+                <td>
+                    <select onchange="toggleContact(this)"><option value="no">لا</option><option value="yes">نعم</option></select>
+                    <input type="text" class="hidden" placeholder="تليفون/عنوان" style="margin-top:5px;">
+                </td>
+                <td><select><option>تخص المنطقة</option><option>عامة</option></select></td>
+                <td><button class="btn-del" onclick="removeRow(this)">حذف</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">الأقارب وأهل الخير <button class="btn-add" onclick="addRow('donorBody')">+</button></div>
+    <table id="donorTable">
+        <thead><tr><th>النوع</th><th>صلة القرابة / الاسم</th><th>القيمة</th><th>الدورية</th><th>حذف</th></tr></thead>
+        <tbody id="donorBody">
+            <tr>
+                <td><select><option>أقارب</option><option>متبرع عام</option><option>جيران</option><option>أخرى</option></select></td>
+                <td><input type="text" placeholder="مثلاً: ابن، أخ، فاعل خير"></td>
+                <td><input type="number" class="income-val" oninput="calculateAll()"></td>
+                <td><select><option>شهري</option><option>موسمي</option></select></td>
+                <td><button class="btn-del" onclick="removeRow(this)">حذف</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">مصادر أخرى ومساعدات عينية <button class="btn-add" onclick="addRow('otherBody')">+</button></div>
+    <table id="otherTable">
+        <thead><tr><th width="30%">اسم المصدر / النوع</th><th width="20%">قيمة نقدية (إن وجدت)</th><th width="40%">وصف المساعدة العينية</th><th width="10%">حذف</th></tr></thead>
+        <tbody id="otherBody">
+            <tr>
+                <td><input type="text"></td>
+                <td><input type="number" class="income-val" oninput="calculateAll()"></td>
+                <td><input type="text" placeholder="نوع المساعدة وخصائصها"></td>
+                <td><button class="btn-del" onclick="removeRow(this)">حذف</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">ثانياً: المصروفات (فواتير والتزامات ثابتة)</div>
+    <table style="background: #fffafa;">
+        <tr><td>الإيجار</td><td><input type="number" class="exp-val" oninput="calculateAll()"></td><td>كهرباء</td><td><input type="number" class="exp-val" oninput="calculateAll()"></td></tr>
+        <tr><td>مياة / كسح</td><td><input type="number" class="exp-val" oninput="calculateAll()"></td><td>غاز / اسطوانة</td><td><input type="number" class="exp-val" oninput="calculateAll()"></td></tr>
+        <tr><td>تليفون / انترنت</td><td><input type="number" class="exp-val" oninput="calculateAll()"></td><td>شحن الموبيل</td><td><input type="number" class="exp-val" oninput="calculateAll()"></td></tr>
+        <tr><td>علاج</td><td><input type="number" class="exp-val" oninput="calculateAll()"></td><td>دروس خاصة / كورسات</td><td><input type="number" class="exp-val" oninput="calculateAll()"></td></tr>
+        <tr><td>اقساط / قروض</td><td><input type="number" class="exp-val" oninput="calculateAll()"></td><td>اخرى</td><td><input type="number" class="exp-val" oninput="calculateAll()"></td></tr>
+    </table>
+
+    <div class="section-title">ثالثاً: تحليل المصرف اليومي للمنزل</div>
+    <div style="padding: 15px; border: 1px solid #ddd;">
+        ما هي مصروفات المنزل اليومية (أكل وشرب)؟ 
+        <input type="number" id="dailyInput" oninput="calculateAll()" style="width: 150px; display: inline-block;"> جنيه
+    </div>
+
+    <div class="result-box">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+            <span>إجمالي الدخل: <strong id="totalInc">0</strong> ج.م</span>
+            <span>إجمالي الفواتير: <strong id="totalExp">0</strong> ج.م</span>
+            <span>المتبقي للمعيشة: <strong id="remLiving">0</strong> ج.م</span>
+        </div>
+        <div style="margin-top: 15px; border-top: 1px solid #555; padding-top: 10px;">
+            المصرف الشهري المطلوب (30 يوم): <strong id="monthlyNeeds">0</strong> ج.م | 
+            حالة الميزانية: <span id="statusBadge" class="status-label">---</span>
+        </div>
+    </div>
+
+    <div id="smartSection" class="hidden" style="margin-top: 20px; border: 2px solid #e74c3c; padding: 15px; border-radius: 8px;">
+        <p>يوجد عجز مادي قدره (<span id="deficitAmt">0</span>) ج.م. هل تغطي المساعدات العينية هذا العجز؟ 
+            <select id="aidCoverage" onchange="finalRec()">
+                <option value="">اختر الإجابة</option><option value="yes">نعم</option><option value="no">لا</option>
+            </select>
+        </p>
+        <div id="finalRecommendation" style="color: #c0392b; font-weight: bold; margin-top: 10px;"></div>
+    </div>
+</div>
+
+<script>
+    // وظيفة عامة لإضافة صف جديد بناءً على القسم
+    function addRow(bodyId) {
+        const body = document.getElementById(bodyId);
+        const firstRow = body.children[0];
+        const newRow = firstRow.cloneNode(true);
+        
+        // تنظيف المدخلات في الصف الجديد
+        newRow.querySelectorAll('input').forEach(input => {
+            input.value = '';
+            if(input.classList.contains('hidden')) input.style.display = 'none';
+        });
+        newRow.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+        
+        body.appendChild(newRow);
+        calculateAll();
+    }
+
+    // وظيفة حذف الصف
+    function removeRow(btn) {
+        const row = btn.parentNode.parentNode;
+        const body = row.parentNode;
+        if (body.children.length > 1) {
+            row.remove();
+            calculateAll();
+        } else {
+            alert("لا يمكن حذف آخر صف، يمكنك مسح البيانات منه فقط.");
+        }
+    }
+
+    // إظهار حقل "أخرى" للمعاشات
+    function checkOther(select) {
+        const input = select.nextElementSibling;
+        input.style.display = (select.value === 'other') ? 'block' : 'none';
+    }
+
+    // إظهار حقل العنوان/التليفون
+    function toggleContact(select) {
+        const input = select.nextElementSibling;
+        input.style.display = (select.value === 'yes') ? 'block' : 'none';
+    }
+
+    // الحسابات العامة
+    function calculateAll() {
+        let inc = 0;
+        document.querySelectorAll('.income-val').forEach(i => inc += Number(i.value) || 0);
+        document.getElementById('totalInc').innerText = inc;
+
+        let exp = 0;
+        document.querySelectorAll('.exp-val').forEach(e => exp += Number(e.value) || 0);
+        document.getElementById('totalExp').innerText = exp;
+
+        let remaining = inc - exp;
+        document.getElementById('remLiving').innerText = remaining;
+
+        let daily = Number(document.getElementById('dailyInput').value) || 0;
+        let monthly = daily * 30;
+        document.getElementById('monthlyNeeds').innerText = monthly;
+
+        let badge = document.getElementById('statusBadge');
+        let smart = document.getElementById('smartSection');
+        
+        if (daily > 0) {
+            if (remaining >= monthly) {
+                badge.innerText = "متوازن"; badge.className = "status-label balanced"; smart.style.display = "none";
+            } else {
+                badge.innerText = "غير متوازن"; badge.className = "status-label unbalanced";
+                smart.style.display = "block"; document.getElementById('deficitAmt').innerText = monthly - remaining;
+            }
+        }
+    }
+
+    function finalRec() {
+        let cov = document.getElementById('aidCoverage').value;
+        let rec = document.getElementById('finalRecommendation');
+        if (cov === 'yes') rec.innerText = "توصية: الوضع المالي به عجز، لكن المساعدات العينية كافية لسد الاحتياج المعيشي.";
+        else if (cov === 'no') rec.innerText = "توصية: عجز حرج جداً؛ لا يوجد دخل كافٍ ولا مساعدات عينية تغطي الفجوة. الأسرة تحت خط الكفاية.";
+    }
+</script>
+
+</body>
+</html>

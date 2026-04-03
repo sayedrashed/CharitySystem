@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>صفحة المقبوضات - لاندسكيب</title>
+    <style>
+        /* إعداد الصفحة كوضع عرضي Landscape */
+        @page { size: A4 landscape; margin: 0; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0; padding: 0;
+            background-color: #555;
+        }
+
+        .page {
+            background-color: #fff;
+            width: 297mm; /* عرض A4 */
+            height: 210mm; /* ارتفاع A4 */
+            margin: 10mm auto;
+            position: relative;
+            padding: 10mm;
+            display: flex;
+        }
+
+        /* الإطار الإسلامي المزدوج الموحد */
+        .islamic-frame {
+            border: 6px double #000;
+            flex-grow: 1;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* زوايا الإطار المزخرفة */
+        .islamic-frame::before, .islamic-frame::after,
+        .frame-inner-decoration::before, .frame-inner-decoration::after {
+            content: "";
+            position: absolute;
+            width: 30px; height: 30px;
+            border: 2px solid #000;
+            background-color: #fff;
+            transform: rotate(45deg);
+            z-index: 2;
+        }
+        .islamic-frame::before { top: -16px; right: -16px; }
+        .islamic-frame::after { bottom: -16px; left: -16px; }
+        .frame-inner-decoration::before { top: -16px; left: -16px; }
+        .frame-inner-decoration::after { bottom: -16px; right: -16px; }
+
+        /* كلمة المقبوضات ضخمة وبدون تقطيع */
+        .main-word-landscape {
+            font-size: 160pt; /* حجم ضخم جداً ليناسب العرض */
+            font-weight: bold;
+            font-family: 'Amiri', 'Times New Roman', serif;
+            margin: 0;
+            white-space: nowrap;
+            color: #000;
+            /* لا نحتاج لتدوير هنا لأن الصفحة نفسها لاندسكيب والكلمة ستكتب طبيعياً بعرضها */
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; width: 297mm; height: 210mm; box-shadow: none; }
+            .print-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div class="islamic-frame">
+        <div class="frame-inner-decoration"></div>
+        
+        <h1 class="main-word-landscape">المقبوضات</h1>
+
+    </div>
+</div>
+
+<div style="text-align: center; margin: 20px;">
+    <button class="print-btn" onclick="window.print()" style="padding: 10px 40px; font-weight: bold; cursor: pointer; background: #333; color: #fff; border: none; border-radius: 5px;">طباعة الصفحة</button>
+</div>
+
+</body>
+</html>

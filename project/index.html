@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة البحث الاجتماعي</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0F1117;
+            --bg-secondary: #1A1D27;
+            --bg-card: #1A1D27;
+            --border: #2E3250;
+            --text-primary: #E8EBF4;
+            --text-secondary: #6B7280;
+            --accent: #4F8EF7;
+            --success: #2DD4BF;
+            --warning: #F59E0B;
+            --danger: #F87171;
+            --gold: #F5C842;
+        }
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            min-height: 100vh;
+        }
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logo-area h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+        }
+        .logo-area p { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+        .user-area { display: flex; align-items: center; gap: 15px; }
+        .theme-toggle {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .modules-nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .module-nav-btn {
+            padding: 8px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-primary);
+        }
+        .module-nav-btn:hover { border-color: var(--accent); }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .stat-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+        .stat-card .value { font-size: 32px; font-weight: 800; }
+        .stat-card .label { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+        .stat-card.primary .value { color: var(--accent); }
+        .stat-card.danger .value { color: var(--danger); }
+        .stat-card.warning .value { color: var(--warning); }
+        .stat-card.success .value { color: var(--success); }
+        .stat-card.gold .value { color: var(--gold); }
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            padding: 0 24px 24px;
+        }
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .dist-bar { display: flex; height: 10px; border-radius: 8px; overflow: hidden; gap: 2px; margin-bottom: 16px; }
+        .dist-seg.danger { background: linear-gradient(90deg, var(--danger), #ff8c69); }
+        .dist-seg.warning { background: linear-gradient(90deg, var(--warning), var(--gold)); }
+        .dist-seg.success { background: linear-gradient(90deg, var(--success), #52e0c4); }
+        .dist-seg.strong { background: linear-gradient(90deg, var(--gold), #ffe580); }
+        .dist-legend { display: flex; gap: 20px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .recent-list { display: flex; flex-direction: column; gap: 10px; }
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .recent-item:hover { background: var(--bg-secondary); }
+        .recent-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .recent-info { flex: 1; }
+        .recent-name { font-weight: 600; font-size: 14px; }
+        .recent-date { font-size: 11px; color: var(--text-secondary); }
+        .recent-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+        .badge-danger { background: rgba(248,113,113,0.15); color: var(--danger); }
+        .badge-warning { background: rgba(245,166,35,0.15); color: var(--warning); }
+        .badge-success { background: rgba(46,202,171,0.15); color: var(--success); }
+        .assistant-card {
+            background: linear-gradient(135deg, rgba(79,142,247,0.1), rgba(46,202,171,0.05));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .assistant-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .assistant-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .assistant-name { font-weight: 700; font-size: 16px; }
+        .assistant-role { font-size: 11px; color: var(--text-secondary); }
+        .assistant-bubble {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 16px;
+            position: relative;
+        }
+        .msg-line { display: flex; gap: 10px; margin-bottom: 10px; }
+        .msg-icon { font-size: 18px; }
+        .msg-text { font-size: 13px; line-height: 1.5; flex: 1; }
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 14px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .action-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+        .action-icon { font-size: 22px; }
+        .control-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+        }
+        .control-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-logout { background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); }
+        .btn-reboot { background: var(--warning); color: #0F1117; }
+        .btn-shutdown { background: var(--danger); color: white; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            width: 400px;
+            max-width: 90%;
+        }
+        .modal-content h3 { margin-bottom: 20px; }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; }
+        .btn-save { background: var(--accent); color: white; }
+        .btn-cancel { background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: none;
+            z-index: 1000;
+        }
+        @media (max-width: 900px) {
+            .dashboard-row { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo-area">
+        <h1 id="orgName">✨ جمعية الرحمة الخيرية ✨</h1>
+        <p>نظام إدارة البحث الاجتماعي</p>
+    </div>
+    <div class="user-area">
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">👤</div>
+            <div>
+                <div class="user-name" id="userName">مرحباً بك</div>
+                <div class="user-role" id="userRole"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modules-nav" id="modulesNav"></div>
+<div class="stats-grid" id="statsGrid"></div>
+
+<div class="dashboard-row">
+    <div>
+        <div class="section">
+            <div class="section-title">📈 توزيع الحالات</div>
+            <div class="dist-bar" id="distBar"></div>
+            <div class="dist-legend" id="distLegend"></div>
+        </div>
+        <div class="section">
+            <div class="section-title">🕒 آخر الحالات</div>
+            <div class="recent-list" id="recentList"></div>
+        </div>
+    </div>
+    <div>
+        <div class="assistant-card">
+            <div class="assistant-header">
+                <div class="assistant-avatar">🤖</div>
+                <div>
+                    <div class="assistant-name">المساعد الذكي</div>
+                    <div class="assistant-role">محلل البيانات</div>
+                </div>
+            </div>
+            <div class="assistant-bubble" id="assistantBubble"></div>
+        </div>
+        <div class="section">
+            <div class="section-title">⚡ إجراءات سريعة</div>
+            <div class="actions-grid" id="quickActions"></div>
+        </div>
+    </div>
+</div>
+
+<div class="control-buttons">
+    <button class="control-btn btn-logout" onclick="logout()">🔒 تسجيل خروج</button>
+    <button class="control-btn btn-reboot" id="rebootBtn" onclick="rebootSystem()" style="display:none;">🔄 إعادة تشغيل</button>
+    <button class="control-btn btn-shutdown" id="shutdownBtn" onclick="shutdownSystem()" style="display:none;">⏻ إيقاف تشغيل</button>
+</div>
+
+<div id="editOrgModal" class="modal">
+    <div class="modal-content">
+        <h3>✏️ تعديل اسم الجمعية</h3>
+        <input type="text" id="orgNameInput">
+        <div class="modal-buttons">
+            <button class="btn-save" onclick="saveOrgName()">حفظ</button>
+            <button class="btn-cancel" onclick="closeModal('editOrgModal')">إلغاء</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    let currentUser = { id: 1, name: "سيد راشد", role: "admin", avatar: "👑" };
+    let stats = { total: 1250, danger: 220, warning: 340, good: 510, strong: 180 };
+    let recentCases = [
+        { name: "أحمد محمود علي", date: "23 مارس", badge: "danger" },
+        { name: "فاطمة حسن إبراهيم", date: "22 مارس", badge: "warning" },
+        { name: "محمود سامي خليل", date: "22 مارس", badge: "success" },
+        { name: "سارة أحمد فتحي", date: "21 مارس", badge: "danger" },
+        { name: "حسين علي منصور", date: "21 مارس", badge: "success" }
+    ];
+
+    const adminModules = [
+        { name: "إدارة الحالات", icon: "🏠", link: "/modules/cases/index.html" },
+        { name: "الموظفين (HR)", icon: "👥", link: "/modules/hr/index.html" },
+        { name: "الحسابات", icon: "💰", link: "/modules/accounting/index.html" },
+        { name: "خطط الزيارات", icon: "🗺️", link: "/modules/cases/visit_management/index.html" },
+        { name: "حالات خاصة", icon: "⭐", link: "/modules/cases/special_cases/index.html" },
+        { name: "الإعدادات", icon: "⚙️", link: "/modules/settings/index.html" }
+    ];
+
+    const researcherModules = [
+        { name: "إدارة الحالات", icon: "🏠", link: "/modules/cases/index.html" },
+        { name: "الموظفين (HR)", icon: "👥", link: "/modules/hr/index.html" },
+        { name: "الحسابات", icon: "💰", link: "/modules/accounting/index.html" },
+        { name: "خطط الزيارات", icon: "🗺️", link: "/modules/cases/visit_management/index.html" }
+    ];
+
+    const adminActions = [
+        { icon: "➕", label: "حالة جديدة", action: "newCase" },
+        { icon: "📄", label: "قائمة الحالات", action: "casesList" },
+        { icon: "👥", label: "الموظفين", action: "hr" },
+        { icon: "💰", label: "الحسابات", action: "accounting" },
+        { icon: "⚙️", label: "الإعدادات", action: "settings" },
+        { icon: "⭐", label: "حالات خاصة", action: "specialCases" }
+    ];
+
+    const researcherActions = [
+        { icon: "➕", label: "حالة جديدة", action: "newCase" },
+        { icon: "📄", label: "قائمة الحالات", action: "casesList" },
+        { icon: "👥", label: "الموظفين", action: "hr" },
+        { icon: "💰", label: "الحسابات", action: "accounting" }
+    ];
+
+    function loadModules() {
+        const container = document.getElementById('modulesNav');
+        const modules = currentUser.role === 'admin' ? adminModules : researcherModules;
+        container.innerHTML = modules.map(m => `<button class="module-nav-btn" onclick="navigateTo('${m.link}')"><span>${m.icon}</span> ${m.name}</button>`).join('');
+    }
+
+    function loadQuickActions() {
+        const container = document.getElementById('quickActions');
+        const actions = currentUser.role === 'admin' ? adminActions : researcherActions;
+        container.innerHTML = actions.map(a => `<button class="action-btn" onclick="${a.action}()"><span class="action-icon">${a.icon}</span>${a.label}</button>`).join('');
+    }
+
+    function loadStats() {
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card primary" onclick="navigateTo('/modules/cases/index.html')"><div class="value">${stats.total}</div><div class="label">إجمالي الحالات</div></div>
+            <div class="stat-card danger" onclick="filterCases('danger')"><div class="value">${stats.danger}</div><div class="label">تحتاج تدخل عاجل</div></div>
+            <div class="stat-card warning" onclick="filterCases('warning')"><div class="value">${stats.warning}</div><div class="label">في مرحلة تحسن</div></div>
+            <div class="stat-card success" onclick="filterCases('good')"><div class="value">${stats.good}</div><div class="label">حالات مستقرة</div></div>
+            <div class="stat-card gold" onclick="filterCases('strong')"><div class="value">${stats.strong}</div><div class="label">حالات قوية</div></div>
+        `;
+        let total = stats.total || 1;
+        document.getElementById('distBar').innerHTML = `
+            <div class="dist-seg danger" style="flex-grow:${stats.danger/total*100}"></div>
+            <div class="dist-seg warning" style="flex-grow:${stats.warning/total*100}"></div>
+            <div class="dist-seg success" style="flex-grow:${stats.good/total*100}"></div>
+            <div class="dist-seg strong" style="flex-grow:${stats.strong/total*100}"></div>
+        `;
+        document.getElementById('distLegend').innerHTML = `
+            <div class="legend-item"><div class="legend-dot" style="background:var(--danger)"></div><span>${stats.danger} تدخل عاجل</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--warning)"></div><span>${stats.warning} تحسن</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--success)"></div><span>${stats.good} مستقرة</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div><span>${stats.strong} قوية</span></div>
+        `;
+        let badgeMap = { danger: 'badge-danger', warning: 'badge-warning', success: 'badge-success' };
+        document.getElementById('recentList').innerHTML = recentCases.map(c => `
+            <div class="recent-item" onclick="openCase('${c.name}')">
+                <div class="recent-avatar">${c.name.charAt(0)}</div>
+                <div class="recent-info"><div class="recent-name">${c.name}</div><div class="recent-date">${c.date}</div></div>
+                <span class="recent-badge ${badgeMap[c.badge]}">${c.badge === 'danger' ? 'خطر' : c.badge === 'warning' ? 'متوسط' : 'مستقر'}</span>
+            </div>
+        `).join('');
+        let isAdmin = currentUser.role === 'admin';
+        document.getElementById('assistantBubble').innerHTML = `
+            <div class="msg-line"><span class="msg-icon">👋</span><span class="msg-text">مرحباً ${currentUser.name}</span></div>
+            <div class="msg-line"><span class="msg-icon">📌</span><span class="msg-text">${isAdmin ? `📊 لديك ${stats.danger} حالة تحتاج تدخل عاجل` : '📋 عهدتك الورقية جاهزة'}</span></div>
+        `;
+    }
+
+    function loadUserInfo() {
+        document.getElementById('userAvatar').innerText = currentUser.avatar;
+        document.getElementById('userName').innerText = currentUser.name;
+        document.getElementById('userRole').innerText = currentUser.role === 'admin' ? 'مدير النظام' : 'باحث';
+    }
+
+    function loadOrgName() { let saved = localStorage.getItem('orgName'); if (saved) document.getElementById('orgName').innerHTML = `✨ ${saved} ✨`; }
+    function openEditOrgModal() { if (currentUser.role !== 'admin') return; document.getElementById('orgNameInput').value = document.getElementById('orgName').innerHTML.replace('✨', '').replace('✨', '').trim(); document.getElementById('editOrgModal').classList.add('active'); }
+    function saveOrgName() { let newName = document.getElementById('orgNameInput').value.trim(); if (newName) { localStorage.setItem('orgName', newName); document.getElementById('orgName').innerHTML = `✨ ${newName} ✨`; showToast('تم تحديث اسم الجمعية'); } closeModal('editOrgModal'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
+    function toggleTheme() { let html = document.documentElement; let newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; html.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); document.querySelector('.theme-toggle').textContent = newTheme === 'light' ? '🌙' : '☀️'; }
+    function navigateTo(link) { window.location.href = link; }
+    function newCase() { window.location.href = '/modules/cases/case_management/case_view.html?mode=new'; }
+    function casesList() { window.location.href = '/modules/cases/index.html'; }
+    function hr() { window.location.href = '/modules/hr/index.html'; }
+    function accounting() { window.location.href = '/modules/accounting/index.html'; }
+    function settings() { if (currentUser.role === 'admin') window.location.href = '/modules/settings/index.html'; else showToast('للمدير فقط'); }
+    function specialCases() { if (currentUser.role === 'admin') window.location.href = '/modules/cases/special_cases/index.html'; else showToast('للمدير فقط'); }
+    function filterCases(type) { showToast(`عرض الحالات ${type}`); }
+    function openCase(name) { showToast(`فتح حالة ${name}`); }
+    function logout() { if (confirm('تسجيل الخروج؟')) { localStorage.removeItem('currentUser'); window.location.href = '/login.html'; } }
+    function rebootSystem() { if (currentUser.role !== 'admin') return; if (confirm('إعادة تشغيل الجهاز؟')) showToast('جاري إعادة التشغيل...'); }
+    function shutdownSystem() { if (currentUser.role !== 'admin') return; if (confirm('إيقاف تشغيل الجهاز؟')) showToast('جاري إيقاف التشغيل...'); }
+
+    function init() {
+        loadUserInfo();
+        loadModules();
+        loadQuickActions();
+        loadStats();
+        loadOrgName();
+        let savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
+        document.getElementById('orgName').onclick = openEditOrgModal;
+    }
+    init();
+</script>
+</body>
+</html>

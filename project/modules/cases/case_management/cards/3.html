@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بطاقة تعريف الأسرة</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #3498db; color: white; }
+        select, input { width: 95%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .btn-add { background-color: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 18px; margin-top: 15px; }
+        .btn-add:hover { background-color: #219150; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        /* تنسيق زر الحذف */
+        .btn-del { background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-del:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>جدول تكوين الأسرة</h2>
+    <table id="familyTable">
+        <thead>
+            <tr>
+                <th>م</th>
+                <th>اسم الفرد</th>
+                <th>صلة القرابة</th>
+                <th>الحالة الاجتماعية</th>
+                <th>العمل</th>
+                <th>السن</th>
+                <th>ملاحظات</th>
+                <th>حذف</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <button class="btn-add" onclick="addRow()">+ إضافة فرد جديد</button>
+</div>
+
+<script>
+    function addRow() {
+        const table = document.getElementById("familyTable").getElementsByTagName('tbody')[0];
+        const rowCount = table.rows.length + 1;
+        const newRow = table.insertRow();
+
+        newRow.innerHTML = `
+            <td class="index">${rowCount}</td>
+            <td><input type="text" placeholder="الاسم الكامل"></td>
+            <td>
+                <select>
+                    <option value="">اختر القربى</option>
+                    <option>رب الأسرة</option><option>زوج</option><option>زوجة</option>
+                    <option>ابن</option><option>ابنة</option><option>ابن الأخ</option>
+                    <option>ابنة الأخ</option><option>ابن الأخت</option><option>ابنة الأخت</option>
+                    <option>جد</option><option>جدة</option><option>زوج الأخت</option>
+                    <option>زوجة الأخ</option><option>زوج الأم</option><option>زوجة الأب</option>
+                    <option>ابن العم</option><option>ابن الخال</option><option>ابنة العم</option>
+                    <option>ابنة الخال</option><option>حفيد</option><option>حفيدة</option>
+                    <option>أخ</option><option>أخت</option><option>والد</option>
+                    <option>والدة</option><option>قريب</option><option>آخر</option>
+                </select>
+            </td>
+            <td>
+                <select>
+                    <option value="">اختر الحالة</option>
+                    <option>متزوج</option><option>متزوجة</option><option>أعزب</option>
+                    <option>انسة</option><option>أرمل</option><option>ارملة</option>
+                    <option>مطلق</option><option>مطلقة</option>
+                </select>
+            </td>
+            <td>
+                <select>
+                    <option value="">اختر العمل</option>
+                    <option>ربة منزل</option><option>لا يعمل</option><option>طالب</option>
+                    <option>عاملة</option><option>عامل</option><option>مديرة منزل</option>
+                    <option>موظف</option><option>بالمعاش</option><option>مجند</option><option>طفل</option>
+                </select>
+            </td>
+            <td><input type="number" min="0" max="120"></td>
+            <td><input type="text"></td>
+            <td><button class="btn-del" onclick="deleteRow(this)">×</button></td>
+        `;
+    }
+
+    function deleteRow(btn) {
+        const row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        reorderRows();
+    }
+
+    // وظيفة لإعادة ترتيب الأرقام (م) بعد الحذف
+    function reorderRows() {
+        const rows = document.querySelectorAll("#familyTable tbody tr");
+        rows.forEach((row, index) => {
+            row.querySelector(".index").innerText = index + 1;
+        });
+    }
+
+    window.onload = addRow;
+</script>
+
+</body>
+</html>

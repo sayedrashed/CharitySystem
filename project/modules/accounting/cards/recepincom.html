@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>بيان المقبوضات - الجمعية الشرعية</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0; padding: 0;
+            background-color: #555;
+        }
+
+        .page {
+            background-color: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 10mm auto;
+            position: relative;
+            padding: 10mm;
+        }
+
+        .islamic-frame {
+            border: 6px double #000;
+            min-height: 277mm;
+            width: 100%;
+            position: relative;
+            padding: 5mm; 
+        }
+
+        .islamic-frame::before, .islamic-frame::after,
+        .frame-inner-decoration::before, .frame-inner-decoration::after {
+            content: "";
+            position: absolute;
+            width: 30px; height: 30px;
+            border: 2px solid #000;
+            background-color: #fff;
+            transform: rotate(45deg);
+            z-index: 2;
+        }
+        .islamic-frame::before { top: -16px; right: -16px; }
+        .islamic-frame::after { bottom: -16px; left: -16px; }
+        .frame-inner-decoration::before { top: -16px; left: -16px; }
+        .frame-inner-decoration::after { bottom: -16px; right: -16px; }
+
+        .bismi-center {
+            position: absolute;
+            top: 5mm; left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold; font-size: 19pt;
+            font-family: 'Andalus', serif;
+        }
+
+        .header-right {
+            position: absolute;
+            top: 12mm; right: 5mm;
+            text-align: center;
+            font-family: 'Andalus', serif;
+            font-size: 11.5pt; line-height: 1.4;
+            font-weight: bold;
+        }
+
+        .logo-section {
+            position: absolute;
+            top: 38mm; left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo-box {
+            width: 80px; height: 80px;
+            border: 1.5px solid #000;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8pt; background: #fff;
+        }
+
+        .main-content {
+            margin-top: 62mm;
+            width: 100%;
+        }
+
+        .doc-title-area {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .doc-title {
+            font-size: 17pt;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 0;
+        }
+
+        select {
+            border: none; background: transparent;
+            font-family: 'Times New Roman';
+            font-weight: bold; font-size: 13pt;
+            appearance: none; text-align: center;
+            border-bottom: 1px dashed #999;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin-top: 10px;
+            border: 4px double #000 !important; 
+        }
+
+        th, td {
+            border: 1px solid #000;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+            font-size: 10pt;
+            height: 32px;
+        }
+
+        /* تحسين العناوين الرأسية لضمان عدم خروج النص */
+        .header-row-main { height: 110px; } /* زيادة ارتفاع الصف الرئيسي */
+
+        .vertical-th {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            white-space: normal; /* السماح بالالتفاف البسيط إذا لزم الأمر */
+            line-height: 1.1;
+            padding: 5px 2px;
+            font-size: 10pt;
+            height: 110px; 
+        }
+
+        .signatures-area {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .sig-column { width: 30%; }
+        .parentheses { font-size: 20pt; display: block; margin-bottom: -5px; }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; width: 210mm; height: 297mm; box-shadow: none; }
+            .print-btn { display: none; }
+            select { border: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div class="islamic-frame">
+        <div class="frame-inner-decoration"></div>
+        <div class="bismi-center">بسم الله الرحمن الرحيم</div>
+
+        <div class="header-right">
+            <div>الجمعية الشرعية الرئيسية</div>
+            <div>لتعاون العاملين بالكتاب والسنة المحمدية</div>
+            <div>فرع الرحمن بمساكن حجازي</div>
+            <div style="text-decoration: underline;">مكتب : عمر بن الخطاب بالعبور</div>
+        </div>
+        
+        <div class="logo-section">
+            <div class="logo-box">شعار الجمعية</div>
+        </div>
+
+        <div class="main-content">
+            <div class="doc-title-area">
+                <h2 class="doc-title">بيان المقبوضات عن شهر</h2>
+                <div style="margin-top: 8px; font-weight: bold;">
+                    ( <select id="monthSel"></select> ) لعام ( <select id="yearSel"></select> ) م
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr class="header-row-main">
+                        <th colspan="2" style="background:#e8e8e8">الإجمالي</th>
+                        <th class="vertical-th">تبرعات خيرية وإنشاء</th>
+                        <th class="vertical-th">الطفل اليتيم</th>
+                        <th class="vertical-th">مشتريات</th>
+                        <th class="vertical-th">نثريات</th>
+                        <th colspan="2" style="background:#e8e8e8">بيان ورقم الإيصال</th>
+                        <th style="width: 35px; background:#e8e8e8">م</th>
+                    </tr>
+                    <tr style="height: 30px; background:#e8e8e8">
+                        <th style="width: 65px;">جنية</th>
+                        <th style="width: 35px;">ق</th>
+                        <th colspan="4" style="background: white;"></th> <th style="width: 85px;">من رقم</th>
+                        <th style="width: 85px;">إلى رقم</th>
+                        <th style="background: white;"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+                <tfoot>
+                    <tr style="background:#e8e8e8; height: 40px;">
+                        <td></td><td></td>
+                        <td></td><td></td><td></td><td></td>
+                        <td colspan="2" style="text-align: center;">الإجمالـــــــــي</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="signatures-area">
+                <div class="sig-column">
+                    <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                    <b style="font-size: 11pt;">الأمين العام</b><br>
+                    <span>ناصر سيد ابراهيم أبو العلا</span>
+                </div>
+                <div class="sig-column">
+                    <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                    <b style="font-size: 11pt;">أمين الصندوق</b><br>
+                    <span>سعود محمد هانى</span>
+                </div>
+                <div class="sig-column">
+                    <span class="parentheses">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                    <b style="font-size: 11pt;">رئيس مجلس الإدارة</b><br>
+                    <span>شعبان على ابراهيم أبو العلا</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin: 20px;">
+    <button class="print-btn" onclick="window.print()" style="padding: 10px 40px; font-weight: bold; cursor: pointer;">طباعة البيان</button>
+</div>
+
+<script>
+    const gMonths = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+
+    function setup() {
+        const gm = document.getElementById('monthSel');
+        gMonths.forEach(m => gm.options.add(new Option(m, m)));
+        gm.selectedIndex = new Date().getMonth();
+
+        const y = new Date().getFullYear();
+        const gy = document.getElementById('yearSel');
+        for (let i = y - 1; i <= y + 5; gy.options.add(new Option(i, i, i === y, i === y)), i++);
+
+        const tbody = document.getElementById('tableBody');
+        for (let i = 0; i < 18; i++) {
+            tbody.innerHTML += `<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>${i+1}</td></tr>`;
+        }
+    }
+    window.onload = setup;
+</script>
+
+</body>
+</html>

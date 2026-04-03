@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>بدل انتقال الإداريين - ترويسة منفصلة</title>
+    <style>
+        @page { size: A4 landscape; margin: 0; }
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0; padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .page {
+            background-color: #fff;
+            width: 297mm; height: 210mm;
+            margin: 5mm auto;
+            position: relative;
+            padding: 8mm;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .islamic-frame {
+            border: 6px double #000;
+            height: 100%; width: 100%;
+            position: relative;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ضبط الترويسة العلوية بأسطر منفصلة */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .header-right {
+            text-align: center;
+            font-weight: bold;
+            font-size: 11.5pt;
+            line-height: 1.5; /* مسافة مريحة بين الأسطر */
+        }
+
+        .header-left {
+            text-align: right;
+            font-weight: bold;
+            font-size: 11pt;
+            line-height: 1.8;
+        }
+
+        .date-select {
+            border: none;
+            background: #fdfdfd;
+            font-family: 'Times New Roman';
+            font-weight: bold;
+            font-size: 11pt;
+            border-bottom: 1px dashed #000;
+            appearance: none;
+            -webkit-appearance: none;
+            padding: 0 2px;
+        }
+
+        .main-title {
+            text-align: center;
+            margin: 5px 0 15px 0;
+        }
+
+        .main-title h2 {
+            display: inline-block;
+            border-bottom: 3px double #000;
+            padding: 0 30px 5px 30px;
+            margin: 0;
+            font-size: 20pt;
+            font-family: 'Andalus', serif;
+        }
+
+        /* إعدادات الجدول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 3px solid #000;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+
+        thead th {
+            height: 115px; /* ارتفاع كافٍ جداً للنصوص الرأسية */
+            background-color: #f2f2f2 !important;
+        }
+
+        .vertical-text {
+            display: inline-block;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            white-space: nowrap;
+            line-height: 1.1;
+        }
+
+        tbody td { height: 35px; }
+
+        .signatures {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; box-shadow: none; }
+            .print-btn { display: none; }
+            .date-select { background: transparent; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div class="islamic-frame">
+        <div class="header-section">
+            <div class="header-right">
+                <div>الجمعية الشرعية الرئيسية</div>
+                <div>لتعاون العاملين بالكتاب والسنة المحمدية</div>
+                <div>فرع الرحمن بمساكن حجازي - شبرا الخيمة</div>
+                <div style="text-decoration: underline;">مكتب : عمر بن الخطاب بالعبور</div>
+                <div style="font-size: 9pt;">المشهرة برقم 2005/986 قليوبية</div>
+            </div>
+            <div class="header-left">
+                <div>التاريخ الميلادي: 
+                    <select class="date-select" id="mDay"></select> / 
+                    <select class="date-select" id="mMonth"></select> / 
+                    <select class="date-select" id="mYear"></select> م
+                </div>
+                <div>التاريخ الهجري: 
+                    <select class="date-select" id="hDay"></select> / 
+                    <select class="date-select" id="hMonth"></select> / 
+                    <select class="date-select" id="hYear"></select> هـ
+                </div>
+            </div>
+        </div>
+
+        <div class="main-title">
+            <h2>بدل انتقال الإداريين</h2>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" style="width: 35px;">م</th>
+                    <th rowspan="2" style="width: 170px;">الاســـــــــــــم</th>
+                    <th rowspan="2"><span class="vertical-text">المرتب</span></th>
+                    <th colspan="4" style="height: 40px;">حوض تجميع بدلات</th>
+                    <th rowspan="2"><span class="vertical-text">بدل انتقال</span></th>
+                    <th rowspan="2"><span class="vertical-text">الإجمالي</span></th>
+                    <th colspan="3" style="height: 40px;">حوض تجميع استقطاعات</th>
+                    <th rowspan="2"><span class="vertical-text">إجمالي الاستقطاعات</span></th>
+                    <th rowspan="2"><span class="vertical-text">الصافي</span></th>
+                    <th rowspan="2" style="width: 100px;">التوقيع</th>
+                    <th rowspan="2" style="width: 135px;">الرقم القومي</th>
+                </tr>
+                <tr>
+                    <th><span class="vertical-text">بدل انتظام</span></th>
+                    <th><span class="vertical-text">وجبة</span></th>
+                    <th><span class="vertical-text">إضافي</span></th>
+                    <th><span class="vertical-text">منح</span></th>
+                    <th><span class="vertical-text">غياب</span></th>
+                    <th><span class="vertical-text">تأخيرات</span></th>
+                    <th><span class="vertical-text">جزاءات</span></th>
+                </tr>
+            </thead>
+            <tbody id="tBody"></tbody>
+        </table>
+
+        <div class="signatures">
+            <div style="width: 30%;"><b>الأمين العام</b><br>ناصر سيد ابراهيم</div>
+            <div style="width: 30%;"><b>أمين الصندوق</b><br>سعود محمد هاني</div>
+            <div style="width: 30%;"><b>رئيس مجلس الإدارة</b><br>شعبان علي ابراهيم</div>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin: 10px;">
+    <button class="print-btn" onclick="window.print()" style="padding: 10px 40px; font-weight: bold; cursor: pointer; background: #333; color: #fff; border: none; border-radius: 5px;">طباعة الكشف</button>
+</div>
+
+<script>
+    // تعبئة التواريخ
+    const mD = document.getElementById('mDay'), mM = document.getElementById('mMonth'), mY = document.getElementById('mYear');
+    for(let i=1; i<=31; i++) mD.options.add(new Option(i, i));
+    const months = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+    months.forEach((m, i) => mM.options.add(new Option(m, i+1)));
+    for(let i=2025; i<=2030; i++) mY.options.add(new Option(i, i, i===2026, i===2026));
+
+    const hD = document.getElementById('hDay'), hM = document.getElementById('hMonth'), hY = document.getElementById('hYear');
+    for(let i=1; i<=30; i++) hD.options.add(new Option(i, i));
+    const hMonths = ["محرم","صفر","ربيع أول","ربيع ثان","جمادى أول","جمادى ثان","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
+    hMonths.forEach((m, i) => hM.options.add(new Option(m, i+1)));
+    for(let i=1446; i<=1450; i++) hY.options.add(new Option(i, i, i===1447, i===1447));
+
+    const b = document.getElementById('tBody');
+    for(let i=1; i<=9; i++) {
+        b.innerHTML += `<tr><td>${i}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+    }
+</script>
+</body>
+</html>

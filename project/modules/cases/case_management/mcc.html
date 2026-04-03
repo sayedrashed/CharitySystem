@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نموذج البحث الاجتماعي - البيانات الديمغرافية</title>
     <style>
-        /* كود الـ CSS الأصلي الخاص بك دون أي تعديل */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Arial', sans-serif; background: #f5f5f5; padding: 20px; direction: rtl; }
         .page { width: 210mm; background: white; margin: 0 auto; padding: 10mm; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -34,22 +33,17 @@
         .phone-group { display: flex; gap: 2mm; flex: 1; }
         .phone-plus-btn { padding: 1mm 3mm; background: #0066CC; color: white; border: none; border-radius: 1mm; cursor: pointer; font-size: 10px; }
         .income-expense-box { width: 80mm; border: 1px solid #ddd; border-radius: 2mm; padding: 5mm; background: white; grid-column: 4; }
-        
-        /* تنسيق جدول الأسرة الإضافي (بقياسات تتوافق مع صفحتك) */
         .family-container { width: 100%; margin-top: 20px; margin-bottom: 20px; }
         .family-table { width: 100%; border-collapse: collapse; font-size: 11px; }
         .family-table th, .family-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         .family-table th { background-color: #3498db; color: white; }
         .btn-add { background-color: #27ae60; color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; margin-top: 5px; }
-        
-        /* تنسيقات التقارير الأصلية الخاصة بك */
         .textarea-clean { width: 100%; height: 120px; border: none; outline: none; resize: none; font-size: 16px; line-height: 1.8; background: transparent; }
         .input-clean { width: 100%; border: none; outline: none; font-size: 16px; background: transparent; }
         .dotted-line { border-bottom: 2px dotted #000; margin: 10px 0 20px 0; }
         .donor-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; direction: ltr; }
         .approve-left { text-align: left; font-weight: bold; }
         .date-center { text-align: center; flex: 1; }
-
         @media print { .print-hide { display: none; } .borderless-input { border-bottom: none; } }
     </style>
 </head>
@@ -60,28 +54,28 @@
                 <div class="research-fields">
                     <div class="inline-group">
                         <label>م.ع</label>
-                        <input type="text" class="borderless-input" readonly placeholder="...">
+                        <input type="text" class="borderless-input" id="caseSerial" placeholder="...">
                         <label style="margin-right: 10px;">م.م</label>
-                        <input type="text" class="borderless-input" readonly placeholder="...">
+                        <input type="text" class="borderless-input" id="caseMM" placeholder="...">
                     </div>
                     <div class="inline-group">
                         <label>زيارة منزلية</label>
-                        <input type="text" class="borderless-input" readonly placeholder="...">
+                        <input type="text" class="borderless-input" id="homeVisit" placeholder="...">
                     </div>
                     <div class="inline-group">
                         <label>باحث مكتبي</label>
-                        <input type="text" class="borderless-input" readonly placeholder="...">
+                        <input type="text" class="borderless-input" id="officeResearcher" placeholder="...">
                     </div>
                 </div>
                 <div class="date-field">
                     <label>التاريخ:</label>
-                    <input type="date" value="2026-02-11">
+                    <input type="date" id="caseDate">
                 </div>
             </div>
             <div class="middle-column">
                 <div class="header-title">بحث اجتماعي</div>
                 <div class="status-field">
-                    <select>
+                    <select id="caseStatus">
                         <option>حالة جديدة</option>
                         <option>إعادة تقييم</option>
                         <option>مقبول</option>
@@ -97,38 +91,38 @@
         <div class="top-section">
             <div class="photo-box">
                 <div class="photo-placeholder">📷</div>
-                <button class="photo-btn">اختيار</button>
+                <button class="photo-btn" id="photoBtn">اختيار</button>
             </div>
             <div class="spacer"></div>
             <div class="demographic-box">
-                <div class="form-group"><label>الاسم *</label><input type="text" placeholder="الاسم الكامل"></div>
-                <div class="form-group"><label>الرقم القومي</label><input type="text" placeholder="14 رقم" maxlength="14"></div>
-                <div class="form-group"><label>محل الإقامة</label><input type="text" placeholder="المدينة"></div>
-                <div class="form-group"><label>المحافظة</label><input type="text" placeholder="اسم المحافظة"></div>
-                <div class="form-group"><label>الحي / المنطقة</label><input type="text" placeholder="اسم الحي"></div>
+                <div class="form-group"><label>الاسم *</label><input type="text" id="fullName" placeholder="الاسم الكامل"></div>
+                <div class="form-group"><label>الرقم القومي</label><input type="text" id="nationalId" placeholder="14 رقم" maxlength="14"></div>
+                <div class="form-group"><label>محل الإقامة</label><input type="text" id="residence" placeholder="المدينة"></div>
+                <div class="form-group"><label>المحافظة</label><input type="text" id="governorate" placeholder="اسم المحافظة"></div>
+                <div class="form-group"><label>الحي / المنطقة</label><input type="text" id="district" placeholder="اسم الحي"></div>
                 <div class="form-group">
                     <label>الهاتف</label>
-                    <div class="phone-group"><input type="text" placeholder="رقم الهاتف"><button class="phone-plus-btn">+</button></div>
+                    <div class="phone-group"><input type="text" id="phone" placeholder="رقم الهاتف"><button class="phone-plus-btn" id="addPhoneBtn">+</button></div>
                 </div>
-                <div class="form-group"><label>الغرض من البحث</label><input type="text" placeholder="اكتب الغرض هنا"></div>
+                <div class="form-group"><label>الغرض من البحث</label><input type="text" id="researchPurpose" placeholder="اكتب الغرض هنا"></div>
             </div>
             <div class="income-expense-box">
-                <table style="width:100%; border-collapse:collapse; text-align:center; table-layout:fixed; font-size:11px;">
+                <table style="width:100%; border-collapse:collapse; text-align:center; font-size:11px;">
                     <thead><tr style="background:#f2f2f2; font-weight:bold;"><th>نوع الدخل</th><th>المبلغ</th><th>نوع المصروف</th><th>المبلغ</th></tr></thead>
                     <tbody>
-                        <tr><td>معاش/مرتب</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>كهرباء</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
-                        <tr><td>طرفنا</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>غاز/أسطوانة</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
-                        <tr><td>جمعيات</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>مياه</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
-                        <tr><td>مساجد</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>ت/نت</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
-                        <tr><td>أبناء</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>دروس</td><td><input type="number" class="expense lessons" oninput="calculate()" style="width:100%;"></td></tr>
-                        <tr><td>أقارب</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>إيجار</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
-                        <tr><td>أهل الخير</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>علاج</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
-                        <tr><td>العمل</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>أقساط</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>معاش/مرتب</td><td><input type="number" class="income" data-income="salary" oninput="calculateTotal()" style="width:90%;"></td><td>كهرباء</td><td><input type="number" class="expense" data-expense="electricity" oninput="calculateTotal()" style="width:90%;"></td></tr>
+                        <tr><td>طرفنا</td><td><input type="number" class="income" data-income="ourSide" oninput="calculateTotal()" style="width:90%;"></td><td>غاز/أسطوانة</td><td><input type="number" class="expense" data-expense="gas" oninput="calculateTotal()" style="width:90%;"></td></tr>
+                        <tr><td>جمعيات</td><td><input type="number" class="income" data-income="associations" oninput="calculateTotal()" style="width:90%;"></td><td>مياه</td><td><input type="number" class="expense" data-expense="water" oninput="calculateTotal()" style="width:90%;"></td></tr>
+                        <tr><td>مساجد</td><td><input type="number" class="income" data-income="mosques" oninput="calculateTotal()" style="width:90%;"></td><td>ت/نت</td><td><input type="number" class="expense" data-expense="internet" oninput="calculateTotal()" style="width:90%;"></td></tr>
+                        <tr><td>أبناء</td><td><input type="number" class="income" data-income="children" oninput="calculateTotal()" style="width:90%;"></td><td>دروس</td><td><input type="number" class="expense lessons" data-expense="lessons" oninput="calculateTotal()" style="width:90%;"></td></tr>
+                        <tr><td>أقارب</td><td><input type="number" class="income" data-income="relatives" oninput="calculateTotal()" style="width:90%;"></td><td>إيجار</td><td><input type="number" class="expense" data-expense="rent" oninput="calculateTotal()" style="width:90%;"></td></tr>
+                        <tr><td>أهل الخير</td><td><input type="number" class="income" data-income="charity" oninput="calculateTotal()" style="width:90%;"></td><td>علاج</td><td><input type="number" class="expense" data-expense="treatment" oninput="calculateTotal()" style="width:90%;"></td></tr>
+                        <tr><td>العمل</td><td><input type="number" class="income" data-income="work" oninput="calculateTotal()" style="width:90%;"></td><td>أقساط</td><td><input type="number" class="expense" data-expense="installments" oninput="calculateTotal()" style="width:90%;"></td></tr>
                     </tbody>
                     <tfoot>
-                        <tr><td>إجمالي الدخل</td><td id="totalIncome">0</td><td>إجمالي المصروفات</td><td id="totalExpenses">0</td></tr>
-                        <tr><td>الصافي</td><td id="net">0</td><td>أفراد الأسرة</td><td><input type="number" id="members" value="1" oninput="calculate()" style="width:100%;"></td></tr>
-                        <tr><td>نصيب الفرد</td><td id="share">0</td><td>بدون دروس</td><td id="shareNoLessons">0</td></tr>
+                        <tr><td><strong>إجمالي الدخل</strong></td><td id="totalIncome">0</td><td><strong>إجمالي المصروفات</strong></td><td id="totalExpenses">0</td></tr>
+                        <tr><td><strong>الصافي</strong></td><td id="net">0</td><td><strong>أفراد الأسرة</strong></td><td><input type="number" id="members" value="1" oninput="calculateTotal()" style="width:70px;"></td></tr>
+                        <tr><td><strong>نصيب الفرد</strong></td><td id="share">0</td><td><strong>بدون دروس</strong></td><td id="shareNoLessons">0</td></tr>
                     </tfoot>
                 </table>
             </div>
@@ -138,67 +132,47 @@
             <h3 style="text-align:center; color: #2c3e50; margin-bottom: 10px;">جدول تكوين الأسرة</h3>
             <table id="familyTable" class="family-table">
                 <thead>
-                    <tr>
-                        <th>م</th><th>اسم الفرد</th><th>صلة القرابة</th><th>الحالة الاجتماعية</th><th>العمل</th><th>السن</th><th>ملاحظات</th><th class="print-hide">حذف</th>
-                    </tr>
+                    <tr><th>م</th><th>اسم الفرد</th><th>صلة القرابة</th><th>الحالة الاجتماعية</th><th>العمل</th><th>السن</th><th>ملاحظات</th><th class="print-hide">حذف</th></tr>
                 </thead>
-                <tbody></tbody>
+                <tbody id="familyTableBody"></tbody>
             </table>
-            <button class="btn-add print-hide" onclick="addRow()">+ إضافة فرد جديد</button>
+            <button class="btn-add print-hide" onclick="addFamilyRow()">+ إضافة فرد جديد</button>
         </div>
 
         <h3 style="text-align:center;">التقرير</h3>
-        <textarea class="textarea-clean"></textarea>
+        <textarea class="textarea-clean" id="reportText"></textarea>
         <h4>التوصية</h4>
-        <input class="input-clean">
+        <input class="input-clean" id="recommendation">
     </div>
 
     <div class="page">
         <h3 style="text-align:center;">التقرير الذكي</h3>
-        <textarea class="textarea-clean"></textarea>
+        <textarea class="textarea-clean" id="smartReportText"></textarea>
         <h4>التوصية الذكية</h4>
-        <input class="input-clean">
+        <input class="input-clean" id="smartRecommendation">
     </div>
 
     <div class="page">
         <h3 style="text-align:center;">الرأي</h3>
         <div class="dotted-line"></div>
-        <input class="input-clean">
+        <input class="input-clean" id="opinion">
         <div class="dotted-line"></div>
         <div class="donor-footer">
             <div class="approve-left">يعتمد</div>
-            <div class="date-center">التاريخ : <input type="date" style="border:none;outline:none;"></div>
+            <div class="date-center">التاريخ : <input type="date" id="approvalDate" style="border:none;outline:none;"></div>
         </div>
     </div>
 
     <script>
-        // دالة الحساب الأصلية الخاصة بك
-        function calculate() {
-            const incomes = document.querySelectorAll('.income');
-            const expenses = document.querySelectorAll('.expense');
-            const lessons = document.querySelectorAll('.expense.lessons');
-            let totalIncome = 0; let totalExpenses = 0; let lessonsTotal = 0;
-            incomes.forEach(i => totalIncome += parseFloat(i.value) || 0);
-            expenses.forEach(e => totalExpenses += parseFloat(e.value) || 0);
-            lessons.forEach(l => lessonsTotal += parseFloat(l.value) || 0);
-            const net = totalIncome - totalExpenses;
-            const members = parseFloat(document.getElementById('members').value) || 1;
-            document.getElementById('totalIncome').innerText = totalIncome.toFixed(2);
-            document.getElementById('totalExpenses').innerText = totalExpenses.toFixed(2);
-            const netCell = document.getElementById('net');
-            netCell.innerText = net.toFixed(2);
-            if(net > 0) netCell.style.background = 'lightgreen';
-            else if(net < 0) netCell.style.background = 'lightcoral';
-            else netCell.style.background = 'yellow';
-            document.getElementById('share').innerText = (net / members).toFixed(2);
-            document.getElementById('shareNoLessons').innerText = ((net + lessonsTotal) / members).toFixed(2);
-        }
-
-        // دالة جدول الأسرة (المحقونة)
-        function addRow() {
-            const table = document.getElementById("familyTable").getElementsByTagName('tbody')[0];
-            const rowCount = table.rows.length + 1;
-            const newRow = table.insertRow();
+        // ============================================================
+        // دوال جدول الأسرة (كما كانت في الأصل)
+        // ============================================================
+        
+        function addFamilyRow() {
+            const tbody = document.getElementById('familyTableBody');
+            if (!tbody) return;
+            const rowCount = tbody.rows.length + 1;
+            const newRow = tbody.insertRow();
             newRow.innerHTML = `
                 <td class="index">${rowCount}</td>
                 <td><input type="text" style="width:100%; border:none;"></td>
@@ -207,14 +181,142 @@
                 <td><input type="text" style="width:100%; border:none;"></td>
                 <td><input type="number" style="width:100%; border:none;"></td>
                 <td><input type="text" style="width:100%; border:none;"></td>
-                <td class="print-hide"><button onclick="this.parentElement.parentElement.remove(); reorderRows();" style="color:red;">×</button></td>
+                <td class="print-hide"><button onclick="this.closest('tr').remove(); reorderFamilyRows();" style="color:red;">×</button></td>
             `;
+            reorderFamilyRows();
         }
-        function reorderRows() {
-            const rows = document.querySelectorAll("#familyTable tbody tr");
-            rows.forEach((row, index) => { row.querySelector(".index").innerText = index + 1; });
+        
+        function reorderFamilyRows() {
+            const rows = document.querySelectorAll('#familyTableBody tr');
+            rows.forEach((row, index) => {
+                const indexCell = row.querySelector('.index');
+                if (indexCell) indexCell.innerText = index + 1;
+            });
         }
-        window.onload = function() { addRow(); };
+        
+        // ============================================================
+        // دوال حساب الإجماليات (كما كانت في الأصل)
+        // ============================================================
+        
+        function calculateTotal() {
+            let totalIncome = 0;
+            let totalExpenses = 0;
+            let lessonsTotal = 0;
+            
+            document.querySelectorAll('.income').forEach(input => {
+                totalIncome += parseFloat(input.value) || 0;
+            });
+            document.querySelectorAll('.expense').forEach(input => {
+                const val = parseFloat(input.value) || 0;
+                totalExpenses += val;
+                if (input.classList.contains('lessons')) lessonsTotal += val;
+            });
+            
+            const net = totalIncome - totalExpenses;
+            const members = parseFloat(document.getElementById('members')?.value) || 1;
+            
+            document.getElementById('totalIncome').innerText = totalIncome.toFixed(2);
+            document.getElementById('totalExpenses').innerText = totalExpenses.toFixed(2);
+            const netCell = document.getElementById('net');
+            netCell.innerText = net.toFixed(2);
+            if (net > 0) netCell.style.background = 'lightgreen';
+            else if (net < 0) netCell.style.background = 'lightcoral';
+            else netCell.style.background = 'yellow';
+            document.getElementById('share').innerText = (net / members).toFixed(2);
+            document.getElementById('shareNoLessons').innerText = ((net + lessonsTotal) / members).toFixed(2);
+        }
+        
+        // ============================================================
+        // ربط البيانات مع App (مضاف فقط ولا يؤثر على الشكل)
+        // ============================================================
+        
+        function saveToApp() {
+            if (!window.parent || !window.parent.App) return;
+            const app = window.parent.App;
+            if (!app.currentCase) return;
+            
+            app.currentCase.data = {
+                case_serial: document.getElementById('caseSerial')?.value || '',
+                case_mm: document.getElementById('caseMM')?.value || '',
+                home_visit: document.getElementById('homeVisit')?.value || '',
+                office_researcher: document.getElementById('officeResearcher')?.value || '',
+                case_date: document.getElementById('caseDate')?.value || '',
+                case_status: document.getElementById('caseStatus')?.value || '',
+                full_name: document.getElementById('fullName')?.value || '',
+                national_id: document.getElementById('nationalId')?.value || '',
+                residence: document.getElementById('residence')?.value || '',
+                governorate: document.getElementById('governorate')?.value || '',
+                district: document.getElementById('district')?.value || '',
+                phone: document.getElementById('phone')?.value || '',
+                research_purpose: document.getElementById('researchPurpose')?.value || '',
+                report_text: document.getElementById('reportText')?.value || '',
+                recommendation: document.getElementById('recommendation')?.value || '',
+                smart_report_text: document.getElementById('smartReportText')?.value || '',
+                smart_recommendation: document.getElementById('smartRecommendation')?.value || '',
+                opinion: document.getElementById('opinion')?.value || '',
+                approval_date: document.getElementById('approvalDate')?.value || '',
+                members: parseInt(document.getElementById('members')?.value) || 1
+            };
+        }
+        
+        function loadFromApp() {
+            if (!window.parent || !window.parent.App) return;
+            const app = window.parent.App;
+            const data = app.currentCase?.data || {};
+            
+            if (document.getElementById('caseSerial')) document.getElementById('caseSerial').value = data.case_serial || '';
+            if (document.getElementById('caseMM')) document.getElementById('caseMM').value = data.case_mm || '';
+            if (document.getElementById('homeVisit')) document.getElementById('homeVisit').value = data.home_visit || '';
+            if (document.getElementById('officeResearcher')) document.getElementById('officeResearcher').value = data.office_researcher || '';
+            if (document.getElementById('caseDate')) document.getElementById('caseDate').value = data.case_date || '';
+            if (document.getElementById('caseStatus')) document.getElementById('caseStatus').value = data.case_status || 'حالة جديدة';
+            if (document.getElementById('fullName')) document.getElementById('fullName').value = data.full_name || '';
+            if (document.getElementById('nationalId')) document.getElementById('nationalId').value = data.national_id || '';
+            if (document.getElementById('residence')) document.getElementById('residence').value = data.residence || '';
+            if (document.getElementById('governorate')) document.getElementById('governorate').value = data.governorate || '';
+            if (document.getElementById('district')) document.getElementById('district').value = data.district || '';
+            if (document.getElementById('phone')) document.getElementById('phone').value = data.phone || '';
+            if (document.getElementById('researchPurpose')) document.getElementById('researchPurpose').value = data.research_purpose || '';
+            if (document.getElementById('reportText')) document.getElementById('reportText').value = data.report_text || '';
+            if (document.getElementById('recommendation')) document.getElementById('recommendation').value = data.recommendation || '';
+            if (document.getElementById('smartReportText')) document.getElementById('smartReportText').value = data.smart_report_text || '';
+            if (document.getElementById('smartRecommendation')) document.getElementById('smartRecommendation').value = data.smart_recommendation || '';
+            if (document.getElementById('opinion')) document.getElementById('opinion').value = data.opinion || '';
+            if (document.getElementById('approvalDate')) document.getElementById('approvalDate').value = data.approval_date || '';
+            if (document.getElementById('members')) document.getElementById('members').value = data.members || 1;
+            
+            calculateTotal();
+        }
+        
+        // ربط جميع الحقول لحفظ البيانات تلقائياً
+        function bindAutoSave() {
+            const allInputs = document.querySelectorAll('input, select, textarea');
+            allInputs.forEach(input => {
+                input.addEventListener('change', () => saveToApp());
+                input.addEventListener('input', () => saveToApp());
+            });
+        }
+        
+        // الاستماع لرسائل من الإطار الأب
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'UPDATE_CASE') {
+                loadFromApp();
+            }
+        });
+        
+        // عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            bindAutoSave();
+            loadFromApp();
+            if (document.getElementById('familyTableBody')?.children.length === 0) {
+                addFamilyRow();
+            }
+        });
+        
+        // تصدير الدوال للنطاق العام
+        window.calculateTotal = calculateTotal;
+        window.addFamilyRow = addFamilyRow;
+        window.reorderFamilyRows = reorderFamilyRows;
     </script>
 </body>
 </html>

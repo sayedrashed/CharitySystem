@@ -16,7 +16,7 @@ function dispatch(name, detail = {}) {
 }
 
 function on(name, handler) {
-  if (typeof window === 'undefined') return () => {};
+  if ( typeof window === 'undefined' ) return () => {};
   window.addEventListener(name, e => handler(e.detail ?? {}));
   return () => window.removeEventListener(name, handler);
 }
@@ -167,7 +167,12 @@ async function saveCase(options = {}) {
 
 function _getCaseStore() {
   if (typeof window !== 'undefined' && window.caseStore) return window.caseStore;
-  try { return require('../cases/case_store'); } catch {}
+  try { 
+    // محاولة تحميل case_store إذا كان في المسار الصحيح
+    if (typeof require !== 'undefined') {
+      return require('../cases/case_store');
+    }
+  } catch {}
   return null;
 }
 
@@ -175,10 +180,6 @@ function _getBinding() {
   if (typeof window !== 'undefined' && window.DataBinding?.binding)
     return window.DataBinding.binding;
   return null;
-}
-
-function _log(action, detail) {
-  console.log('[AppController]', action, detail ?? '');
 }
 
 // ════════════════════════════════════════════════════════════════

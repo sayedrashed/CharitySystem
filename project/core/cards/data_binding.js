@@ -25,6 +25,10 @@ const binding = {
   setValue(fieldId, value) {
     if (!fieldId) return;
     this.currentCase.data[fieldId] = value;
+    // إشعار التطبيق الرئيسي بتغير البيانات
+    if (typeof window !== 'undefined' && window.App) {
+      window.App.dispatch('data:changed', { fieldId, value });
+    }
   },
 
   getValue(fieldId) {
@@ -36,6 +40,38 @@ const binding = {
       if (!(f.id in this.currentCase.data)) {
         this.currentCase.data[f.id] = '';
       }
+    });
+  },
+
+  // دالة جديدة: ربط الحقول تلقائياً
+  bindForm(containerSelector) {
+    const container = typeof containerSelector === 'string' 
+      ? document.querySelector(containerSelector) 
+      : containerSelector;
+    if (!container) return;
+
+    // البحث عن جميع الحقول التي تحمل data-field
+    const fields = container.querySelectorAll('[data-field]');
+    fields.forEach(field => {
+      const fieldId = field.getAttribute('data-field');
+      if (!fieldId) return;
+
+      // تعيين القيمة الحالية
+      const currentValue = this.getValue(fieldId);
+      if (field.tagName === 'INPUT' && field.type === 'checkbox') {
+        field.checked = currentValue === true || currentValue === 'true';
+      } else if (field.tagName === 'SELECT') {
+        field.value = currentValue;
+      } else {
+        field.value = currentValue;
+      }
+
+      // إضافة مستمع لتحديث binding عند التغيير
+      const eventType = field.tagName === 'SELECT' ? 'change' : 'input';
+      field.addEventListener(eventType, (e) => {
+        const newValue = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        this.setValue(fieldId, newValue);
+      });
     });
   }
 };
@@ -97,7 +133,9 @@ function attachListeners(container, onChangeCallback) {
 }
 
 function _esc(str) { return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-function _log(action, detail) { console.log('[DataBinding]', action, detail ?? ''); }
 
-if (typeof module !== 'undefined') { module.exports = { binding, renderField, renderCard, attachListeners }; }
-else { window.DataBinding = { binding, renderField, renderCard, attachListeners }; }
+if (typeof module !== 'undefined') { 
+  module.exports = { binding, renderField, renderCard, attachListeners };
+} else { 
+  window.DataBinding = { binding, renderField, renderCard, attachListeners };
+}

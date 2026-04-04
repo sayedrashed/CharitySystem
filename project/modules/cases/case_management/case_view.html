@@ -3,388 +3,618 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شاشة الحالة - نظام إدارة البحث الاجتماعي</title>
+    <title>عرض الحالة - نظام إدارة البحث الاجتماعي</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         :root {
-            --bg-primary: #0F1117;
-            --bg-secondary: #1A1D27;
-            --bg-card: #1A1D27;
-            --border: #2E3250;
-            --text-primary: #E8EBF4;
-            --text-secondary: #6B7280;
-            --accent: #4F8EF7;
-            --success: #2DD4BF;
-            --gold: #F5C842;
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --info-color: #1abc9c;
         }
-
         body {
-            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            direction: rtl;
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'Tahoma', 'Segoe UI', system-ui;
+            background: #f5f7fb;
         }
-
-        /* تخطيط الشاشة: يسار = mcc (إخراج)، يمين = بطاقات (إدخال) */
-        .case-layout {
-            display: flex;
-            height: 100vh;
-            width: 100%;
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        /* الشاشة اليسرى - إخراج النتائج (mcc) */
-        .output-panel {
-            width: 45%;
-            background: #0A0C14;
-            border-right: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* الشاشة اليمنى - إدخال البيانات (البطاقات) */
-        .input-panel {
-            flex: 1;
-            background: #111420;
-            overflow-y: auto;
+        .case-header {
+            background: white;
+            border-radius: 15px;
             padding: 20px;
-        }
-
-        /* شريط الأدوات */
-        .tools-bar {
-            padding: 10px 12px;
-            background: #1A1D27;
-            border-bottom: 1px solid #2E3250;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .tools-btn {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            background: #2E3250;
-            color: #E8EBF4;
-            border: none;
-        }
-        .tools-btn:hover { background: #4F8EF7; }
-        .tools-btn.print { background: #2DD4BF; color: #0F1117; }
-
-        .output-header {
-            padding: 10px 16px;
-            background: #1A1D27;
-            font-size: 13px;
-            font-weight: 600;
-            color: #F5C842;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .output-frame {
-            flex: 1;
-            width: 100%;
-            border: none;
-            background: #fff;
-        }
-
-        /* شريط التنقل بين البطاقات */
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #2E3250;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         }
-
-        .nav-buttons { display: flex; gap: 10px; }
-        .nav-btn {
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        .info-card:hover {
+            transform: translateY(-3px);
+        }
+        .timeline-item {
+            border-right: 3px solid var(--secondary-color);
+            padding-right: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            right: -7px;
+            top: 0;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+        }
+        .ai-suggestion {
+            background: linear-gradient(135deg, #e8f4fd, #d1ecf9);
+            border-right: 4px solid var(--info-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .priority-high { border-top: 4px solid var(--danger-color); }
+        .priority-medium { border-top: 4px solid var(--warning-color); }
+        .priority-low { border-top: 4px solid var(--success-color); }
+        .btn-ai {
+            background: linear-gradient(135deg, var(--info-color), var(--secondary-color));
             border: none;
+            color: white;
         }
-        .nav-prev { background: #2E3250; color: #E8EBF4; }
-        .nav-next { background: #4F8EF7; color: #fff; }
-        .nav-save { background: #2DD4BF; color: #0F1117; }
-        .nav-new { background: var(--gold); color: #0F1117; }
-        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .card-title { font-size: 18px; font-weight: 700; color: #F5C842; }
-
-        .card-container {
-            background: #1A1D27;
-            border-radius: 12px;
-            border: 1px solid #2E3250;
-            overflow: hidden;
+        .btn-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
         }
-        .card-iframe {
-            width: 100%;
-            height: calc(100vh - 200px);
-            border: none;
-            background: #fff;
-        }
-
-        .status-bar {
-            margin-top: 15px;
-            padding: 10px;
-            background: #1A1D27;
-            border-radius: 8px;
-            font-size: 12px;
-            color: #6B7280;
-            text-align: center;
-        }
-
-        .progress-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        .progress-dot {
-            width: 30px;
-            height: 4px;
-            background: #2E3250;
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-        .progress-dot.active { background: #F5C842; }
-        .progress-dot.completed { background: #2DD4BF; }
-
-        @media (max-width: 900px) { 
-            .output-panel { width: 50%; } 
-        }
-
-        .toast {
+        .floating-ai-btn {
             position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 8px 20px;
-            display: none;
+            bottom: 30px;
+            left: 30px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--info-color), var(--secondary-color));
+            color: white;
+            border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
             z-index: 1000;
-            font-size: 13px;
+        }
+        .floating-ai-btn:hover {
+            transform: scale(1.1);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
 <body>
-
-<div class="case-layout">
-    <!-- الشاشة اليسرى: إخراج النتائج mcc.html -->
-    <div class="output-panel">
-        <div class="output-header">
-            📄 بطاقة الإخراج النهائي (Manager Card)
-            <button class="tools-btn print" onclick="printMCC()">🖨️ طباعة</button>
-        </div>
-        <iframe id="mccFrame" class="output-frame" src="mcc.html" title="بطاقة الإخراج"></iframe>
-    </div>
-
-    <!-- الشاشة اليمنى: إدخال البيانات (البطاقات) -->
-    <div class="input-panel" id="inputPanel">
-        <div class="progress-indicator" id="progressIndicator"></div>
-        <div class="nav-bar">
-            <div class="card-title" id="cardTitle">تحميل البطاقات...</div>
-            <div class="nav-buttons">
-                <button class="nav-btn nav-new" id="newBtn" onclick="newCase()" title="حالة جديدة">➕ جديد</button>
-                <button class="nav-btn nav-prev" id="prevBtn" onclick="previousCard()" disabled>← السابق</button>
-                <button class="nav-btn nav-save" id="saveBtn" onclick="saveCurrentCard()">💾 حفظ</button>
-                <button class="nav-btn nav-next" id="nextBtn" onclick="nextCard()" disabled>التالي →</button>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-hand-holding-heart me-2"></i>
+                نظام إدارة البحث الاجتماعي - عرض الحالة
+            </a>
+            <div class="d-flex">
+                <span class="text-white me-3">
+                    <i class="fas fa-user me-1"></i>
+                    <span id="userName">المشرف</span>
+                </span>
+                <button class="btn btn-outline-light btn-sm" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
             </div>
         </div>
-        <div class="card-container">
-            <iframe id="cardFrame" class="card-iframe" src="" title="بطاقة الإدخال"></iframe>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- زر الرجوع -->
+        <a href="/modules/cases/special_cases/index.html" class="btn btn-outline-secondary mb-3">
+            <i class="fas fa-arrow-right me-1"></i> رجوع
+        </a>
+
+        <!-- رأس الحالة -->
+        <div class="case-header priority-high" id="caseHeader">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h2 id="caseName">جاري التحميل...</h2>
+                    <span class="badge bg-danger" id="priorityBadge">عالية</span>
+                    <span class="badge bg-warning" id="statusBadge">قيد المراجعة</span>
+                </div>
+                <div class="text-muted">
+                    <small>رقم الحالة: <span id="caseId">---</span></small><br>
+                    <small>تاريخ التسجيل: <span id="createdAt">---</span></small>
+                </div>
+            </div>
         </div>
-        <div class="status-bar" id="statusBar">✅ جاهز | الحالة: جديدة | رقم التتبع: --</div>
+
+        <div class="row">
+            <!-- العمود الأيمن - معلومات الحالة -->
+            <div class="col-md-6">
+                <div class="info-card">
+                    <h5><i class="fas fa-info-circle text-primary me-2"></i>معلومات الحالة</h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-4 text-muted">نوع الحالة:</div>
+                        <div class="col-8" id="caseType">---</div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-4 text-muted">رقم الهاتف:</div>
+                        <div class="col-8" id="phone">---</div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-4 text-muted">المبلغ المطلوب:</div>
+                        <div class="col-8" id="requestedAmount">---</div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-4 text-muted">المساعد المسؤول:</div>
+                        <div class="col-8" id="assignedTo">---</div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h5><i class="fas fa-file-alt text-primary me-2"></i>الوصف</h5>
+                    <hr>
+                    <p id="description">---</p>
+                </div>
+
+                <div class="info-card">
+                    <h5><i class="fas fa-sticky-note text-primary me-2"></i>الملاحظات</h5>
+                    <hr>
+                    <p id="notes">---</p>
+                    <button class="btn btn-sm btn-outline-primary mt-2" onclick="addNote()">
+                        <i class="fas fa-plus me-1"></i> إضافة ملاحظة
+                    </button>
+                </div>
+            </div>
+
+            <!-- العمود الأيسر - الذكاء الاصطناعي والتحديثات -->
+            <div class="col-md-6">
+                <!-- اقتراحات الذكاء الاصطناعي -->
+                <div class="info-card">
+                    <h5>
+                        <i class="fas fa-robot text-info me-2"></i>
+                        اقتراحات المساعد الذكي
+                        <button class="btn btn-sm btn-ai float-end" onclick="refreshAISuggestions()">
+                            <i class="fas fa-sync-alt me-1"></i> تحديث
+                        </button>
+                    </h5>
+                    <hr>
+                    <div id="aiSuggestions">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>جاري تحميل الاقتراحات...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- الجدول الزمني -->
+                <div class="info-card">
+                    <h5><i class="fas fa-history text-primary me-2"></i>الجدول الزمني</h5>
+                    <hr>
+                    <div id="timeline">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>جاري التحميل...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- التذكيرات -->
+                <div class="info-card">
+                    <h5><i class="fas fa-bell text-primary me-2"></i>التذكيرات</h5>
+                    <hr>
+                    <div id="remindersList">
+                        <div class="text-center text-muted">لا توجد تذكيرات</div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-warning mt-2" onclick="addReminder()">
+                        <i class="fas fa-plus me-1"></i> إضافة تذكير
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<div id="toast" class="toast"></div>
+    <!-- زر المساعد الذكي -->
+    <button class="floating-ai-btn pulse" onclick="openAIAssistant()">
+        <i class="fas fa-robot fa-2x"></i>
+    </button>
 
-<script>
-    // ============================================================
-    // قائمة البطاقات حسب المسارات الصحيحة في المشروع
-    // ============================================================
-    const CARDS = [
-        { id: "card1", name: "مقدمة البحث", file: "cards/1.html" },
-        { id: "card2", name: "البيانات الديمغرافية", file: "cards/2.html" },
-        { id: "card3", name: "تعريف الأسرة", file: "cards/3.html" },
-        { id: "card4", name: "بيانات الفرد", file: "cards/4.html" },
-        { id: "card5", name: "الدخل والمصروفات", file: "cards/5.html" },
-        { id: "card6", name: "تقرير الباحث", file: "cards/6.html" },
-        { id: "card7", name: "التقرير الذكي", file: "cards/7.html" },
-        { id: "card8", name: "توثيق المتبرع", file: "cards/8.html" }
-    ];
+    <!-- مودال إضافة ملاحظة -->
+    <div class="modal fade" id="noteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">إضافة ملاحظة</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" id="noteText" rows="4" placeholder="اكتب ملاحظتك هنا..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNote()">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    let currentIndex = 0;
-    let cardFrame = document.getElementById("cardFrame");
-    let mccFrame = document.getElementById("mccFrame");
+    <!-- مودال إضافة تذكير -->
+    <div class="modal fade" id="reminderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">إضافة تذكير</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">التاريخ والوقت</label>
+                        <input type="datetime-local" class="form-control" id="reminderDateTime">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">رسالة التذكير</label>
+                        <textarea class="form-control" id="reminderMessage" rows="3" placeholder="اكتب رسالة التذكير..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-warning" onclick="saveReminder()">حفظ التذكير</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    // تحديث mcc.html عند تغيير البيانات
-    function updateMCC() {
-        if (!window.App || !window.App.currentCase) return;
-        if (mccFrame && mccFrame.contentWindow && mccFrame.contentWindow.updateFromApp) {
-            mccFrame.contentWindow.updateFromApp(window.App.currentCase);
-        } else if (mccFrame && mccFrame.contentWindow) {
-            mccFrame.contentWindow.postMessage({ type: "UPDATE_CASE", data: window.App.currentCase }, "*");
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        // المتغيرات العامة
+        let currentCaseId = null;
+        let currentCaseData = null;
+        let noteModal, reminderModal;
+        
+        // الحصول على معرّف الحالة من URL
+        function getCaseIdFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
         }
-    }
-
-    // تحميل بطاقة
-    function loadCard(index) {
-        if (index < 0 || index >= CARDS.length) return;
-        currentIndex = index;
-        const card = CARDS[currentIndex];
-        document.getElementById("cardTitle").innerHTML = `📋 ${card.name} (${currentIndex + 1}/${CARDS.length})`;
-        cardFrame.src = card.file;
-        updateNavButtons();
-        updateProgressIndicator();
-    }
-
-    function updateNavButtons() {
-        document.getElementById("prevBtn").disabled = (currentIndex === 0);
-        document.getElementById("nextBtn").disabled = (currentIndex === CARDS.length - 1);
-    }
-
-    function updateProgressIndicator() {
-        const container = document.getElementById("progressIndicator");
-        if (!container) return;
-        container.innerHTML = CARDS.map((card, idx) => {
-            let statusClass = "";
-            if (idx === currentIndex) statusClass = "active";
-            else if (idx < currentIndex) statusClass = "completed";
-            return `<div class="progress-dot ${statusClass}" title="${card.name}"></div>`;
-        }).join("");
-    }
-
-    function nextCard() {
-        if (currentIndex < CARDS.length - 1) loadCard(currentIndex + 1);
-    }
-
-    function previousCard() {
-        if (currentIndex > 0) loadCard(currentIndex - 1);
-    }
-
-    async function saveCurrentCard() {
-        if (window.App && window.App.saveCase) {
-            try {
-                await window.App.saveCase();
-                updateStatusBar("💾 تم حفظ البيانات بنجاح");
-                updateMCC();
-            } catch (err) {
-                updateStatusBar("⚠️ خطأ في الحفظ: " + err.message, "error");
+        
+        // تحميل بيانات الحالة
+        async function loadCaseData() {
+            currentCaseId = getCaseIdFromURL();
+            if (!currentCaseId) {
+                showError('لم يتم تحديد الحالة');
+                return;
             }
-        } else {
-            updateStatusBar("⚠️ AppController غير متاح", "error");
-        }
-    }
-
-    function newCase() {
-        if (window.App && window.App.newCase) {
-            window.App.newCase();
-            currentIndex = 0;
-            loadCard(0);
-            updateStatusBar("✨ تم إنشاء حالة جديدة");
-            updateMCC();
-        } else {
-            updateStatusBar("⚠️ AppController غير متاح", "error");
-        }
-    }
-
-    function updateStatusBar(msg, type = "info") {
-        const bar = document.getElementById("statusBar");
-        if (msg) {
-            const icon = type === "error" ? "❌" : "✅";
-            bar.innerHTML = `${icon} ${msg}`;
-            setTimeout(() => {
-                if (window.App && window.App.currentCase) {
-                    const caseId = window.App.currentCase.id || "جديد";
-                    const status = window.App.currentCase.data?.case_status || "تحت الدراسة";
-                    bar.innerHTML = `✅ جاهز | الحالة: ${status} | رقم التتبع: ${caseId}`;
+            
+            try {
+                if (window.CaseStore) {
+                    currentCaseData = window.CaseStore.getSpecialCaseById(parseInt(currentCaseId));
+                    if (currentCaseData) {
+                        displayCaseData(currentCaseData);
+                        loadAISuggestions(currentCaseData);
+                        loadTimeline(currentCaseData);
+                        loadReminders(currentCaseData);
+                    } else {
+                        showError('الحالة غير موجودة');
+                    }
+                } else {
+                    // محاكاة بيانات للاختبار
+                    loadMockData();
                 }
-            }, 3000);
-        } else if (window.App && window.App.currentCase) {
-            const caseId = window.App.currentCase.id || "جديد";
-            const status = window.App.currentCase.data?.case_status || "تحت الدراسة";
-            bar.innerHTML = `✅ جاهز | الحالة: ${status} | رقم التتبع: ${caseId}`;
+            } catch (error) {
+                console.error('Error loading case:', error);
+                showError('فشل في تحميل بيانات الحالة');
+            }
         }
-    }
-
-    function printMCC() {
-        if (mccFrame && mccFrame.contentWindow) {
-            mccFrame.contentWindow.print();
-        } else {
-            window.print();
+        
+        // عرض بيانات الحالة
+        function displayCaseData(data) {
+            document.getElementById('caseName').textContent = data.name;
+            document.getElementById('caseId').textContent = data.id;
+            document.getElementById('caseType').textContent = getCaseTypeText(data.type);
+            document.getElementById('phone').textContent = data.phone || 'غير متوفر';
+            document.getElementById('requestedAmount').textContent = data.requestedAmount ? `${data.requestedAmount} ج.م` : 'غير محدد';
+            document.getElementById('assignedTo').textContent = data.assignedTo || 'غير محدد';
+            document.getElementById('description').textContent = data.description || 'لا يوجد وصف';
+            document.getElementById('notes').textContent = data.notes || 'لا توجد ملاحظات';
+            document.getElementById('createdAt').textContent = formatDate(data.createdAt);
+            
+            // الأولوية
+            const priorityBadge = document.getElementById('priorityBadge');
+            priorityBadge.className = `badge ${getPriorityClass(data.priority)}`;
+            priorityBadge.textContent = getPriorityText(data.priority);
+            
+            // الحالة
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.className = `badge ${getStatusClass(data.status)}`;
+            statusBadge.textContent = getStatusText(data.status);
+            
+            // تحديث لون الهيدر
+            const header = document.getElementById('caseHeader');
+            header.className = `case-header priority-${data.priority}`;
         }
-    }
-
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 3000);
-    }
-
-    // الاستماع لتحديثات AppController
-    if (window.App) {
-        window.App.on('case:opened', () => {
-            updateStatusBar();
-            updateMCC();
+        
+        // تحميل اقتراحات الذكاء الاصطناعي
+        async function loadAISuggestions(caseData) {
+            const container = document.getElementById('aiSuggestions');
+            
+            try {
+                if (window.AppController) {
+                    const suggestions = await window.AppController.askAI(caseData.id, 'قدم اقتراحات لهذه الحالة');
+                    
+                    if (suggestions && suggestions.analysis) {
+                        container.innerHTML = `
+                            <div class="ai-suggestion">
+                                <i class="fas fa-lightbulb text-warning me-2"></i>
+                                <strong>تحليل ذكي:</strong>
+                                <p class="mt-2 mb-0">${suggestions.analysis}</p>
+                            </div>
+                            <div class="ai-suggestion mt-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>الإجراءات المقترحة:</strong>
+                                <ul class="mt-2 mb-0">
+                                    ${suggestions.suggestions?.map(s => `<li>${s}</li>`).join('') || '<li>مراجعة الحالة أولاً</li>'}
+                                </ul>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = getDefaultSuggestions(caseData);
+                    }
+                } else {
+                    container.innerHTML = getDefaultSuggestions(caseData);
+                }
+            } catch (error) {
+                console.error('Error loading AI suggestions:', error);
+                container.innerHTML = getDefaultSuggestions(caseData);
+            }
+        }
+        
+        // اقتراحات افتراضية
+        function getDefaultSuggestions(caseData) {
+            return `
+                <div class="ai-suggestion">
+                    <i class="fas fa-lightbulb text-warning me-2"></i>
+                    <strong>اقتراحات تلقائية:</strong>
+                    <ul class="mt-2 mb-0">
+                        <li>يفضل إجراء زيارة ميدانية خلال 24 ساعة</li>
+                        <li>التواصل مع الجهات المختصة للمساعدة</li>
+                        <li>إضافة تذكير للمتابعة بعد 3 أيام</li>
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // تحميل الجدول الزمني
+        function loadTimeline(caseData) {
+            const container = document.getElementById('timeline');
+            const timeline = [
+                { date: caseData.createdAt, action: 'تم تسجيل الحالة', user: 'النظام' },
+                { date: caseData.updatedAt, action: 'آخر تحديث', user: 'النظام' }
+            ];
+            
+            if (caseData.visitHistory) {
+                timeline.push(...caseData.visitHistory);
+            }
+            
+            container.innerHTML = timeline.map(item => `
+                <div class="timeline-item">
+                    <small class="text-muted">${formatDateTime(item.date)}</small>
+                    <div class="mt-1">${item.action}</div>
+                    <small class="text-muted">بواسطة: ${item.user || 'النظام'}</small>
+                </div>
+            `).join('');
+        }
+        
+        // تحميل التذكيرات
+        function loadReminders(caseData) {
+            const container = document.getElementById('remindersList');
+            
+            if (window.CaseStore) {
+                const reminders = window.CaseStore.getStore().reminders.filter(r => r.caseId === caseData.id);
+                
+                if (reminders.length > 0) {
+                    container.innerHTML = reminders.map(r => `
+                        <div class="alert alert-${r.status === 'pending' ? 'warning' : 'secondary'} alert-sm">
+                            <i class="fas fa-bell me-2"></i>
+                            <strong>${formatDateTime(r.scheduledFor)}</strong>
+                            <p class="mb-0 small">${r.message}</p>
+                            <span class="badge bg-${r.status === 'pending' ? 'warning' : 'success'}">${r.status === 'pending' ? 'معلق' : 'تم الإرسال'}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div class="text-center text-muted">لا توجد تذكيرات</div>';
+                }
+            }
+        }
+        
+        // تحديث اقتراحات الذكاء الاصطناعي
+        async function refreshAISuggestions() {
+            Swal.fire({
+                title: 'جاري التحديث',
+                text: 'المساعد الذكي يقوم بتحليل الحالة...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+            
+            await loadAISuggestions(currentCaseData);
+            
+            Swal.close();
+            Swal.fire('تم التحديث', 'تم تحديث اقتراحات المساعد الذكي', 'success');
+        }
+        
+        // إضافة ملاحظة
+        function addNote() {
+            noteModal.show();
+        }
+        
+        function saveNote() {
+            const note = document.getElementById('noteText').value;
+            if (!note) {
+                showError('الرجاء إدخال الملاحظة');
+                return;
+            }
+            
+            // حفظ الملاحظة
+            if (window.CaseStore) {
+                const updatedNotes = currentCaseData.notes ? 
+                    `${currentCaseData.notes}\n\n[${new Date().toLocaleString()}] ${note}` : 
+                    `[${new Date().toLocaleString()}] ${note}`;
+                
+                window.CaseStore.updateSpecialCase(currentCaseData.id, { notes: updatedNotes });
+                document.getElementById('notes').textContent = updatedNotes;
+            }
+            
+            noteModal.hide();
+            document.getElementById('noteText').value = '';
+            showSuccess('تم إضافة الملاحظة');
+        }
+        
+        // إضافة تذكير
+        function addReminder() {
+            reminderModal.show();
+        }
+        
+        function saveReminder() {
+            const datetime = document.getElementById('reminderDateTime').value;
+            const message = document.getElementById('reminderMessage').value;
+            
+            if (!datetime || !message) {
+                showError('الرجاء إدخال التاريخ والرسالة');
+                return;
+            }
+            
+            if (window.CaseStore) {
+                window.CaseStore.addReminder(currentCaseData.id, {
+                    scheduledFor: datetime,
+                    message: message,
+                    type: 'follow_up'
+                });
+            }
+            
+            reminderModal.hide();
+            document.getElementById('reminderDateTime').value = '';
+            document.getElementById('reminderMessage').value = '';
+            showSuccess('تم إضافة التذكير');
+            loadReminders(currentCaseData);
+        }
+        
+        // فتح المساعد الذكي
+        function openAIAssistant() {
+            if (window.AppController) {
+                window.AppController.openAIAssistant(currentCaseData);
+            } else {
+                Swal.fire('تنبيه', 'جاري تحميل المساعد الذكي...', 'info');
+                // تحميل النافذة ديناميكياً
+                const script = document.createElement('script');
+                script.src = '/ui/components/ai_assistant_popup.js';
+                script.onload = () => {
+                    if (window.AIAssistantPopup) {
+                        new window.AIAssistantPopup().open(currentCaseData);
+                    }
+                };
+                document.head.appendChild(script);
+            }
+        }
+        
+        // دوال مساعدة
+        function getCaseTypeText(type) {
+            const types = {
+                urgent: 'طارئة', medical: 'طبية', disability: 'احتياجات خاصة',
+                elderly: 'كبير بالسن', orphan: 'يتيم', widow: 'أرملة', other: 'أخرى'
+            };
+            return types[type] || type;
+        }
+        
+        function getPriorityClass(priority) {
+            return { high: 'bg-danger', medium: 'bg-warning', low: 'bg-success' }[priority] || 'bg-secondary';
+        }
+        
+        function getPriorityText(priority) {
+            return { high: 'عالية', medium: 'متوسطة', low: 'منخفضة' }[priority] || priority;
+        }
+        
+        function getStatusClass(status) {
+            return {
+                pending: 'bg-warning', in_progress: 'bg-info',
+                completed: 'bg-success', cancelled: 'bg-danger'
+            }[status] || 'bg-secondary';
+        }
+        
+        function getStatusText(status) {
+            return {
+                pending: 'قيد المراجعة', in_progress: 'قيد المعالجة',
+                completed: 'مكتملة', cancelled: 'ملغية'
+            }[status] || status;
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            return new Date(dateString).toLocaleDateString('ar-EG');
+        }
+        
+        function formatDateTime(dateString) {
+            if (!dateString) return '-';
+            return new Date(dateString).toLocaleString('ar-EG');
+        }
+        
+        function showSuccess(message) {
+            Swal.fire({ icon: 'success', title: 'نجاح', text: message, timer: 2000, showConfirmButton: false });
+        }
+        
+        function showError(message) {
+            Swal.fire({ icon: 'error', title: 'خطأ', text: message });
+        }
+        
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login.html';
+        }
+        
+        // بيانات اختبارية
+        function loadMockData() {
+            currentCaseData = {
+                id: 1001,
+                name: 'أسرة محمد أحمد',
+                phone: '01001234567',
+                type: 'urgent',
+                priority: 'high',
+                status: 'pending',
+                description: 'أسرة مكونة من 5 أفراد بحاجة ماسة للسكن والغذاء',
+                notes: 'تم التواصل مع الأب - بحاجة لمساعدة عاجلة',
+                requestedAmount: 5000,
+                assignedTo: 'أحمد محمود',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            displayCaseData(currentCaseData);
+            loadAISuggestions(currentCaseData);
+            loadTimeline(currentCaseData);
+            loadReminders(currentCaseData);
+        }
+        
+        // التهيئة
+        document.addEventListener('DOMContentLoaded', () => {
+            noteModal = new bootstrap.Modal(document.getElementById('noteModal'));
+            reminderModal = new bootstrap.Modal(document.getElementById('reminderModal'));
+            loadCaseData();
         });
-        window.App.on('case:saved', () => {
-            updateStatusBar("💾 تم حفظ الحالة بنجاح");
-            updateMCC();
-        });
-        window.App.on('case:new', () => {
-            updateStatusBar();
-            updateMCC();
-        });
-    }
-
-    // تحميل الحالة الحالية من App إذا وجدت
-    async function loadCurrentCase() {
-        if (window.App && window.App.currentCase && window.App.currentCase.id) {
-            updateStatusBar();
-            updateMCC();
-        }
-    }
-
-    // تهيئة الشاشة
-    function init() {
-        loadCard(0);
-        if (window.App && !window.App.currentCase?.id) {
-            window.App.newCase();
-        }
-        updateStatusBar();
-        updateProgressIndicator();
-        loadCurrentCase();
-    }
-
-    window.previousCard = previousCard;
-    window.nextCard = nextCard;
-    window.saveCurrentCard = saveCurrentCard;
-    window.printMCC = printMCC;
-    window.newCase = newCase;
-
-    document.addEventListener("DOMContentLoaded", init);
-</script>
-
+    </script>
 </body>
 </html>

@@ -42,6 +42,7 @@
             min-height: 100vh;
         }
 
+        /* Header */
         .header {
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
@@ -61,9 +62,19 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .logo-area p { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
 
-        .user-area { display: flex; align-items: center; gap: 15px; }
+        .logo-area p {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .theme-toggle {
             background: var(--bg-primary);
             border: 1px solid var(--border);
@@ -72,8 +83,22 @@
             cursor: pointer;
             font-size: 14px;
         }
-        .admin-badge { background: var(--danger); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .user-info { display: flex; align-items: center; gap: 12px; }
+
+        .admin-badge {
+            background: var(--danger);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -86,12 +111,49 @@
             font-size: 18px;
         }
 
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Admin Grid */
         .admin-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             padding: 24px;
         }
+
         .admin-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -101,27 +163,72 @@
             transition: all 0.3s ease;
             text-align: center;
         }
-        .admin-card:hover { transform: translateY(-4px); border-color: var(--accent); }
-        .admin-card .icon { font-size: 48px; margin-bottom: 15px; }
-        .admin-card .title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-        .admin-card .desc { font-size: 12px; color: var(--text-secondary); }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 24px;
+        .admin-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
         }
-        .stat-card {
-            background: var(--bg-card);
+
+        .admin-card .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .admin-card .title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .admin-card .desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Control Buttons */
+        .control-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout {
+            background: var(--bg-primary);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
+            color: var(--text-primary);
         }
-        .stat-card .value { font-size: 32px; font-weight: 800; color: var(--accent); }
-        .stat-card .label { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
 
+        .btn-reboot {
+            background: var(--warning);
+            color: #0F1117;
+        }
+
+        .btn-shutdown {
+            background: var(--danger);
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -136,8 +243,12 @@
         }
 
         @media (max-width: 768px) {
-            .admin-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -154,100 +265,196 @@
         <div class="user-info">
             <div class="user-avatar" id="userAvatar">👑</div>
             <div>
-                <div class="user-name" id="userName"></div>
+                <div class="user-name" id="userName">سيد راشد</div>
                 <div class="user-role">مدير</div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- إحصائيات سريعة -->
 <div class="stats-grid">
-    <div class="stat-card"><div class="value" id="totalCases">0</div><div class="label">إجمالي الحالات</div></div>
-    <div class="stat-card"><div class="value" id="totalResearchers">0</div><div class="label">الباحثين</div></div>
-    <div class="stat-card"><div class="value" id="totalSpecial">0</div><div class="label">حالات خاصة</div></div>
-    <div class="stat-card"><div class="value" id="totalAmount">0</div><div class="label">إجمالي المصروفات</div></div>
+    <div class="stat-card" onclick="navigateTo('/modules/cases/index.html')">
+        <div class="value" id="totalCases">0</div>
+        <div class="label">إجمالي الحالات</div>
+    </div>
+    <div class="stat-card" onclick="navigateTo('/modules/hr/index.html')">
+        <div class="value" id="totalResearchers">0</div>
+        <div class="label">الباحثين</div>
+    </div>
+    <div class="stat-card" onclick="navigateTo('/modules/cases/special_cases/index.html')">
+        <div class="value" id="totalSpecial">0</div>
+        <div class="label">حالات خاصة</div>
+    </div>
+    <div class="stat-card" onclick="navigateTo('/modules/accounting/index.html')">
+        <div class="value" id="totalAmount">0</div>
+        <div class="label">إجمالي المصروفات</div>
+    </div>
 </div>
 
+<!-- أدوات المدير -->
 <div class="admin-grid">
     <div class="admin-card" onclick="navigateTo('/modules/settings/index.html')">
         <div class="icon">⚙️</div>
         <div class="title">الإعدادات العامة</div>
         <div class="desc">إعدادات النظام والجمعية</div>
     </div>
+    
+    <div class="admin-card" onclick="navigateTo('/modules/cases/smart_engine/index.html')">
+        <div class="icon">🧠</div>
+        <div class="title">المحرك الذكي</div>
+        <div class="desc">حقن Excel/Word في قاعدة البيانات</div>
+    </div>
+    
     <div class="admin-card" onclick="navigateTo('/modules/settings/index.html?tab=forms')">
         <div class="icon">📄</div>
         <div class="title">قوالب الاستمارات</div>
-        <div class="desc">تعديل قوالب الطباعة</div>
+        <div class="desc">تعديل قوالب الطباعة (No-Code)</div>
     </div>
+    
     <div class="admin-card" onclick="navigateTo('/modules/settings/index.html?tab=modules')">
         <div class="icon">🧩</div>
         <div class="title">إدارة الموديولات</div>
         <div class="desc">تفعيل/إيقاف الموديولات</div>
     </div>
+    
     <div class="admin-card" onclick="navigateTo('/modules/settings/index.html?tab=users')">
         <div class="icon">👥</div>
         <div class="title">إدارة المستخدمين</div>
         <div class="desc">إضافة/تعديل/حذف مستخدمين</div>
     </div>
+    
     <div class="admin-card" onclick="navigateTo('/modules/cases/special_cases/index.html')">
         <div class="icon">⭐</div>
         <div class="title">حالات خاصة</div>
         <div class="desc">مساعدات خاصة خارج الكاش</div>
     </div>
+    
+    <div class="admin-card" onclick="navigateTo('/modules/accounting/treasury/index.html')">
+        <div class="icon">🏦</div>
+        <div class="title">الخزينة</div>
+        <div class="desc">إدارة الخزينة والسلف</div>
+    </div>
+    
     <div class="admin-card" onclick="navigateTo('/modules/settings/index.html?tab=database')">
         <div class="icon">💾</div>
         <div class="title">النسخ الاحتياطي</div>
         <div class="desc">نسخ واستعادة قاعدة البيانات</div>
     </div>
-    <div class="admin-card" onclick="navigateTo('/modules/cases/index.html')">
-        <div class="icon">🏠</div>
-        <div class="title">إدارة الحالات</div>
-        <div class="desc">إدارة الحالات العادية</div>
+    
+    <div class="admin-card" onclick="navigateTo('/modules/hr/reports/index.html')">
+        <div class="icon">📊</div>
+        <div class="title">تقارير الأداء</div>
+        <div class="desc">إحصائيات الباحثين والإنتاجية</div>
     </div>
-    <div class="admin-card" onclick="navigateTo('/modules/hr/index.html')">
-        <div class="icon">👥</div>
-        <div class="title">الموظفين (HR)</div>
-        <div class="desc">إدارة الموظفين والحضور</div>
+    
+    <div class="admin-card" onclick="navigateTo('/modules/ai/assistant.html')">
+        <div class="icon">🤖</div>
+        <div class="title">المساعد الذكي</div>
+        <div class="desc">إدارة بوت التليجرام والواتساب</div>
     </div>
-    <div class="admin-card" onclick="navigateTo('/modules/accounting/index.html')">
-        <div class="icon">💰</div>
-        <div class="title">الحسابات</div>
-        <div class="desc">الحسابات والخزينة</div>
-    </div>
-    <div class="admin-card" onclick="navigateTo('/modules/cases/visit_management/index.html')">
-        <div class="icon">🗺️</div>
-        <div class="title">خطط الزيارات</div>
-        <div class="desc">توليد خطط الزيارات</div>
-    </div>
+</div>
+
+<!-- أزرار التحكم -->
+<div class="control-buttons">
+    <button class="control-btn btn-logout" onclick="logout()">🔒 تسجيل خروج</button>
+    <button class="control-btn btn-reboot" id="rebootBtn" onclick="rebootSystem()">🔄 إعادة تشغيل الجهاز</button>
+    <button class="control-btn btn-shutdown" id="shutdownBtn" onclick="shutdownSystem()">⏻ إيقاف تشغيل الجهاز</button>
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
-    let currentUser = { name: "سيد راشد", avatar: "👑", role: "admin" };
-    let stats = { total: 1250, researchers: 12, special: 15, amount: 243000 };
+    // بيانات تجريبية - سيتم ربطها بقاعدة البيانات لاحقاً
+    let stats = {
+        total: 1250,
+        researchers: 12,
+        special: 15,
+        amount: 243000
+    };
 
-    function loadUserInfo() {
-        document.getElementById('userAvatar').innerText = currentUser.avatar;
-        document.getElementById('userName').innerText = currentUser.name;
-    }
+    // تحميل البيانات
     function loadStats() {
-        document.getElementById('totalCases').innerText = stats.total;
+        document.getElementById('totalCases').innerText = stats.total.toLocaleString('ar-EG');
         document.getElementById('totalResearchers').innerText = stats.researchers;
         document.getElementById('totalSpecial').innerText = stats.special;
         document.getElementById('totalAmount').innerText = stats.amount.toLocaleString('ar-EG');
     }
-    function navigateTo(link) { window.location.href = link; }
-    function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
-    function toggleTheme() { let html = document.documentElement; let newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; html.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); document.querySelector('.theme-toggle').textContent = newTheme === 'light' ? '🌙' : '☀️'; }
 
-    function init() {
-        loadUserInfo();
-        loadStats();
-        let savedTheme = localStorage.getItem('theme') || 'dark';
+    // التنقل بين الصفحات
+    function navigateTo(link) {
+        showToast(`جاري فتح ${link}`);
+        // window.location.href = link;
+    }
+
+    // تسجيل الخروج
+    function logout() {
+        if (confirm('هل تريد تسجيل الخروج؟')) {
+            localStorage.removeItem('currentUser');
+            showToast('جاري تسجيل الخروج...');
+            setTimeout(() => {
+                window.location.href = '/login.html';
+            }, 1000);
+        }
+    }
+
+    // إعادة تشغيل النظام
+    function rebootSystem() {
+        if (confirm('⚠️ تحذير: سيتم إعادة تشغيل الجهاز بالكامل. هل أنت متأكد؟')) {
+            showToast('جاري إعادة تشغيل الجهاز...');
+            // هنا سيتم الاتصال بـ API لإعادة التشغيل
+        }
+    }
+
+    // إيقاف تشغيل النظام
+    function shutdownSystem() {
+        if (confirm('⚠️ تحذير: سيتم إيقاف تشغيل الجهاز بالكامل. هل أنت متأكد؟')) {
+            showToast('جاري إيقاف تشغيل الجهاز...');
+            // هنا سيتم الاتصال بـ API لإيقاف التشغيل
+        }
+    }
+
+    // تغيير الثيم
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.querySelector('.theme-toggle').textContent = newTheme === 'light' ? '🌙' : '☀️';
+    }
+
+    // عرض الإشعارات
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    // تحميل إعدادات الثيم
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
     }
+
+    // تحميل بيانات المستخدم
+    function loadUserInfo() {
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{"name":"سيد راشد","avatar":"👑"}');
+        document.getElementById('userAvatar').innerText = user.avatar || '👑';
+        document.getElementById('userName').innerText = user.name || 'سيد راشد';
+    }
+
+    // تهيئة الصفحة
+    function init() {
+        loadUserInfo();
+        loadStats();
+        loadTheme();
+    }
+
     init();
 </script>
 </body>

@@ -1,359 +1,369 @@
-/**
- * case_store.js - إدارة وتخزين بيانات الحالات
- * تم التحديث: إضافة دعم للحالات الخاصة والتكامل مع الذكاء الاصطناعي
- */
+// =====================================================================
+// core/cases/case_store.js - إدارة الحالات (Case Store)
+// المرجع: Master Plan v1.0 - 5 أبريل 2026
+// المبادئ: currentCase.data هو مصدر الحقيقة، Additive Only
+// =====================================================================
 
-const CaseStore = (function() {
-    'use strict';
+const fs = require('fs').promises;
+const path = require('path');
+const crypto = require('crypto');
+
+// =====================================================================
+// التكوين الأساسي
+// =====================================================================
+const DATA_DIR = path.join(process.cwd(), 'data');
+const CASES_DIR = path.join(DATA_DIR, 'cases');
+const ATTACHMENTS_DIR = path.join(DATA_DIR, 'attachments');
+const META_FILE = path.join(CASES_DIR, '_meta.json');
+
+// التأكد من وجود المجلدات الأساسية
+async function ensureDirectories() {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    await fs.mkdir(CASES_DIR, { recursive: true });
+    await fs.mkdir(ATTACHMENTS_DIR, { recursive: true });
+}
+
+// =====================================================================
+// دوال مساعدة (Helper Functions)
+// =====================================================================
+
+// توليد معرف فريد للحالة الجديدة
+function generateCaseId() {
+    return `CASE-${Date.now()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+}
+
+// الحصول على مسار ملف الحالة
+function getCaseFilePath(caseId) {
+    return path.join(CASES_DIR, `${caseId}.json`);
+}
+
+// الحصول على مسار مجلد مرفقات الحالة
+function getCaseAttachmentsDir(caseId) {
+    return path.join(ATTACHMENTS_DIR, caseId);
+}
+
+// قراءة ملف الميتا (قائمة بجميع الحالات وبياناتها الأساسية)
+async function readMeta() {
+    try {
+        const data = await fs.readFile(META_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        // إذا كان الملف غير موجود أو تالف، نعيد هيكل فارغ
+        return { cases: [], lastUpdated: null };
+    }
+}
+
+// كتابة ملف الميتا
+async function writeMeta(meta) {
+    meta.lastUpdated = new Date().toISOString();
+    await fs.writeFile(META_FILE, JSON.stringify(meta, null, 2), 'utf8');
+}
+
+// تحديث الميتا بعد إضافة/حذف حالة
+async function updateMetaForCase(caseObj, isDelete = false) {
+    const meta = await readMeta();
+    const caseId = caseObj.caseId || caseObj.id;
     
-    // ==================== جداول البيانات الجديدة ====================
-    
-    // جدول الحالات الخاصة
-    let specialCasesDB = [];
-    
-    // جدول تتبع التذكيرات (للتكامل مع بوت التليجرام)
-    let remindersDB = [];
-    
-    // جدول سجل تفاعلات الذكاء الاصطناعي
-    let aiInteractionsDB = [];
-    
-    // ==================== دوال الحالات الخاصة ====================
-    
-    /**
-     * الحصول على جميع الحالات الخاصة
-     */
-    function getSpecialCases(filters = {}) {
-        let result = [...specialCasesDB];
-        
-        if (filters.status) {
-            result = result.filter(c => c.status === filters.status);
+    // استخراج البيانات الأساسية للميتا (بدون تفاصيل كبيرة)
+    const caseMeta = {
+        caseId: caseId,
+        caseNo: caseObj.data?.caseNo || caseObj.caseNo || '',
+        fullName: caseObj.data?.fullName || caseObj.fullName || '',
+        phone: caseObj.data?.phone || caseObj.phone || '',
+        city: caseObj.data?.city || caseObj.city || '',
+        status: caseObj.data?.status || caseObj.status || 'new',
+        priority: caseObj.data?.priority || caseObj.priority || 'medium',
+        createdAt: caseObj.createdAt || caseObj.data?.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+
+    if (isDelete) {
+        // حذف من الميتا
+        meta.cases = meta.cases.filter(c => c.caseId !== caseId);
+    } else {
+        // البحث عن الحالة في الميتا
+        const existingIndex = meta.cases.findIndex(c => c.caseId === caseId);
+        if (existingIndex !== -1) {
+            // تحديث الحالة الموجودة
+            meta.cases[existingIndex] = { ...meta.cases[existingIndex], ...caseMeta };
+        } else {
+            // إضافة حالة جديدة
+            meta.cases.push(caseMeta);
         }
-        if (filters.priority) {
-            result = result.filter(c => c.priority === filters.priority);
-        }
-        if (filters.type) {
-            result = result.filter(c => c.type === filters.type);
-        }
-        if (filters.assignedTo) {
-            result = result.filter(c => c.assignedTo === filters.assignedTo);
-        }
-        
-        return result.sort((a, b) => {
-            const priorityOrder = { high: 0, medium: 1, low: 2 };
-            return priorityOrder[a.priority] - priorityOrder[b.priority];
-        });
     }
     
-    /**
-     * الحصول على حالة خاصة بواسطة ID
-     */
-    function getSpecialCaseById(id) {
-        return specialCasesDB.find(c => c.id === id);
-    }
+    await writeMeta(meta);
+}
+
+// =====================================================================
+// الوظائف الأساسية (Core Functions) - API العام للنظام
+// =====================================================================
+
+/**
+ * حفظ حالة جديدة أو تحديث حالة موجودة
+ * @param {Object} caseObj - كائن الحالة الكامل (يجب أن يحتوي على caseId للموجودات)
+ * @returns {Promise<Object>} - الحالة المحفوظة
+ */
+async function saveCase(caseObj) {
+    await ensureDirectories();
     
-    /**
-     * إضافة حالة خاصة جديدة
-     */
-    function addSpecialCase(caseData) {
-        const newCase = {
-            id: Date.now(),
-            ...caseData,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            status: caseData.status || 'pending',
-            aiSuggestions: [],
-            visitHistory: []
-        };
-        
-        specialCasesDB.push(newCase);
-        saveToLocalStorage();
-        
-        // تسجيل التفاعل مع الذكاء الاصطناعي
-        logAICaseCreation(newCase);
-        
-        // إرسال إشعار للبوت (إذا كان هناك حالة عالية الأولوية)
-        if (newCase.priority === 'high') {
-            notifyKeeperBot(newCase);
-        }
-        
-        return newCase;
-    }
-    
-    /**
-     * تحديث حالة خاصة
-     */
-    function updateSpecialCase(id, updates) {
-        const index = specialCasesDB.findIndex(c => c.id === id);
-        if (index === -1) return null;
-        
-        const oldCase = specialCasesDB[index];
-        specialCasesDB[index] = {
-            ...oldCase,
-            ...updates,
+    // التأكد من وجود بنية البيانات الأساسية
+    if (!caseObj.data) {
+        // إذا لم يكن هناك data، نعتبر أن caseObj نفسه هو data
+        caseObj = {
+            caseId: caseObj.caseId || generateCaseId(),
+            data: caseObj,
+            createdAt: caseObj.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
-        
-        saveToLocalStorage();
-        
-        // تسجيل التحديث للذكاء الاصطناعي
-        logAIUpdate(oldCase, specialCasesDB[index]);
-        
-        return specialCasesDB[index];
+    } else {
+        // تحديث وقت التعديل
+        caseObj.updatedAt = new Date().toISOString();
+        if (!caseObj.caseId) {
+            caseObj.caseId = generateCaseId();
+        }
+        if (!caseObj.createdAt) {
+            caseObj.createdAt = new Date().toISOString();
+        }
     }
     
-    /**
-     * حذف حالة خاصة
-     */
-    function deleteSpecialCase(id) {
-        const index = specialCasesDB.findIndex(c => c.id === id);
-        if (index === -1) return false;
+    // التأكد من وجود معرف
+    const caseId = caseObj.caseId;
+    const filePath = getCaseFilePath(caseId);
+    
+    // حفظ الملف
+    await fs.writeFile(filePath, JSON.stringify(caseObj, null, 2), 'utf8');
+    
+    // تحديث الميتا
+    await updateMetaForCase(caseObj);
+    
+    console.log(`[CaseStore] تم حفظ الحالة: ${caseId}`);
+    return caseObj;
+}
+
+/**
+ * تحميل حالة بناءً على المعرف
+ * @param {string} id - معرف الحالة
+ * @returns {Promise<Object|null>} - كائن الحالة أو null إذا لم توجد
+ */
+async function getCase(id) {
+    await ensureDirectories();
+    const filePath = getCaseFilePath(id);
+    
+    try {
+        const data = await fs.readFile(filePath, 'utf8');
+        const caseObj = JSON.parse(data);
+        console.log(`[CaseStore] تم تحميل الحالة: ${id}`);
+        return caseObj;
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            console.log(`[CaseStore] الحالة غير موجودة: ${id}`);
+            return null;
+        }
+        console.error(`[CaseStore] خطأ في تحميل الحالة ${id}:`, error);
+        throw error;
+    }
+}
+
+/**
+ * الحصول على قائمة بجميع الحالات (بيانات أساسية فقط للميتا)
+ * @param {Object} filters - فلترة اختيارية { status, priority, search }
+ * @returns {Promise<Array>} - قائمة الحالات
+ */
+async function getAllCases(filters = {}) {
+    await ensureDirectories();
+    const meta = await readMeta();
+    let cases = [...meta.cases];
+    
+    // تطبيق الفلاتر
+    if (filters.status) {
+        cases = cases.filter(c => c.status === filters.status);
+    }
+    if (filters.priority) {
+        cases = cases.filter(c => c.priority === filters.priority);
+    }
+    if (filters.search) {
+        const searchTerm = filters.search.toLowerCase();
+        cases = cases.filter(c => 
+            c.fullName.toLowerCase().includes(searchTerm) ||
+            c.caseNo.toLowerCase().includes(searchTerm) ||
+            c.phone.includes(searchTerm)
+        );
+    }
+    
+    // ترتيب حسب تاريخ التحديث (الأحدث أولاً)
+    cases.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    
+    console.log(`[CaseStore] تم جلب ${cases.length} حالة`);
+    return cases;
+}
+
+/**
+ * حذف حالة ومرفقاتها
+ * @param {string} id - معرف الحالة
+ * @returns {Promise<boolean>} - true إذا تم الحذف بنجاح
+ */
+async function deleteCase(id) {
+    await ensureDirectories();
+    const filePath = getCaseFilePath(id);
+    const attachmentsDir = getCaseAttachmentsDir(id);
+    
+    try {
+        // تحميل الحالة قبل الحذف لتحديث الميتا
+        const caseObj = await getCase(id);
+        if (!caseObj) {
+            console.log(`[CaseStore] محاولة حذف حالة غير موجودة: ${id}`);
+            return false;
+        }
         
-        specialCasesDB.splice(index, 1);
-        saveToLocalStorage();
+        // حذف ملف الحالة
+        await fs.unlink(filePath);
+        
+        // حذف مجلد المرفقات إذا كان موجوداً
+        try {
+            await fs.rm(attachmentsDir, { recursive: true, force: true });
+        } catch (e) {
+            // تجاهل الأخطاء إذا لم يكن المجلد موجوداً
+            console.log(`[CaseStore] لا يوجد مرفقات للحالة ${id}`);
+        }
+        
+        // تحديث الميتا (حذف من القائمة)
+        await updateMetaForCase(caseObj, true);
+        
+        console.log(`[CaseStore] تم حذف الحالة: ${id}`);
         return true;
+    } catch (error) {
+        console.error(`[CaseStore] خطأ في حذف الحالة ${id}:`, error);
+        throw error;
+    }
+}
+
+/**
+ * حفظ مرفق لحالة معينة
+ * @param {string} caseId - معرف الحالة
+ * @param {string} fileName - اسم الملف
+ * @param {Buffer|string} fileContent - محتوى الملف (Buffer أو مسار)
+ * @returns {Promise<string>} - مسار المرفق المحفوظ
+ */
+async function saveAttachment(caseId, fileName, fileContent) {
+    await ensureDirectories();
+    const attachmentsDir = getCaseAttachmentsDir(caseId);
+    await fs.mkdir(attachmentsDir, { recursive: true });
+    
+    // تنظيف اسم الملف
+    const safeFileName = fileName.replace(/[^a-zA-Z0-9\u0600-\u06FF\-_.]/g, '_');
+    const filePath = path.join(attachmentsDir, safeFileName);
+    
+    // إذا كان fileContent مساراً، ننسخ الملف
+    if (typeof fileContent === 'string' && (fileContent.startsWith('/') || fileContent.includes(':'))) {
+        await fs.copyFile(fileContent, filePath);
+    } else {
+        // وإلا نكتب المحتوى مباشرة
+        await fs.writeFile(filePath, fileContent);
     }
     
-    // ==================== دوال التذكيرات (للبوت) ====================
-    
-    /**
-     * إضافة تذكير لحالة
-     */
-    function addReminder(caseId, reminderData) {
-        const reminder = {
-            id: Date.now(),
-            caseId: caseId,
-            type: reminderData.type || 'follow_up', // follow_up, urgent, scheduled
-            scheduledFor: reminderData.scheduledFor,
-            message: reminderData.message,
-            status: 'pending', // pending, sent, cancelled
-            createdAt: new Date().toISOString(),
-            sentAt: null,
-            retryCount: 0
-        };
-        
-        remindersDB.push(reminder);
-        saveToLocalStorage();
-        return reminder;
+    console.log(`[CaseStore] تم حفظ مرفق ${safeFileName} للحالة ${caseId}`);
+    return filePath;
+}
+
+/**
+ * حذف مرفق معين
+ * @param {string} caseId - معرف الحالة
+ * @param {string} fileName - اسم الملف
+ * @returns {Promise<boolean>}
+ */
+async function deleteAttachment(caseId, fileName) {
+    const filePath = path.join(getCaseAttachmentsDir(caseId), fileName);
+    try {
+        await fs.unlink(filePath);
+        console.log(`[CaseStore] تم حذف مرفق ${fileName} للحالة ${caseId}`);
+        return true;
+    } catch (error) {
+        console.error(`[CaseStore] خطأ في حذف المرفق:`, error);
+        return false;
     }
-    
-    /**
-     * الحصول على التذكيرات المستحقة
-     */
-    function getPendingReminders() {
-        const now = new Date();
-        return remindersDB.filter(r => {
-            if (r.status !== 'pending') return false;
-            if (!r.scheduledFor) return false;
-            return new Date(r.scheduledFor) <= now;
-        });
+}
+
+/**
+ * الحصول على جميع مرفقات حالة معينة
+ * @param {string} caseId - معرف الحالة
+ * @returns {Promise<Array>} - قائمة بأسماء الملفات
+ */
+async function getAttachments(caseId) {
+    const attachmentsDir = getCaseAttachmentsDir(caseId);
+    try {
+        const files = await fs.readdir(attachmentsDir);
+        return files;
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            return [];
+        }
+        throw error;
     }
+}
+
+/**
+ * تصدير جميع البيانات (للنسخ الاحتياطي)
+ * @returns {Promise<Object>} - جميع الحالات والميتا
+ */
+async function exportAllData() {
+    await ensureDirectories();
+    const meta = await readMeta();
+    const cases = [];
     
-    /**
-     * تحديث حالة تذكير (تم إرساله)
-     */
-    function markReminderSent(id) {
-        const reminder = remindersDB.find(r => r.id === id);
-        if (reminder) {
-            reminder.status = 'sent';
-            reminder.sentAt = new Date().toISOString();
-            saveToLocalStorage();
+    for (const caseMeta of meta.cases) {
+        const caseObj = await getCase(caseMeta.caseId);
+        if (caseObj) {
+            cases.push(caseObj);
         }
     }
-    
-    // ==================== دوال الذكاء الاصطناعي ====================
-    
-    /**
-     * تسجيل إنشاء حالة جديدة بواسطة AI
-     */
-    function logAICaseCreation(caseData) {
-        const interaction = {
-            id: Date.now(),
-            type: 'case_creation',
-            caseId: caseData.id,
-            caseData: caseData,
-            timestamp: new Date().toISOString(),
-            source: 'user'
-        };
-        aiInteractionsDB.push(interaction);
-        saveToLocalStorage();
-    }
-    
-    /**
-     * تسجيل تحديث بواسطة AI
-     */
-    function logAIUpdate(oldData, newData) {
-        const interaction = {
-            id: Date.now(),
-            type: 'case_update',
-            caseId: newData.id,
-            changes: {
-                before: oldData,
-                after: newData
-            },
-            timestamp: new Date().toISOString(),
-            source: 'ai_assistant'
-        };
-        aiInteractionsDB.push(interaction);
-        saveToLocalStorage();
-    }
-    
-    /**
-     * الحصول على إحصائيات للذكاء الاصطناعي
-     */
-    function getAIStatistics() {
-        const totalCases = specialCasesDB.length;
-        const highPriorityCases = specialCasesDB.filter(c => c.priority === 'high').length;
-        const pendingReminders = remindersDB.filter(r => r.status === 'pending').length;
-        const recentInteractions = aiInteractionsDB.filter(i => {
-            return new Date(i.timestamp) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-        }).length;
-        
-        return {
-            totalSpecialCases: totalCases,
-            highPriorityCases: highPriorityCases,
-            pendingReminders: pendingReminders,
-            weeklyAIActions: recentInteractions,
-            completionRate: totalCases ? 
-                (specialCasesDB.filter(c => c.status === 'completed').length / totalCases * 100).toFixed(1) : 0
-        };
-    }
-    
-    /**
-     * إشعار بوت Keeper (للتذكير)
-     */
-    function notifyKeeperBot(caseData) {
-        // هذا سيتصل بـ API البوت
-        if (window.aiRouter && window.aiRouter.sendToKeeperBot) {
-            window.aiRouter.sendToKeeperBot({
-                type: 'urgent_case',
-                caseId: caseData.id,
-                caseName: caseData.name,
-                priority: caseData.priority
-            });
-        }
-    }
-    
-    // ==================== دوال التخزين المحلي ====================
-    
-    /**
-     * حفظ البيانات في LocalStorage
-     */
-    function saveToLocalStorage() {
-        try {
-            localStorage.setItem('specialCasesDB', JSON.stringify(specialCasesDB));
-            localStorage.setItem('remindersDB', JSON.stringify(remindersDB));
-            localStorage.setItem('aiInteractionsDB', JSON.stringify(aiInteractionsDB));
-        } catch(e) {
-            console.error('Error saving to localStorage:', e);
-        }
-    }
-    
-    /**
-     * تحميل البيانات من LocalStorage
-     */
-    function loadFromLocalStorage() {
-        try {
-            const savedSpecial = localStorage.getItem('specialCasesDB');
-            const savedReminders = localStorage.getItem('remindersDB');
-            const savedAI = localStorage.getItem('aiInteractionsDB');
-            
-            if (savedSpecial) specialCasesDB = JSON.parse(savedSpecial);
-            if (savedReminders) remindersDB = JSON.parse(savedReminders);
-            if (savedAI) aiInteractionsDB = JSON.parse(savedAI);
-        } catch(e) {
-            console.error('Error loading from localStorage:', e);
-            // بيانات افتراضية للاختبار
-            if (specialCasesDB.length === 0) {
-                loadMockData();
-            }
-        }
-    }
-    
-    /**
-     * بيانات افتراضية للاختبار
-     */
-    function loadMockData() {
-        specialCasesDB = [
-            {
-                id: 1001,
-                name: 'أسرة محمد أحمد',
-                phone: '01001234567',
-                type: 'urgent',
-                priority: 'high',
-                status: 'pending',
-                description: 'أسرة مكونة من 5 أفراد بحاجة ماسة للسكن',
-                requestedAmount: 5000,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            },
-            {
-                id: 1002,
-                name: 'حالة طبية - سيدة مسنة',
-                phone: '01007654321',
-                type: 'medical',
-                priority: 'high',
-                status: 'in_progress',
-                description: 'حاجة لعملية عيون عاجلة',
-                requestedAmount: 15000,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            }
-        ];
-        saveToLocalStorage();
-    }
-    
-    // ==================== دوال التوافق مع النظام القديم ====================
-    
-    /**
-     * دالة البحث الموحدة (للتكامل مع البحث القديم)
-     */
-    function searchCases(query, type = 'all') {
-        query = query.toLowerCase();
-        
-        let results = [];
-        
-        if (type === 'all' || type === 'special') {
-            results.push(...specialCasesDB.filter(c => 
-                c.name.toLowerCase().includes(query) || 
-                (c.phone && c.phone.includes(query))
-            ));
-        }
-        
-        return results;
-    }
-    
-    // ==================== التهيئة ====================
-    
-    // تحميل البيانات عند بدء التشغيل
-    loadFromLocalStorage();
-    
-    // ==================== الواجهة العامة (API) ====================
     
     return {
-        // دوال الحالات الخاصة
-        getSpecialCases,
-        getSpecialCaseById,
-        addSpecialCase,
-        updateSpecialCase,
-        deleteSpecialCase,
-        
-        // دوال التذكيرات
-        addReminder,
-        getPendingReminders,
-        markReminderSent,
-        
-        // دوال الذكاء الاصطناعي
-        getAIStatistics,
-        
-        // دوال البحث
-        searchCases,
-        
-        // دوال مساعدة
-        getStore: () => ({ specialCases: specialCasesDB, reminders: remindersDB })
+        exportedAt: new Date().toISOString(),
+        version: '1.0',
+        meta: meta,
+        cases: cases
     };
-})();
-
-// تصدير للاستخدام في المتصفح
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CaseStore;
 }
+
+/**
+ * استيراد بيانات (للاستعادة من نسخة احتياطية)
+ * @param {Object} exportData - البيانات المصدرة مسبقاً
+ * @returns {Promise<number>} - عدد الحالات المستوردة
+ */
+async function importAllData(exportData) {
+    await ensureDirectories();
+    
+    let importedCount = 0;
+    for (const caseObj of exportData.cases) {
+        await saveCase(caseObj);
+        importedCount++;
+    }
+    
+    console.log(`[CaseStore] تم استيراد ${importedCount} حالة`);
+    return importedCount;
+}
+
+// =====================================================================
+// تصدير الوحدات (CommonJS للاستخدام في Node.js)
+// =====================================================================
+module.exports = {
+    // دوال إدارة الحالات
+    saveCase,
+    getCase,
+    getAllCases,
+    deleteCase,
+    
+    // دوال إدارة المرفقات
+    saveAttachment,
+    deleteAttachment,
+    getAttachments,
+    
+    // دوال النسخ الاحتياطي
+    exportAllData,
+    importAllData,
+    
+    // دوال مساعدة (للاستخدام الداخلي أو المتقدم)
+    generateCaseId,
+    ensureDirectories
+};

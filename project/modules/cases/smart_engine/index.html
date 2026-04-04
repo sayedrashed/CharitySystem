@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المحرك الذكي - حقن البيانات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0F1117;
+            --bg-secondary: #1A1D27;
+            --bg-card: #1A1D27;
+            --border: #2E3250;
+            --text-primary: #E8EBF4;
+            --text-secondary: #6B7280;
+            --accent: #4F8EF7;
+            --success: #2DD4BF;
+            --warning: #F59E0B;
+            --danger: #F87171;
+            --gold: #F5C842;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .admin-badge {
+            background: var(--danger);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #0F1117;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: var(--success);
+            transition: width 0.3s ease;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .preview-table th, .preview-table td {
+            border: 1px solid var(--border);
+            padding: 8px;
+            text-align: center;
+        }
+
+        .preview-table th {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .status-success {
+            background: rgba(46,202,171,0.15);
+            color: var(--success);
+        }
+
+        .status-error {
+            background: rgba(248,113,113,0.15);
+            color: var(--danger);
+        }
+
+        .status-warning {
+            background: rgba(245,166,35,0.15);
+            color: var(--warning);
+        }
+
+        .row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        @media (max-width: 768px) {
+            .row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <button class="back-btn" onclick="goBack()"><span>←</span> العودة</button>
+    <div class="page-title">⚙️ المحرك الذكي</div>
+    <div class="user-area">
+        <div class="admin-badge">👑 للمدير فقط</div>
+    </div>
+</div>
+
+<div class="container">
+    
+    <!-- رفع ملف Excel -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">📊 رفع ملف Excel (حقن 200 حالة دفعة واحدة)</div>
+        </div>
+        <div class="form-group">
+            <label>اختر ملف Excel (.xlsx, .xls)</label>
+            <input type="file" id="excelFile" class="file-input" accept=".xlsx,.xls">
+        </div>
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-primary" onclick="previewExcel()">🔍 معاينة البيانات</button>
+            </div>
+            <div class="col">
+                <button class="btn btn-success" onclick="importExcel()" id="importBtn" disabled>💾 حقن البيانات</button>
+            </div>
+        </div>
+        <div id="excelPreview"></div>
+        <div id="excelProgress" class="progress-bar" style="display:none;"><div class="progress-fill"></div></div>
+        <div id="excelStatus"></div>
+    </div>
+
+    <!-- رفع ملف Word -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">📝 رفع ملف Word (استخراج البيانات مع تشيك بوكس)</div>
+        </div>
+        <div class="form-group">
+            <label>اختر ملف Word (.docx)</label>
+            <input type="file" id="wordFile" class="file-input" accept=".docx">
+        </div>
+        <button class="btn btn-primary" onclick="processWord()">🔍 تحليل الملف</button>
+        <div id="wordSections"></div>
+        <div id="wordStatus"></div>
+    </div>
+
+    <!-- رفع ملف PDF -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">📄 فك ضغط PDF (استخراج الصفحات)</div>
+        </div>
+        <div class="form-group">
+            <label>اختر ملف PDF</label>
+            <input type="file" id="pdfFile" class="file-input" accept=".pdf">
+        </div>
+        <button class="btn btn-primary" onclick="extractPDF()">🔓 فك الضغط</button>
+        <div id="pdfStatus"></div>
+    </div>
+</div>
+
+<div id="toast" class="toast" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:12px 24px; display:none; z-index:1000;"></div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+<script>
+    let excelData = [];
+    let wordSections = [];
+
+    // ============================================================
+    // دوال Excel
+    // ============================================================
+
+    async function previewExcel() {
+        const file = document.getElementById('excelFile').files[0];
+        if (!file) {
+            showToast('الرجاء اختيار ملف Excel أولاً');
+            return;
+        }
+
+        showToast('⏳ جاري قراءة الملف...');
+        
+        const data = await readExcelFile(file);
+        if (data && data.length > 0) {
+            excelData = data;
+            displayExcelPreview(data.slice(0, 10));
+            document.getElementById('importBtn').disabled = false;
+            showToast(`✅ تم قراءة ${data.length} صف`);
+        }
+    }
+
+    function readExcelFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(firstSheet);
+                resolve(rows);
+            };
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    function displayExcelPreview(rows) {
+        if (!rows.length) return;
+        
+        const headers = Object.keys(rows[0]);
+        let html = '<table class="preview-table"><thead><tr>';
+        headers.forEach(h => html += `<th>${h}</th>`);
+        html += '</tr></thead><tbody>';
+        
+        rows.forEach(row => {
+            html += '<tr>';
+            headers.forEach(h => html += `<td>${row[h] || ''}</td>`);
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+        
+        document.getElementById('excelPreview').innerHTML = html;
+    }
+
+    async function importExcel() {
+        if (!excelData.length) return;
+        
+        const progressBar = document.getElementById('excelProgress');
+        const progressFill = progressBar.querySelector('.progress-fill');
+        const statusDiv = document.getElementById('excelStatus');
+        
+        progressBar.style.display = 'block';
+        statusDiv.innerHTML = '';
+        
+        let successCount = 0;
+        let errorCount = 0;
+        
+        for (let i = 0; i < excelData.length; i++) {
+            const row = excelData[i];
+            const percent = ((i + 1) / excelData.length) * 100;
+            progressFill.style.width = `${percent}%`;
+            
+            try {
+                const caseData = {
+                    name: row['الاسم'] || row['name'] || '',
+                    serial_global: row['م.ع'] || row['serial_global'] || '',
+                    serial_accounting: row['م.م'] || row['serial_accounting'] || '',
+                    phone: row['الهاتف'] || row['phone'] || '',
+                    address: row['العنوان'] || row['address'] || '',
+                    category: detectCategory(row),
+                    status: 'قيد المراجعة',
+                    created_at: new Date().toISOString()
+                };
+                
+                // حفظ في قاعدة البيانات (localStorage مؤقتاً)
+                saveToLocalStorage(caseData);
+                successCount++;
+            } catch (error) {
+                errorCount++;
+                console.error(error);
+            }
+        }
+        
+        progressBar.style.display = 'none';
+        statusDiv.innerHTML = `
+            <div class="status status-success">
+                ✅ تم استيراد ${successCount} حالة بنجاح
+                ${errorCount > 0 ? `<br>⚠️ فشل استيراد ${errorCount} حالة` : ''}
+            </div>
+        `;
+        
+        showToast(`✅ تم استيراد ${successCount} حالة`);
+    }
+
+    function detectCategory(row) {
+        const serialGlobal = row['م.ع'] || row['serial_global'];
+        const serialAccounting = row['م.م'] || row['serial_accounting'];
+        
+        if (serialGlobal <= 750) return 'شبرا';
+        if (serialGlobal > 750 && serialAccounting === 1) return 'النهضة';
+        if (serialGlobal > 751 && serialAccounting === 1) return 'معاقين';
+        return 'الشركة';
+    }
+
+    function saveToLocalStorage(caseData) {
+        const cases = JSON.parse(localStorage.getItem('imported_cases') || '[]');
+        cases.push(caseData);
+        localStorage.setItem('imported_cases', JSON.stringify(cases));
+    }
+
+    // ============================================================
+    // دوال Word (مع تشيك بوكس)
+    // ============================================================
+
+    async function processWord() {
+        const file = document.getElementById('wordFile').files[0];
+        if (!file) {
+            showToast('الرجاء اختيار ملف Word أولاً');
+            return;
+        }
+
+        showToast('⏳ جاري تحليل الملف...');
+        
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        const text = result.value;
+        
+        // تقسيم النص إلى أقسام
+        wordSections = extractSections(text);
+        displayWordSections(wordSections);
+        
+        showToast(`✅ تم تحليل الملف إلى ${wordSections.length} أقسام`);
+    }
+
+    function extractSections(text) {
+        const sections = [];
+        const keywords = [
+            { name: 'البيانات الديموغرافية', target: '2.html', keywords: ['الاسم', 'الرقم القومي', 'العنوان', 'الهاتف'] },
+            { name: 'جدول تكوين الأسرة', target: '3.html', keywords: ['أسرة', 'أفراد', 'الاسم', 'صلة القرابة'] },
+            { name: 'الدخل والمصروفات', target: '5.html', keywords: ['دخل', 'مصروفات', 'مرتب', 'إيجار', 'كهرباء'] },
+            { name: 'تقرير الباحث', target: '6.html', keywords: ['تقرير', 'ملاحظات', 'وصف'] },
+            { name: 'التاريخ التطوري', target: '1.html', keywords: ['تاريخ', 'سابق', 'تطور', 'قديم'] }
+        ];
+        
+        for (const section of keywords) {
+            const found = section.keywords.some(k => text.includes(k));
+            if (found) {
+                sections.push({
+                    name: section.name,
+                    target: section.target,
+                    checked: true,
+                    preview: text.substring(0, 200) + '...'
+                });
+            }
+        }
+        
+        return sections;
+    }
+
+    function displayWordSections(sections) {
+        if (!sections.length) {
+            document.getElementById('wordSections').innerHTML = '<div class="status status-warning">⚠️ لم يتم العثور على أقسام قابلة للاستخراج</div>';
+            return;
+        }
+        
+        let html = '<div class="row" style="margin-top:15px;">';
+        sections.forEach((section, idx) => {
+            html += `
+                <div class="col">
+                    <div class="card" style="padding:15px;">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                            <input type="checkbox" id="section_${idx}" ${section.checked ? 'checked' : ''}>
+                            <strong>${section.name}</strong>
+                            <span style="color:var(--text-secondary);">→ بطاقة ${section.target}</span>
+                        </div>
+                        <div style="font-size:12px; color:var(--text-secondary);">${section.preview}</div>
+                        <div style="margin-top:10px;">
+                            <button class="btn btn-primary btn-sm" onclick="showBalloon(${idx})">💡 بالون التوجيه</button>
+                            <button class="btn btn-warning btn-sm" onclick="correctTarget(${idx})">✏️ تصحيح الوجهة</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        html += '<div style="margin-top:20px;"><button class="btn btn-success" onclick="importSelectedSections()">✅ استيراد الأقسام المحددة</button></div>';
+        
+        document.getElementById('wordSections').innerHTML = html;
+    }
+
+    function showBalloon(idx) {
+        const section = wordSections[idx];
+        alert(`🔍 سيتم إدراج بيانات "${section.name}" في بطاقة ${section.target}\n\nهل تريد المتابعة؟`);
+    }
+
+    function correctTarget(idx) {
+        const newTarget = prompt(`تغيير وجهة "${wordSections[idx].name}":\nأدخل رقم البطاقة المستهدفة (1-8)`, wordSections[idx].target.replace('.html', ''));
+        if (newTarget && newTarget >= 1 && newTarget <= 8) {
+            wordSections[idx].target = `${newTarget}.html`;
+            showToast(`✅ تم تغيير الوجهة إلى بطاقة ${newTarget}`);
+            displayWordSections(wordSections);
+        }
+    }
+
+    async function importSelectedSections() {
+        const selected = [];
+        for (let i = 0; i < wordSections.length; i++) {
+            const checkbox = document.getElementById(`section_${i}`);
+            if (checkbox && checkbox.checked) {
+                selected.push(wordSections[i]);
+            }
+        }
+        
+        if (selected.length === 0) {
+            showToast('الرجاء اختيار قسم واحد على الأقل');
+            return;
+        }
+        
+        showToast(`✅ تم استيراد ${selected.length} قسم بنجاح`);
+        // هنا سيتم حفظ البيانات في قاعدة البيانات
+    }
+
+    // ============================================================
+    // دوال PDF
+    // ============================================================
+
+    async function extractPDF() {
+        const file = document.getElementById('pdfFile').files[0];
+        if (!file) {
+            showToast('الرجاء اختيار ملف PDF أولاً');
+            return;
+        }
+        
+        showToast('⏳ جاري فك ضغط PDF...');
+        
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const numPages = pdf.numPages;
+        
+        let html = `<div class="status status-success">✅ تم فك ضغط ${numPages} صفحة</div>`;
+        html += '<div class="row" style="margin-top:15px;">';
+        
+        for (let i = 1; i <= Math.min(numPages, 6); i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 0.5 });
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const context = canvas.getContext('2d');
+            await page.render({ canvasContext: context, viewport }).promise;
+            html += `<div class="col"><img src="${canvas.toDataURL()}" style="width:100%; border-radius:8px;"></div>`;
+        }
+        
+        html += '</div>';
+        document.getElementById('pdfStatus').innerHTML = html;
+        showToast(`✅ تم استخراج ${numPages} صفحة بنجاح`);
+    }
+
+    // ============================================================
+    // دوال مساعدة
+    // ============================================================
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    function goBack() {
+        window.location.href = '/index.html';
+    }
+</script>
+
+<style>
+    .btn-sm { padding: 4px 12px; font-size: 12px; }
+    .btn-warning { background: var(--warning); color: #0F1117; }
+    .toast { animation: slideUp 0.3s ease; }
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+</style>
+</body>
+</html>

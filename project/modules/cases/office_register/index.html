@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بيان المكتب - تسجيل المتقدمين</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0F1117;
+            --bg-secondary: #1A1D27;
+            --bg-card: #1A1D27;
+            --border: #2E3250;
+            --text-primary: #E8EBF4;
+            --text-secondary: #6B7280;
+            --accent: #4F8EF7;
+            --success: #2DD4BF;
+            --warning: #F59E0B;
+            --danger: #F87171;
+            --gold: #F5C842;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* نموذج الإدخال */
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .form-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input, .form-group select {
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* جدول البيانات */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: rgba(46,202,171,0.15);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(245,166,35,0.15);
+            color: var(--warning);
+        }
+
+        .status-dropped {
+            background: rgba(248,113,113,0.15);
+            color: var(--danger);
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .action-icon {
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .action-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* أزرار */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #0F1117;
+        }
+
+        .btn-secondary {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        /* إحصائيات */
+        .stats-mini {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+
+        .stat-mini-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-mini-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-mini-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .data-table {
+                font-size: 11px;
+            }
+            .data-table th, .data-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <button class="back-btn" onclick="goBack()"><span>←</span> العودة</button>
+    <div class="page-title">📋 بيان المكتب</div>
+    <div class="user-area">
+        <div class="user-name" id="userName"></div>
+    </div>
+</div>
+
+<div class="container">
+    
+    <!-- إحصائيات سريعة -->
+    <div class="stats-mini" id="statsMini">
+        <div class="stat-mini-card">
+            <div class="stat-mini-value" id="statTotal">0</div>
+            <div class="stat-mini-label">إجمالي المتقدمين اليوم</div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-mini-value" id="statCompleted">0</div>
+            <div class="stat-mini-label">تم إجراء البحث</div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-mini-value" id="statPending">0</div>
+            <div class="stat-mini-label">في انتظار إكمال الأوراق</div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-mini-value" id="statDropped">0</div>
+            <div class="stat-mini-label">لم يعودوا</div>
+        </div>
+    </div>
+
+    <!-- نموذج إدخال سريع -->
+    <div class="form-card">
+        <div class="form-title">➕ تسجيل متقدم جديد</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>الاسم الكامل</label>
+                <input type="text" id="applicantName" placeholder="أدخل الاسم">
+            </div>
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="tel" id="applicantPhone" placeholder="رقم الهاتف">
+            </div>
+            <div class="form-group">
+                <label>الغرض من المراجعة</label>
+                <select id="applicantPurpose">
+                    <option value="بحث جديد">بحث جديد</option>
+                    <option value="استفسار">استفسار</option>
+                    <option value="استلام مساعدة">استلام مساعدة</option>
+                    <option value="تعديل بيانات">تعديل بيانات</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>الأوراق الناقصة</label>
+                <input type="text" id="missingDocs" placeholder="الأوراق الناقصة">
+            </div>
+        </div>
+        <div class="actions-bar" style="justify-content: flex-start;">
+            <button class="btn btn-primary" onclick="addApplicant()">➕ إضافة</button>
+            <button class="btn btn-secondary" onclick="clearForm()">🗑️ تفريغ</button>
+        </div>
+    </div>
+
+    <!-- جدول المتقدمين -->
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>م</th>
+                    <th>الاسم</th>
+                    <th>الهاتف</th>
+                    <th>الغرض</th>
+                    <th>الأوراق الناقصة</th>
+                    <th>إجراء البحث</th>
+                    <th>الحالة</th>
+                    <th>الملاحظات</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="applicantsTable">
+                <tr><td colspan="9" style="text-align:center;">لا توجد بيانات</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions-bar" style="margin-top: 20px; justify-content: space-between;">
+        <button class="btn btn-secondary" onclick="exportToExcel()">📊 تصدير إلى Excel</button>
+        <button class="btn btn-primary" onclick="printReport()">🖨️ طباعة التقرير</button>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    // بيانات المتقدمين (تخزين محلي)
+    let applicants = [];
+    let nextId = 1;
+
+    // تحميل البيانات من localStorage
+    function loadFromStorage() {
+        const saved = localStorage.getItem('office_register');
+        if (saved) {
+            applicants = JSON.parse(saved);
+            nextId = applicants.length > 0 ? Math.max(...applicants.map(a => a.id)) + 1 : 1;
+        } else {
+            // بيانات تجريبية
+            applicants = [
+                { id: 1, name: 'أحمد محمد', phone: '01012345678', purpose: 'بحث جديد', missingDocs: 'صورة البطاقة', researchDone: false, status: 'pending', notes: '' },
+                { id: 2, name: 'سارة علي', phone: '01123456789', purpose: 'استفسار', missingDocs: '', researchDone: true, status: 'completed', notes: '' },
+                { id: 3, name: 'محمود خالد', phone: '01234567890', purpose: 'بحث جديد', missingDocs: 'إثبات العنوان', researchDone: false, status: 'pending', notes: '' }
+            ];
+            nextId = 4;
+            saveToStorage();
+        }
+        renderTable();
+        updateStats();
+    }
+
+    // حفظ البيانات في localStorage
+    function saveToStorage() {
+        localStorage.setItem('office_register', JSON.stringify(applicants));
+    }
+
+    // إضافة متقدم جديد
+    function addApplicant() {
+        const name = document.getElementById('applicantName').value.trim();
+        const phone = document.getElementById('applicantPhone').value.trim();
+        const purpose = document.getElementById('applicantPurpose').value;
+        const missingDocs = document.getElementById('missingDocs').value.trim();
+
+        if (!name || !phone) {
+            showToast('الرجاء إدخال الاسم ورقم الهاتف');
+            return;
+        }
+
+        const newApplicant = {
+            id: nextId++,
+            name: name,
+            phone: phone,
+            purpose: purpose,
+            missingDocs: missingDocs,
+            researchDone: false,
+            status: 'pending',
+            notes: '',
+            date: new Date().toISOString()
+        };
+
+        applicants.unshift(newApplicant);
+        saveToStorage();
+        renderTable();
+        updateStats();
+        clearForm();
+        showToast('✅ تم إضافة المتقدم بنجاح');
+    }
+
+    // تحديث الإحصائيات
+    function updateStats() {
+        const total = applicants.length;
+        const completed = applicants.filter(a => a.researchDone === true).length;
+        const pending = applicants.filter(a => a.status === 'pending').length;
+        const dropped = applicants.filter(a => a.status === 'dropped').length;
+
+        document.getElementById('statTotal').innerText = total;
+        document.getElementById('statCompleted').innerText = completed;
+        document.getElementById('statPending').innerText = pending;
+        document.getElementById('statDropped').innerText = dropped;
+    }
+
+    // عرض الجدول
+    function renderTable() {
+        const tbody = document.getElementById('applicantsTable');
+        if (applicants.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">لا توجد بيانات</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = applicants.map((app, idx) => {
+            let statusClass = '';
+            let statusText = '';
+            switch (app.status) {
+                case 'completed':
+                    statusClass = 'status-completed';
+                    statusText = '✅ تم البحث';
+                    break;
+                case 'dropped':
+                    statusClass = 'status-dropped';
+                    statusText = '❌ لم يعد';
+                    break;
+                default:
+                    statusClass = 'status-pending';
+                    statusText = '⏳ في الانتظار';
+            }
+
+            return `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${app.name}</td>
+                    <td>${app.phone}</td>
+                    <td>${app.purpose}</td>
+                    <td>${app.missingDocs || '—'}</td>
+                    <td>
+                        <input type="checkbox" ${app.researchDone ? 'checked' : ''} 
+                               onchange="toggleResearch(${app.id}, this.checked)">
+                    </td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <input type="text" value="${app.notes || ''}" 
+                               onchange="updateNotes(${app.id}, this.value)" 
+                               style="width:100px; padding:4px; background:var(--bg-primary); border:1px solid var(--border); border-radius:4px; color:var(--text-primary);">
+                    </td>
+                    <td class="action-icons">
+                        <span class="action-icon" onclick="editApplicant(${app.id})" title="تعديل">✏️</span>
+                        <span class="action-icon" onclick="deleteApplicant(${app.id})" title="حذف">🗑️</span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // تبديل حالة البحث
+    function toggleResearch(id, done) {
+        const app = applicants.find(a => a.id === id);
+        if (app) {
+            app.researchDone = done;
+            app.status = done ? 'completed' : 'pending';
+            saveToStorage();
+            renderTable();
+            updateStats();
+            showToast(done ? '✅ تم تسجيل إجراء البحث' : '📝 تم إلغاء البحث');
+        }
+    }
+
+    // تحديث الملاحظات
+    function updateNotes(id, notes) {
+        const app = applicants.find(a => a.id === id);
+        if (app) {
+            app.notes = notes;
+            saveToStorage();
+        }
+    }
+
+    // تعديل متقدم
+    function editApplicant(id) {
+        const app = applicants.find(a => a.id === id);
+        if (!app) return;
+
+        const newName = prompt('الاسم:', app.name);
+        const newPhone = prompt('رقم الهاتف:', app.phone);
+        const newPurpose = prompt('الغرض:', app.purpose);
+        const newMissingDocs = prompt('الأوراق الناقصة:', app.missingDocs);
+
+        if (newName) app.name = newName;
+        if (newPhone) app.phone = newPhone;
+        if (newPurpose) app.purpose = newPurpose;
+        if (newMissingDocs !== null) app.missingDocs = newMissingDocs;
+
+        saveToStorage();
+        renderTable();
+        showToast('✅ تم التعديل');
+    }
+
+    // حذف متقدم
+    function deleteApplicant(id) {
+        if (confirm('هل أنت متأكد من حذف هذا المتقدم؟')) {
+            applicants = applicants.filter(a => a.id !== id);
+            saveToStorage();
+            renderTable();
+            updateStats();
+            showToast('🗑️ تم الحذف');
+        }
+    }
+
+    // تفريغ النموذج
+    function clearForm() {
+        document.getElementById('applicantName').value = '';
+        document.getElementById('applicantPhone').value = '';
+        document.getElementById('applicantPurpose').value = 'بحث جديد';
+        document.getElementById('missingDocs').value = '';
+    }
+
+    // تصدير إلى Excel
+    function exportToExcel() {
+        let csv = 'م,الاسم,الهاتف,الغرض,الأوراق الناقصة,إجراء البحث,الحالة,الملاحظات\n';
+        applicants.forEach((app, idx) => {
+            csv += `${idx + 1},${app.name},${app.phone},${app.purpose},${app.missingDocs || ''},${app.researchDone ? 'نعم' : 'لا'},${app.status},${app.notes || ''}\n`;
+        });
+        
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', 'office_register.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast('📊 تم تصدير البيانات');
+    }
+
+    // طباعة التقرير
+    function printReport() {
+        const printWindow = window.open('', '_blank');
+        let html = `
+            <!DOCTYPE html>
+            <html dir="rtl">
+            <head>
+                <meta charset="UTF-8">
+                <title>بيان المكتب - ${new Date().toLocaleDateString('ar-EG')}</title>
+                <style>
+                    body { font-family: 'Times New Roman', sans-serif; margin: 20px; }
+                    h2 { text-align: center; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+                    th { background: #f0f0f0; }
+                    .footer { margin-top: 30px; text-align: center; }
+                </style>
+            </head>
+            <body>
+                <h2>بيان المكتب - ${new Date().toLocaleDateString('ar-EG')}</h2>
+                <table>
+                    <thead>
+                        <tr><th>م</th><th>الاسم</th><th>الهاتف</th><th>الغرض</th><th>الأوراق الناقصة</th><th>إجراء البحث</th><th>الحالة</th><th>الملاحظات</th></tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        applicants.forEach((app, idx) => {
+            html += `<tr>
+                        <td>${idx + 1}</td>
+                        <td>${app.name}</td>
+                        <td>${app.phone}</td>
+                        <td>${app.purpose}</td>
+                        <td>${app.missingDocs || '—'}</td>
+                        <td>${app.researchDone ? '✅ نعم' : '❌ لا'}</td>
+                        <td>${app.status === 'completed' ? 'تم البحث' : (app.status === 'dropped' ? 'لم يعد' : 'في الانتظار')}</td>
+                        <td>${app.notes || '—'}</td>
+                     </tr>`;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+                <div class="footer">
+                    <p>إجمالي المتقدمين: ${applicants.length}</p>
+                    <p>تم إجراء البحث: ${applicants.filter(a => a.researchDone).length}</p>
+                    <p>في انتظار إكمال الأوراق: ${applicants.filter(a => a.status === 'pending').length}</p>
+                </div>
+            </body>
+            </html>
+        `;
+        
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
+        showToast('🖨️ تم إرسال التقرير إلى الطابعة');
+    }
+
+    // عرض الإشعارات
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    // العودة
+    function goBack() {
+        window.location.href = '/index.html';
+    }
+
+    // تحميل بيانات المستخدم
+    function loadUserInfo() {
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{"name":"باحث"}');
+        document.getElementById('userName').innerText = user.name || 'باحث';
+    }
+
+    // تهيئة الصفحة
+    function init() {
+        loadUserInfo();
+        loadFromStorage();
+    }
+
+    init();
+</script>
+</body>
+</html>

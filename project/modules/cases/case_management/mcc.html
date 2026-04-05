@@ -5,50 +5,969 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نموذج البحث الاجتماعي - البيانات الديمغرافية</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Arial', sans-serif; background: #f5f5f5; padding: 20px; direction: rtl; }
-        .page { width: 210mm; background: white; margin: 0 auto; padding: 10mm; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .header-section { display: grid; grid-template-columns: 75mm 1fr 65mm; gap: 10px; margin-bottom: 10mm; align-items: flex-start; }
-        .right-column { display: flex; flex-direction: column; gap: 8px; }
-        .research-fields { display: flex; flex-direction: column; gap: 5px; }
-        .inline-group { display: flex; align-items: center; gap: 5px; }
-        .inline-group label { font-weight: bold; font-size: 11px; color: #333; white-space: nowrap; }
-        .borderless-input { border: none; background: transparent; outline: none; font-size: 11px; color: #000; flex: 1; border-bottom: 1px dashed #ccc; padding: 2px 0; min-width: 30px; }
-        .date-field { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
-        .date-field label { font-weight: bold; font-size: 12px; color: #333; white-space: nowrap; }
-        .date-field input { padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 11px; flex: 1; }
-        .middle-column { display: flex; flex-direction: column; gap: 5px; justify-content: center; align-items: center; }
-        .header-title { text-align: center; font-size: 28px; font-weight: bold; color: #0066CC; }
-        .status-field select { padding: 6px 10px; border: 2px solid #0066CC; border-radius: 4px; font-size: 12px; text-align: center; width: 180px; }
-        .divider { border-bottom: 2px solid #e0e0e0; margin-bottom: 10mm; }
-        .top-section { display: grid; grid-template-columns: 20mm 3mm 95mm 80mm; gap: 0; margin-bottom: 10mm; align-items: flex-start; }
-        .photo-box { width: 20mm; height: 30mm; border: 2px solid #999; border-radius: 2mm; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f0f0f0; gap: 2mm; padding: 2mm; grid-column: 1; }
-        .photo-placeholder { width: 16mm; height: 24mm; background: #e0e0e0; border: 1px solid #999; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #999; border-radius: 1mm; }
-        .photo-btn { padding: 2mm 4mm; background: #4CAF50; color: white; border: none; border-radius: 2mm; cursor: pointer; font-size: 9px; font-weight: bold; }
-        .spacer { width: 3mm; grid-column: 2; }
-        .demographic-box { width: 95mm; border: 1px solid #ddd; border-radius: 2mm; padding: 4mm; background: white; font-size: 9px; grid-column: 3; display: flex; flex-direction: column; }
-        .form-group { margin-bottom: 4mm; display: flex; align-items: center; gap: 2mm; }
-        .form-group label { font-weight: bold; color: #333; font-size: 10px; white-space: nowrap; min-width: 25mm; }
-        .form-group input { flex: 1; padding: 2mm; border: 1px solid #ddd; border-radius: 1.5mm; font-size: 10px; text-align: right; }
-        .phone-group { display: flex; gap: 2mm; flex: 1; }
-        .phone-plus-btn { padding: 1mm 3mm; background: #0066CC; color: white; border: none; border-radius: 1mm; cursor: pointer; font-size: 10px; }
-        .income-expense-box { width: 80mm; border: 1px solid #ddd; border-radius: 2mm; padding: 5mm; background: white; grid-column: 4; }
-        .family-container { width: 100%; margin-top: 20px; margin-bottom: 20px; }
-        .family-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        .family-table th, .family-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        .family-table th { background-color: #3498db; color: white; }
-        .btn-add { background-color: #27ae60; color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; margin-top: 5px; }
-        .textarea-clean { width: 100%; height: 120px; border: none; outline: none; resize: none; font-size: 16px; line-height: 1.8; background: transparent; }
-        .input-clean { width: 100%; border: none; outline: none; font-size: 16px; background: transparent; }
-        .dotted-line { border-bottom: 2px dotted #000; margin: 10px 0 20px 0; }
-        .donor-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; direction: ltr; }
-        .approve-left { text-align: left; font-weight: bold; }
-        .date-center { text-align: center; flex: 1; }
-        @media print { .print-hide { display: none; } .borderless-input { border-bottom: none; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .page {
+            width: 210mm;
+            background: white;
+            margin: 0 auto;
+            padding: 10mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* ===== الجزء الرأس ===== */
+        .header-section {
+            display: grid;
+            grid-template-columns: 75mm 1fr 65mm;
+            gap: 10px;
+            margin-bottom: 10mm;
+            align-items: flex-start;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .research-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .inline-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .inline-group label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .borderless-input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 11px;
+            color: #000;
+            flex: 1;
+            border-bottom: 1px dashed #ccc;
+            padding: 2px 0;
+            min-width: 30px;
+        }
+
+        .date-field {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .date-field label {
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .date-field input {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 11px;
+            flex: 1;
+        }
+
+        .middle-column {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #0066CC;
+        }
+
+        .status-field select {
+            padding: 6px 10px;
+            border: 2px solid #0066CC;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+            width: 180px;
+        }
+
+        .divider {
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 10mm;
+        }
+
+        /* ===== الجزء الثاني: الصورة + البيانات + جدول الدخل ===== */
+        .top-section {
+            display: grid;
+            grid-template-columns: 20mm 3mm 95mm 80mm;
+            gap: 0;
+            margin-bottom: 10mm;
+            align-items: flex-start;
+        }
+
+        .photo-box {
+            width: 20mm;
+            height: 30mm;
+            border: 2px solid #999;
+            border-radius: 2mm;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            gap: 2mm;
+            padding: 2mm;
+            grid-column: 1;
+        }
+
+        .photo-placeholder {
+            width: 16mm;
+            height: 24mm;
+            background: #e0e0e0;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #999;
+            border-radius: 1mm;
+        }
+
+        .photo-preview {
+            width: 16mm;
+            height: 24mm;
+            object-fit: cover;
+            display: none;
+            border-radius: 1mm;
+        }
+
+        .photo-btn {
+            padding: 2mm 4mm;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 2mm;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .photo-input {
+            display: none;
+        }
+
+        .spacer {
+            width: 3mm;
+            grid-column: 2;
+        }
+
+        .demographic-box {
+            width: 95mm;
+            border: 1px solid #ddd;
+            border-radius: 2mm;
+            padding: 4mm;
+            background: white;
+            font-size: 9px;
+            grid-column: 3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 4mm;
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+            font-size: 10px;
+            white-space: nowrap;
+            min-width: 25mm;
+        }
+
+        .form-group input {
+            flex: 1;
+            padding: 2mm;
+            border: 1px solid #ddd;
+            border-radius: 1.5mm;
+            font-size: 10px;
+            text-align: right;
+        }
+
+        .phone-group {
+            display: flex;
+            gap: 2mm;
+            flex: 1;
+        }
+
+        .phone-plus-btn {
+            padding: 1mm 3mm;
+            background: #0066CC;
+            color: white;
+            border: none;
+            border-radius: 1mm;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .income-expense-box {
+            width: 80mm;
+            border: 1px solid #ddd;
+            border-radius: 2mm;
+            padding: 5mm;
+            background: white;
+            grid-column: 4;
+        }
+
+        /* ===== جدول الأسرة ===== */
+        .family-container {
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .family-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .family-table th, .family-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .family-table th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .family-table select, .family-table input {
+            width: 95%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .family-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .btn-add {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        .btn-add:hover {
+            background-color: #219150;
+        }
+
+        .btn-del {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-del:hover {
+            background-color: #c0392b;
+        }
+
+        /* ===== باقي التنسيقات ===== */
+        .textarea-clean {
+            width: 100%;
+            height: 120px;
+            border: none;
+            outline: none;
+            resize: none;
+            font-size: 16px;
+            line-height: 1.8;
+            background: transparent;
+        }
+
+        .input-clean {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background: transparent;
+        }
+
+        .dotted-line {
+            border-bottom: 2px dotted #000;
+            margin: 10px 0 20px 0;
+        }
+
+        .donor-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            direction: ltr;
+        }
+
+        .approve-left {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .date-center {
+            text-align: center;
+            flex: 1;
+        }
+
+        /* زر المساعد الذكي */
+        .floating-ai-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1abc9c, #3498db);
+            color: white;
+            border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-ai-btn:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @media print {
+            .print-hide { display: none; }
+            .borderless-input { border-bottom: none; }
+            .floating-ai-btn { display: none; }
+        }
     </style>
 </head>
 <body>
+    <!-- الصفحة الأولى -->
     <div class="page">
+        
+        <div class="header-section">
+            <div class="right-column">
+                <div class="research-fields">
+                    <div class="inline-group">
+                        <label>م.ع</label>
+                        <input type="text" class="borderless-input" id="caseSerial" placeholder="...">
+                        
+                        <label style="margin-right: 10px;">م.م</label>
+                        <input type="text" class="borderless-input" id="caseMM" placeholder="...">
+                    </div>
+                    <div class="inline-group">
+                        <label>زيارة منزلية</label>
+                        <input type="text" class="borderless-input" id="homeVisit" placeholder="...">
+                    </div>
+                    <div class="inline-group">
+                        <label>باحث مكتبي</label>
+                        <input type="text" class="borderless-input" id="officeResearcher" placeholder="...">
+                    </div>
+                </div>
+
+                <div class="date-field">
+                    <label>التاريخ:</label>
+                    <input type="date" id="caseDate" value="2026-02-11">
+                </div>
+            </div>
+
+            <div class="middle-column">
+                <div class="header-title">بحث اجتماعي</div>
+                <div class="status-field">
+                    <select id="caseStatus">
+                        <option>حالة جديدة</option>
+                        <option>إعادة تقييم</option>
+                        <option>مقبول</option>
+                        <option>تحت الدراسة</option>
+                    </select>
+                </div>
+            </div>
+            <div></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="top-section">
+            <div class="photo-box">
+                <div class="photo-placeholder" id="photoPlaceholder">📷</div>
+                <img class="photo-preview" id="photoPreview" style="display:none;">
+                <input type="file" id="photoInput" class="photo-input" accept="image/*,application/pdf">
+                <button class="photo-btn" id="photoBtn">اختيار</button>
+            </div>
+
+            <div class="spacer"></div>
+
+            <div class="demographic-box">
+                <div class="form-group">
+                    <label>الاسم *</label>
+                    <input type="text" id="fullName" placeholder="الاسم الكامل">
+                </div>
+
+                <div class="form-group">
+                    <label>الرقم القومي</label>
+                    <input type="text" id="nationalId" placeholder="14 رقم" maxlength="14">
+                </div>
+
+                <div class="form-group">
+                    <label>محل الإقامة</label>
+                    <input type="text" id="residence" placeholder="المدينة">
+                </div>
+
+                <div class="form-group">
+                    <label>المحافظة</label>
+                    <input type="text" id="governorate" placeholder="اسم المحافظة">
+                </div>
+
+                <div class="form-group">
+                    <label>الحي / المنطقة</label>
+                    <input type="text" id="district" placeholder="اسم الحي">
+                </div>
+
+                <div class="form-group">
+                    <label>الهاتف</label>
+                    <div class="phone-group">
+                        <input type="text" id="phone" placeholder="رقم الهاتف">
+                        <button class="phone-plus-btn" id="addPhoneBtn">+</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>الغرض من البحث</label>
+                    <input type="text" id="researchPurpose" placeholder="اكتب الغرض هنا">
+                </div>
+            </div>
+
+            <div class="income-expense-box" style="width:8cm; border:1px solid #000; padding:5px; box-sizing:border-box; font-size:11px;">
+                <table style="width:100%; border-collapse:collapse; text-align:center; table-layout:fixed;">
+                    <thead>
+                        <tr style="background:#f2f2f2; font-weight:bold;">
+                            <th>نوع الدخل</th>
+                            <th>المبلغ</th>
+                            <th>نوع المصروف</th>
+                            <th>المبلغ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>معاش/مرتب</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>كهرباء</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>طرفنا</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>غاز/أسطوانة</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>جمعيات</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>مياه</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>مساجد</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>ت/نت</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>أبناء</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>دروس</td><td><input type="number" class="expense lessons" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>أقارب</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>إيجار</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>أهل الخير</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>علاج</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>العمل</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>أقساط</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                    </tbody>
+                    <tfoot><!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج البحث الاجتماعي - البيانات الديمغرافية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .page {
+            width: 210mm;
+            background: white;
+            margin: 0 auto;
+            padding: 10mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* ===== الجزء الرأس ===== */
+        .header-section {
+            display: grid;
+            grid-template-columns: 75mm 1fr 65mm;
+            gap: 10px;
+            margin-bottom: 10mm;
+            align-items: flex-start;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .research-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .inline-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .inline-group label {
+            font-weight: bold;
+            font-size: 11px;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .borderless-input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 11px;
+            color: #000;
+            flex: 1;
+            border-bottom: 1px dashed #ccc;
+            padding: 2px 0;
+            min-width: 30px;
+        }
+
+        .date-field {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .date-field label {
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .date-field input {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 11px;
+            flex: 1;
+        }
+
+        .middle-column {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #0066CC;
+        }
+
+        .status-field select {
+            padding: 6px 10px;
+            border: 2px solid #0066CC;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+            width: 180px;
+        }
+
+        .divider {
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 10mm;
+        }
+
+        /* ===== الجزء الثاني ===== */
+        .top-section {
+            display: grid;
+            grid-template-columns: 20mm 3mm 95mm 80mm;
+            gap: 0;
+            margin-bottom: 10mm;
+            align-items: stretch;
+        }
+
+        .photo-box {
+            width: 20mm;
+            height: 30mm;
+            border: 2px solid #999;
+            border-radius: 2mm;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            gap: 2mm;
+            padding: 2mm;
+            grid-column: 1;
+        }
+
+        .photo-placeholder {
+            width: 16mm;
+            height: 24mm;
+            background: #e0e0e0;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #999;
+            border-radius: 1mm;
+        }
+
+        .photo-preview {
+            width: 16mm;
+            height: 24mm;
+            object-fit: cover;
+            display: none;
+            border-radius: 1mm;
+        }
+
+        .photo-btn {
+            padding: 2mm 4mm;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 2mm;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .photo-input {
+            display: none;
+        }
+
+        .spacer {
+            width: 3mm;
+            grid-column: 2;
+        }
+
+        .demographic-box {
+            width: 95mm;
+            border: 1px solid #ddd;
+            border-radius: 2mm;
+            padding: 4mm;
+            background: white;
+            font-size: 9px;
+            grid-column: 3;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 4mm;
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+            font-size: 10px;
+            white-space: nowrap;
+            min-width: 25mm;
+        }
+
+        .form-group input, .form-group select {
+            flex: 1;
+            padding: 2mm;
+            border: 1px solid #ddd;
+            border-radius: 1.5mm;
+            font-size: 10px;
+            text-align: right;
+        }
+
+        .phone-group {
+            display: flex;
+            gap: 2mm;
+            flex: 1;
+        }
+
+        .phone-plus-btn {
+            padding: 1mm 3mm;
+            background: #0066CC;
+            color: white;
+            border: none;
+            border-radius: 1mm;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .income-expense-box {
+            width: 80mm;
+            border: 1px solid #ddd;
+            border-radius: 2mm;
+            padding: 5mm;
+            background: white;
+            grid-column: 4;
+            align-self: stretch;
+        }
+
+        /* ===== جدول الأسرة ===== */
+        .family-container {
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .family-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .family-table th, .family-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .family-table th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .family-table select, .family-table input {
+            width: 95%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-add {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        .btn-add:hover {
+            background-color: #219150;
+        }
+
+        .btn-del {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* ===== باقي التنسيقات ===== */
+        .textarea-clean {
+            width: 100%;
+            height: 120px;
+            border: none;
+            outline: none;
+            resize: none;
+            font-size: 16px;
+            line-height: 1.8;
+            background: transparent;
+        }
+
+        .input-clean {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background: transparent;
+        }
+
+        .dotted-line {
+            border-bottom: 2px dotted #000;
+            margin: 10px 0 20px 0;
+        }
+
+        .donor-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            direction: ltr;
+        }
+
+        .approve-left {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .date-center {
+            text-align: center;
+            flex: 1;
+        }
+
+        /* زر المساعد الذكي */
+        .floating-ai-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1abc9c, #3498db);
+            color: white;
+            border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-ai-btn:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @media print {
+            .print-hide { display: none; }
+            .borderless-input { border-bottom: none; }
+            .floating-ai-btn { display: none; }
+        }
+
+        /* الأنماط المضافة */
+        .user-role-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #0066CC;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            z-index: 100;
+        }
+        .aggregated-data {
+            background: #f0f8ff;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .recommendations-list {
+            margin-top: 10px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .recommendation-item {
+            background: #f9f9f9;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-right: 3px solid #0066CC;
+        }
+        .manager-only {
+            border: 2px solid #ffc107;
+            background: #fff8e1;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .grant-section {
+            background: #e8f5e9;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-right: 3px solid #4caf50;
+        }
+        .grant-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .grant-table td {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="userRoleBadge" class="user-role-badge print-hide">🔍 باحث</div>
+
+    <!-- الصفحة الأولى -->
+    <div class="page">
+        
         <div class="header-section">
             <div class="right-column">
                 <div class="research-fields">
@@ -69,9 +988,10 @@
                 </div>
                 <div class="date-field">
                     <label>التاريخ:</label>
-                    <input type="date" id="caseDate">
+                    <input type="date" id="caseDate" value="2026-02-11">
                 </div>
             </div>
+
             <div class="middle-column">
                 <div class="header-title">بحث اجتماعي</div>
                 <div class="status-field">
@@ -80,6 +1000,8 @@
                         <option>إعادة تقييم</option>
                         <option>مقبول</option>
                         <option>تحت الدراسة</option>
+                        <option>تيسير زواج</option>
+                        <option>مساعده مره واحده</option>
                     </select>
                 </div>
             </div>
@@ -90,46 +1012,115 @@
 
         <div class="top-section">
             <div class="photo-box">
-                <div class="photo-placeholder">📷</div>
+                <div class="photo-placeholder" id="photoPlaceholder">📷</div>
+                <img class="photo-preview" id="photoPreview" style="display:none;">
+                <input type="file" id="photoInput" class="photo-input" accept="image/*,application/pdf">
                 <button class="photo-btn" id="photoBtn">اختيار</button>
             </div>
+
             <div class="spacer"></div>
+
             <div class="demographic-box">
-                <div class="form-group"><label>الاسم *</label><input type="text" id="fullName" placeholder="الاسم الكامل"></div>
-                <div class="form-group"><label>الرقم القومي</label><input type="text" id="nationalId" placeholder="14 رقم" maxlength="14"></div>
-                <div class="form-group"><label>محل الإقامة</label><input type="text" id="residence" placeholder="المدينة"></div>
-                <div class="form-group"><label>المحافظة</label><input type="text" id="governorate" placeholder="اسم المحافظة"></div>
-                <div class="form-group"><label>الحي / المنطقة</label><input type="text" id="district" placeholder="اسم الحي"></div>
+                <div class="form-group">
+                    <label>الاسم *</label>
+                    <input type="text" id="fullName" placeholder="الاسم الكامل">
+                </div>
+                <div class="form-group">
+                    <label>الرقم القومي</label>
+                    <input type="text" id="nationalId" placeholder="14 رقم" maxlength="14">
+                </div>
+                <div class="form-group">
+                    <label>محل الإقامة</label>
+                    <input type="text" id="residence" placeholder="المدينة">
+                </div>
+                <div class="form-group">
+                    <label>المحافظة</label>
+                    <input type="text" id="governorate" placeholder="اسم المحافظة">
+                </div>
+                <div class="form-group">
+                    <label>الحي / المنطقة</label>
+                    <input type="text" id="district" placeholder="اسم الحي">
+                </div>
                 <div class="form-group">
                     <label>الهاتف</label>
-                    <div class="phone-group"><input type="text" id="phone" placeholder="رقم الهاتف"><button class="phone-plus-btn" id="addPhoneBtn">+</button></div>
+                    <div class="phone-group">
+                        <input type="text" id="phone" placeholder="رقم الهاتف">
+                        <button class="phone-plus-btn" id="addPhoneBtn">+</button>
+                    </div>
                 </div>
-                <div class="form-group"><label>الغرض من البحث</label><input type="text" id="researchPurpose" placeholder="اكتب الغرض هنا"></div>
+                <div class="form-group">
+                    <label>الغرض من البحث</label>
+                    <select id="researchPurpose">
+                        <option value="">--- اختر ---</option>
+                        <option>مساعده ماليه شهريه</option>
+                        <option>مساعدة طبية</option>
+                        <option>مساعده مره واحده</option>
+                        <option>تيسير زواج</option>
+                    </select>
+                </div>
             </div>
+
             <div class="income-expense-box">
-                <table style="width:100%; border-collapse:collapse; text-align:center; font-size:11px;">
-                    <thead><tr style="background:#f2f2f2; font-weight:bold;"><th>نوع الدخل</th><th>المبلغ</th><th>نوع المصروف</th><th>المبلغ</th></tr></thead>
+                <table style="width:100%; border-collapse:collapse; text-align:center; table-layout:fixed;">
+                    <thead>
+                        <tr style="background:#f2f2f2; font-weight:bold;">
+                            <th>نوع الدخل</th><th>المبلغ</th><th>نوع المصروف</th><th>المبلغ</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr><td>معاش/مرتب</td><td><input type="number" class="income" data-income="salary" oninput="calculateTotal()" style="width:90%;"></td><td>كهرباء</td><td><input type="number" class="expense" data-expense="electricity" oninput="calculateTotal()" style="width:90%;"></td></tr>
-                        <tr><td>طرفنا</td><td><input type="number" class="income" data-income="ourSide" oninput="calculateTotal()" style="width:90%;"></td><td>غاز/أسطوانة</td><td><input type="number" class="expense" data-expense="gas" oninput="calculateTotal()" style="width:90%;"></td></tr>
-                        <tr><td>جمعيات</td><td><input type="number" class="income" data-income="associations" oninput="calculateTotal()" style="width:90%;"></td><td>مياه</td><td><input type="number" class="expense" data-expense="water" oninput="calculateTotal()" style="width:90%;"></td></tr>
-                        <tr><td>مساجد</td><td><input type="number" class="income" data-income="mosques" oninput="calculateTotal()" style="width:90%;"></td><td>ت/نت</td><td><input type="number" class="expense" data-expense="internet" oninput="calculateTotal()" style="width:90%;"></td></tr>
-                        <tr><td>أبناء</td><td><input type="number" class="income" data-income="children" oninput="calculateTotal()" style="width:90%;"></td><td>دروس</td><td><input type="number" class="expense lessons" data-expense="lessons" oninput="calculateTotal()" style="width:90%;"></td></tr>
-                        <tr><td>أقارب</td><td><input type="number" class="income" data-income="relatives" oninput="calculateTotal()" style="width:90%;"></td><td>إيجار</td><td><input type="number" class="expense" data-expense="rent" oninput="calculateTotal()" style="width:90%;"></td></tr>
-                        <tr><td>أهل الخير</td><td><input type="number" class="income" data-income="charity" oninput="calculateTotal()" style="width:90%;"></td><td>علاج</td><td><input type="number" class="expense" data-expense="treatment" oninput="calculateTotal()" style="width:90%;"></td></tr>
-                        <tr><td>العمل</td><td><input type="number" class="income" data-income="work" oninput="calculateTotal()" style="width:90%;"></td><td>أقساط</td><td><input type="number" class="expense" data-expense="installments" oninput="calculateTotal()" style="width:90%;"></td></tr>
+                        <tr><td>معاش/مرتب</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>كهرباء</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>طرفنا</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>غاز/أسطوانة</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>جمعيات</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>مياه</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>مساجد</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>ت/نت</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>أبناء</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>دروس</td><td><input type="number" class="expense lessons" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>أقارب</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>إيجار</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>أهل الخير</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>علاج</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>العمل</td><td><input type="number" class="income" oninput="calculate()" style="width:100%;"></td><td>أقساط</td><td><input type="number" class="expense" oninput="calculate()" style="width:100%;"></td></tr>
                     </tbody>
                     <tfoot>
-                        <tr><td><strong>إجمالي الدخل</strong></td><td id="totalIncome">0</td><td><strong>إجمالي المصروفات</strong></td><td id="totalExpenses">0</td></tr>
-                        <tr><td><strong>الصافي</strong></td><td id="net">0</td><td><strong>أفراد الأسرة</strong></td><td><input type="number" id="members" value="1" oninput="calculateTotal()" style="width:70px;"></td></tr>
-                        <tr><td><strong>نصيب الفرد</strong></td><td id="share">0</td><td><strong>بدون دروس</strong></td><td id="shareNoLessons">0</td></tr>
+                        <tr><td>إجمالي الدخل</td><td id="totalIncome">0</td><td>إجمالي المصروفات</td><td id="totalExpenses">0</td></tr>
+                        <tr><td>الصافي</td><td id="net">0</td><td>أفراد الأسرة</td><td><input type="number" id="members" value="1" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>نصيب الفرد</td><td id="share">0</td><td>بدون دروس</td><td id="shareNoLessons">0</td></tr>
                     </tfoot>
                 </table>
             </div>
         </div>
 
+        <!-- قسم المنح (يتم عرضها من النظام - لا تعدل هنا) -->
+        <div id="grantSection" class="grant-section" style="display:none;">
+            <h4 style="margin: 0 0 10px 0;">🎁 المنح</h4>
+            <table class="grant-table">
+                <tr>
+                    <td style="width: 30%;"><strong>منحة رمضان:</strong></td>
+                    <td style="width: 35%;"><span id="ramadanGrantDisplay">---</span></td>
+                    <td style="width: 35%;"><span id="ramadanGrantDetailsDisplay"></span></td>
+                </tr>
+                <tr>
+                    <td><strong>منحة العيد:</strong></td>
+                    <td><span id="eidGrantDisplay">---</span></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong>منحة الدراسة:</strong></td>
+                    <td><span id="studyGrantDisplay">---</span></td>
+                    <td></td>
+                </tr>
+                <tr id="exemptedRow" style="display:none;">
+                    <td><strong>مستثنى من:</strong></td>
+                    <td colspan="2"><span id="exemptedGrantsDisplay"></span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- قسم البيانات المجمعة -->
+        <div id="aggregatedDataSection" class="aggregated-data" style="display:none;">
+            <h4>📊 ملخص الدخل المجمع</h4>
+            <div id="aggregatedContent"></div>
+        </div>
+
+        <!-- جدول الأسرة -->
         <div class="family-container">
-            <h3 style="text-align:center; color: #2c3e50; margin-bottom: 10px;">جدول تكوين الأسرة</h3>
+            <h2 style="text-align:center; color: #2c3e50;">جدول تكوين الأسرة</h2>
             <table id="familyTable" class="family-table">
                 <thead>
                     <tr><th>م</th><th>اسم الفرد</th><th>صلة القرابة</th><th>الحالة الاجتماعية</th><th>العمل</th><th>السن</th><th>ملاحظات</th><th class="print-hide">حذف</th></tr>
@@ -140,22 +1131,35 @@
         </div>
 
         <h3 style="text-align:center;">التقرير</h3>
-        <textarea class="textarea-clean" id="reportText"></textarea>
+        <textarea class="textarea-clean" id="reportText" oninput="updateHumanReport()"></textarea>
+
         <h4>التوصية</h4>
-        <input class="input-clean" id="recommendation">
+        <input class="input-clean" id="recommendation" oninput="updateHumanRecommendation()">
+
+        <div id="allRecommendationsSection" class="recommendations-list" style="display:none;">
+            <h4>👥 جميع توصيات الباحثين</h4>
+            <div id="allRecommendationsContent"></div>
+        </div>
     </div>
 
+    <!-- القسم الثاني -->
     <div class="page">
-        <h3 style="text-align:center;">التقرير الذكي</h3>
-        <textarea class="textarea-clean" id="smartReportText"></textarea>
-        <h4>التوصية الذكية</h4>
-        <input class="input-clean" id="smartRecommendation">
+        <div id="aiSection" class="manager-only">
+            <h3 style="text-align:center;">التقرير الذكي</h3>
+            <textarea class="textarea-clean" id="smartReportText" readonly placeholder="سيتم توليده بواسطة الذكاء الاصطناعي"></textarea>
+            <h4>التوصية الذكية</h4>
+            <input class="input-clean" id="smartRecommendation" readonly placeholder="سيتم توليدها بواسطة الذكاء الاصطناعي">
+        </div>
+        <div id="researcherOnlySection" style="display:none; text-align:center; padding:40px; color:#999;">
+            🔒 هذه البيانات متاحة للمدير فقط
+        </div>
     </div>
 
+    <!-- القسم الثالث -->
     <div class="page">
         <h3 style="text-align:center;">الرأي</h3>
         <div class="dotted-line"></div>
-        <input class="input-clean" id="opinion">
+        <input class="input-clean" id="opinion" oninput="updateDonorOpinion()">
         <div class="dotted-line"></div>
         <div class="donor-footer">
             <div class="approve-left">يعتمد</div>
@@ -163,11 +1167,260 @@
         </div>
     </div>
 
+    <button class="floating-ai-btn pulse print-hide" onclick="openAIAssistant()">🤖</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script>
         // ============================================================
-        // دوال جدول الأسرة (كما كانت في الأصل)
+        // المتغيرات العامة
         // ============================================================
-        
+        let currentCaseData = null;
+        let currentUserRole = 'researcher';
+        let currentResearcherId = 'researcher_001';
+        let currentResearcherName = 'الباحث';
+
+        // ============================================================
+        // استقبال البيانات من case_view.html
+        // ============================================================
+        window.addEventListener('message', function(event) {
+            const { type, data, userRole, researcherId, researcherName } = event.data;
+            if (type === 'UPDATE_CASE') {
+                currentCaseData = data;
+                currentUserRole = userRole || 'researcher';
+                currentResearcherId = researcherId || 'researcher_001';
+                currentResearcherName = researcherName || 'الباحث';
+                updateUserRoleBadge();
+                updateDisplayFromData();
+            }
+        });
+
+        function updateUserRoleBadge() {
+            const badge = document.getElementById('userRoleBadge');
+            if (currentUserRole === 'manager') {
+                badge.innerHTML = '👑 مدير';
+                badge.style.background = '#ffc107';
+                badge.style.color = '#333';
+            } else {
+                badge.innerHTML = '🔍 باحث';
+                badge.style.background = '#0066CC';
+                badge.style.color = 'white';
+            }
+        }
+
+        function updateDisplayFromData() {
+            if (!currentCaseData || !currentCaseData.data) return;
+            const data = currentCaseData.data;
+
+            setValue('caseSerial', data.caseSerial);
+            setValue('caseMM', data.caseMM);
+            setValue('caseDate', data.caseDate);
+            setValue('officeResearcher', data.officeResearcher);
+            setValue('homeVisit', data.visitTeam);
+            setValue('fullName', data.fullName);
+            setValue('nationalId', data.nationalId);
+            setValue('residence', data.shortAddress || data.detailedAddress);
+            setValue('governorate', data.governorate || '');
+            setValue('district', data.district || '');
+            setValue('phone', data.phones && data.phones[0] ? data.phones[0].number || data.phones[0] : '');
+            setValue('researchPurpose', data.researchPurpose || '');
+
+            if (data.familyMembers && data.familyMembers.length > 0) updateFamilyTable(data.familyMembers);
+            updateIncomeExpenseTable(data);
+            updateAggregatedData(data);
+            updateGrantSection(data);
+            updateHumanReportSection(data);
+            updateAISection(data);
+            updateDonorSection(data);
+            toggleSectionsByRole();
+        }
+
+        function setValue(elementId, value) {
+            const el = document.getElementById(elementId);
+            if (el && value !== undefined && value !== null) el.value = value;
+        }
+
+        function updateFamilyTable(familyMembers) {
+            const tbody = document.getElementById('familyTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            familyMembers.forEach((member, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td class="index">${index + 1}</td>
+                    <td><input type="text" class="family-name" value="${escapeHtml(member.name || '')}" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;" readonly></td>
+                    <td><input type="text" class="family-relation" value="${escapeHtml(member.relation || '')}" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;" readonly></td>
+                    <td><input type="text" class="family-status" value="${escapeHtml(member.status || '')}" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;" readonly></td>
+                    <td><input type="text" class="family-work" value="${escapeHtml(member.work || '')}" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;" readonly></td>
+                    <td><input type="number" class="family-age" value="${member.age || ''}" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;" readonly></td>
+                    <td><input type="text" class="family-notes" value="${escapeHtml(member.notes || '')}" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;" readonly></td>
+                    <td class="print-hide"></td>
+                `;
+            });
+        }
+
+        function updateIncomeExpenseTable(data) {
+            const income = data.income || {}, expenses = data.expenses || {};
+            let totalCharities = 0, totalRelatives = 0, totalPensions = 0, totalWork = 0;
+            income.charities?.forEach(c => totalCharities += parseFloat(c.value) || 0);
+            income.relatives?.forEach(r => totalRelatives += parseFloat(r.value) || 0);
+            income.pensions?.forEach(p => totalPensions += parseFloat(p.value) || 0);
+            income.work?.forEach(w => totalWork += parseFloat(w.value) || 0);
+
+            const incomeInputs = document.querySelectorAll('.income');
+            if (incomeInputs.length >= 8) {
+                if (incomeInputs[0]) incomeInputs[0].value = totalPensions;
+                if (incomeInputs[2]) incomeInputs[2].value = totalCharities;
+                if (incomeInputs[5]) incomeInputs[5].value = totalRelatives;
+                if (incomeInputs[7]) incomeInputs[7].value = totalWork;
+            }
+
+            const expenseInputs = document.querySelectorAll('.expense');
+            if (expenseInputs.length >= 8) {
+                if (expenseInputs[0]) expenseInputs[0].value = expenses.electricity || 0;
+                if (expenseInputs[1]) expenseInputs[1].value = expenses.gas || 0;
+                if (expenseInputs[2]) expenseInputs[2].value = expenses.water || 0;
+                if (expenseInputs[3]) expenseInputs[3].value = expenses.internet || 0;
+                if (expenseInputs[4]) expenseInputs[4].value = expenses.lessons || 0;
+                if (expenseInputs[5]) expenseInputs[5].value = expenses.rent || 0;
+                if (expenseInputs[6]) expenseInputs[6].value = expenses.medical || 0;
+                if (expenseInputs[7]) expenseInputs[7].value = expenses.installments || 0;
+            }
+            if (typeof calculate === 'function') calculate();
+        }
+
+        function updateAggregatedData(data) {
+            const section = document.getElementById('aggregatedDataSection');
+            const content = document.getElementById('aggregatedContent');
+            const income = data.income || {};
+            let totalCharities = 0, totalRelatives = 0;
+            income.charities?.forEach(c => totalCharities += parseFloat(c.value) || 0);
+            income.relatives?.forEach(r => totalRelatives += parseFloat(r.value) || 0);
+            if (totalCharities > 0 || totalRelatives > 0) {
+                section.style.display = 'block';
+                content.innerHTML = `<table style="width:100%"><tr><td><strong>💰 إجمالي الجمعيات:</strong></td><td>${totalCharities.toFixed(2)} ج.م</td></tr>
+                                      <tr><td><strong>👨‍👩‍👧 إجمالي الأقارب:</strong></td><td>${totalRelatives.toFixed(2)} ج.م</td></tr></table>`;
+            } else section.style.display = 'none';
+        }
+
+        function updateGrantSection(data) {
+            const section = document.getElementById('grantSection');
+            const grants = data.grants || {};
+            const exempted = data.exemptedGrants || [];
+            
+            let hasAny = false;
+            
+            // منحة رمضان
+            if (grants.ramadan) {
+                hasAny = true;
+                if (grants.ramadan.type === 'cash') {
+                    document.getElementById('ramadanGrantDisplay').innerHTML = `نقدي: ${grants.ramadan.value || 200} ج.م`;
+                } else {
+                    document.getElementById('ramadanGrantDisplay').innerHTML = 'عينى (قماش)';
+                    document.getElementById('ramadanGrantDetailsDisplay').innerHTML = grants.ramadan.details || '';
+                }
+            } else {
+                document.getElementById('ramadanGrantDisplay').innerHTML = 'غير محدد';
+            }
+            
+            // منحة العيد
+            if (grants.eid) {
+                hasAny = true;
+                document.getElementById('eidGrantDisplay').innerHTML = `${grants.eid.value || 0} ج.م`;
+            } else {
+                document.getElementById('eidGrantDisplay').innerHTML = 'غير محدد';
+            }
+            
+            // منحة الدراسة
+            if (grants.study) {
+                hasAny = true;
+                document.getElementById('studyGrantDisplay').innerHTML = `${grants.study.value || 0} ج.م`;
+            } else {
+                document.getElementById('studyGrantDisplay').innerHTML = 'غير محدد';
+            }
+            
+            // الحالات المستثناة
+            if (exempted.length > 0) {
+                hasAny = true;
+                document.getElementById('exemptedRow').style.display = 'table-row';
+                document.getElementById('exemptedGrantsDisplay').innerHTML = exempted.join('، ');
+            } else {
+                document.getElementById('exemptedRow').style.display = 'none';
+            }
+            
+            section.style.display = hasAny ? 'block' : 'none';
+        }
+
+        function updateHumanReportSection(data) {
+            const humanReports = data.humanReports || {};
+            let allReports = '';
+            for (const [id, report] of Object.entries(humanReports)) {
+                if (report.report) allReports += `\n--- تقرير ${report.researcherName || id} ---\n${report.report}\n`;
+            }
+            setValue('reportText', allReports.trim());
+            if (currentUserRole === 'manager') {
+                const allRecommendationsDiv = document.getElementById('allRecommendationsSection');
+                const allRecommendationsContent = document.getElementById('allRecommendationsContent');
+                let recommendationsHtml = '';
+                for (const [id, report] of Object.entries(humanReports)) {
+                    if (report.recommendation) {
+                        recommendationsHtml += `<div class="recommendation-item"><strong>${escapeHtml(report.researcherName || id)}:</strong><br>${escapeHtml(report.recommendation)}</div>`;
+                    }
+                }
+                if (recommendationsHtml) {
+                    allRecommendationsDiv.style.display = 'block';
+                    allRecommendationsContent.innerHTML = recommendationsHtml;
+                } else allRecommendationsDiv.style.display = 'none';
+                if (humanReports[currentResearcherId]?.recommendation) setValue('recommendation', humanReports[currentResearcherId].recommendation);
+            } else {
+                if (humanReports[currentResearcherId]?.recommendation) setValue('recommendation', humanReports[currentResearcherId].recommendation);
+                document.getElementById('allRecommendationsSection').style.display = 'none';
+            }
+        }
+
+        function updateAISection(data) {
+            if (currentUserRole === 'manager') {
+                document.getElementById('aiSection').style.display = 'block';
+                document.getElementById('researcherOnlySection').style.display = 'none';
+                setValue('smartReportText', data.aiReport || '');
+                setValue('smartRecommendation', data.aiRecommendation || '');
+            } else {
+                document.getElementById('aiSection').style.display = 'none';
+                document.getElementById('researcherOnlySection').style.display = 'block';
+            }
+        }
+
+        function updateDonorSection(data) {
+            setValue('opinion', data.donorOpinion || '');
+            setValue('approvalDate', data.approvalDate || '');
+        }
+
+        function toggleSectionsByRole() {
+            if (currentUserRole === 'manager') {
+                document.getElementById('aiSection').style.display = 'block';
+                document.getElementById('researcherOnlySection').style.display = 'none';
+                document.getElementById('allRecommendationsSection').style.display = 'block';
+            } else {
+                document.getElementById('aiSection').style.display = 'none';
+                document.getElementById('researcherOnlySection').style.display = 'block';
+                document.getElementById('allRecommendationsSection').style.display = 'none';
+            }
+        }
+
+        function updateHumanReport() {
+            window.parent.postMessage({ type: 'HUMAN_REPORT_UPDATE', researcherId: currentResearcherId, researcherName: currentResearcherName, data: { report: document.getElementById('reportText').value } }, '*');
+        }
+        function updateHumanRecommendation() {
+            window.parent.postMessage({ type: 'HUMAN_REPORT_UPDATE', researcherId: currentResearcherId, researcherName: currentResearcherName, data: { recommendation: document.getElementById('recommendation').value } }, '*');
+        }
+        function updateDonorOpinion() {
+            window.parent.postMessage({ type: 'BATCH_UPDATE', data: { donorOpinion: document.getElementById('opinion').value, approvalDate: document.getElementById('approvalDate').value } }, '*');
+        }
+
+        // ============================================================
+        // دوال جدول الأسرة (من الكود الأصلي)
+        // ============================================================
         function addFamilyRow() {
             const tbody = document.getElementById('familyTableBody');
             if (!tbody) return;
@@ -175,15 +1428,362 @@
             const newRow = tbody.insertRow();
             newRow.innerHTML = `
                 <td class="index">${rowCount}</td>
-                <td><input type="text" style="width:100%; border:none;"></td>
-                <td><select style="width:100%; border:none;"><option>رب الأسرة</option><option>زوج/ة</option><option>ابن/ة</option></select></td>
-                <td><select style="width:100%; border:none;"><option>أعزب</option><option>متزوج</option></select></td>
-                <td><input type="text" style="width:100%; border:none;"></td>
-                <td><input type="number" style="width:100%; border:none;"></td>
-                <td><input type="text" style="width:100%; border:none;"></td>
-                <td class="print-hide"><button onclick="this.closest('tr').remove(); reorderFamilyRows();" style="color:red;">×</button></td>
+                <td><input type="text" placeholder="الاسم الكامل" class="family-name" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;"></td>
+                <td>
+                    <select class="family-relation" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                        <option value="">اختر القربى</option>
+                        <option>رب الأسرة</option><option>زوج</option><option>زوجة</option>
+                        <option>ابن</option><option>ابنة</option><option>ابن الأخ</option>
+                        <option>ابنة الأخ</option><option>ابن الأخت</option><option>ابنة الأخت</option>
+                        <option>جد</option><option>جدة</option><option>زوج الأخت</option>
+                        <option>زوجة الأخ</option><option>زوج الأم</option><option>زوجة الأب</option>
+                        <option>ابن العم</option><option>ابن الخال</option><option>ابنة العم</option>
+                        <option>ابنة الخال</option><option>حفيد</option><option>حفيدة</option>
+                        <option>أخ</option><option>أخت</option><option>والد</option>
+                        <option>والدة</option><option>قريب</option><option>آخر</option>
+                    </select>
+                 </td>
+                <td>
+                    <select class="family-status" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                        <option value="">اختر الحالة</option>
+                        <option>متزوج</option><option>متزوجة</option><option>أعزب</option>
+                        <option>انسة</option><option>أرمل</option><option>ارملة</option>
+                        <option>مطلق</option><option>مطلقة</option>
+                    </select>
+                 </td>
+                <td>
+                    <select class="family-work" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                        <option value="">اختر العمل</option>
+                        <option>ربة منزل</option><option>لا يعمل</option><option>طالب</option>
+                        <option>عاملة</option><option>عامل</option><option>مديرة منزل</option>
+                        <option>موظف</option><option>بالمعاش</option><option>مجند</option><option>طفل</option>
+                    </select>
+                 </td>
+                <td><input type="number" min="0" max="120" class="family-age" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;"></td>
+                <td><input type="text" class="family-notes" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;"></td>
+                <td class="print-hide"><button class="btn-del" onclick="deleteFamilyRow(this)">✖</button></td>
             `;
+            saveFamilyToCurrentCase();
+        }
+
+        function deleteFamilyRow(btn) {
+            const row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
             reorderFamilyRows();
+            saveFamilyToCurrentCase();
+        }
+
+        function reorderFamilyRows() {
+            const rows = document.querySelectorAll('#familyTableBody tr');
+            rows.forEach((row, index) => {
+                const indexCell = row.querySelector('.index');
+                if (indexCell) indexCell.innerText = index + 1;
+            });
+        }
+
+        function saveFamilyToCurrentCase() {
+            const rows = document.querySelectorAll('#familyTableBody tr');
+            const familyData = Array.from(rows).map(row => ({
+                name: row.querySelector('.family-name')?.value || '',
+                relation: row.querySelector('.family-relation')?.value || '',
+                status: row.querySelector('.family-status')?.value || '',
+                work: row.querySelector('.family-work')?.value || '',
+                age: row.querySelector('.family-age')?.value || '',
+                notes: row.querySelector('.family-notes')?.value || ''
+            }));
+            window.parent.postMessage({ type: 'BATCH_UPDATE', data: { familyMembers: familyData } }, '*');
+        }
+
+        // ============================================================
+        // دوال الحسابات (من الكود الأصلي)
+        // ============================================================
+        function calculate() {
+            const incomes = document.querySelectorAll('.income');
+            const expenses = document.querySelectorAll('.expense');
+            const lessons = document.querySelectorAll('.expense.lessons');
+            
+            let totalIncome = 0;
+            let totalExpenses = 0;
+            let lessonsTotal = 0;
+
+            incomes.forEach(i => totalIncome += parseFloat(i.value) || 0);
+            expenses.forEach(e => totalExpenses += parseFloat(e.value) || 0);
+            lessons.forEach(l => lessonsTotal += parseFloat(l.value) || 0);
+
+            const net = totalIncome - totalExpenses;
+            const members = parseFloat(document.getElementById('members').value) || 1;
+            
+            document.getElementById('totalIncome').innerText = totalIncome.toFixed(2);
+            document.getElementById('totalExpenses').innerText = totalExpenses.toFixed(2);
+            
+            const netCell = document.getElementById('net');
+            netCell.innerText = net.toFixed(2);
+            if(net > 0) netCell.style.background = 'lightgreen';
+            else if(net < 0) netCell.style.background = 'lightcoral';
+            else netCell.style.background = 'yellow';
+
+            document.getElementById('share').innerText = (net / members).toFixed(2);
+            document.getElementById('shareNoLessons').innerText = ((net + lessonsTotal) / members).toFixed(2);
+        }
+
+        // ============================================================
+        // دوال الصورة (من الكود الأصلي)
+        // ============================================================
+        function setupPhotoButton() {
+            const photoBtn = document.getElementById('photoBtn');
+            const photoInput = document.getElementById('photoInput');
+            const photoPlaceholder = document.getElementById('photoPlaceholder');
+            const photoPreview = document.getElementById('photoPreview');
+            
+            photoBtn.addEventListener('click', () => photoInput.click());
+            photoInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                if (file.type === 'application/pdf') {
+                    photoPlaceholder.style.display = 'none';
+                    photoPreview.style.display = 'block';
+                    photoPreview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+                    Swal.fire('تم', 'تم رفع ملف PDF بنجاح', 'success');
+                } else if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        photoPlaceholder.style.display = 'none';
+                        photoPreview.style.display = 'block';
+                        photoPreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                    Swal.fire('تم', 'تم رفع الصورة بنجاح', 'success');
+                } else {
+                    Swal.fire('تنبيه', 'الرجاء اختيار صورة أو ملف PDF', 'warning');
+                }
+            });
+        }
+
+        // ============================================================
+        // المساعد الذكي
+        // ============================================================
+        function openAIAssistant() {
+            Swal.fire({
+                title: '🤖 المساعد الذكي',
+                html: `<div style="text-align:right"><p><strong>📊 تحليل سريع:</strong></p><p id="aiQuickAnalysis">جاري التحليل...</p><hr><p><strong>💡 التوصية الذكية:</strong></p><p id="aiQuickRecommendation">...</p></div>`,
+                width: '500px',
+                didOpen: () => generateQuickAnalysis()
+            });
+        }
+
+        function generateQuickAnalysis() {
+            if (!currentCaseData) return;
+            const data = currentCaseData.data;
+            const totalIncome = calculateTotalIncomeFromData(data);
+            const totalExpenses = calculateTotalExpensesFromData(data);
+            const net = totalIncome - totalExpenses;
+            const familyCount = data.familyMembers?.length || 1;
+            const perCapita = net / familyCount;
+            
+            let analysis = '', recommendation = '';
+            if (net < 0) {
+                analysis = '⚠️ يوجد عجز مالي كبير';
+                recommendation = 'يوصى بمراجعة المصروفات وطلب مساعدة عاجلة';
+            } else if (perCapita < 500) {
+                analysis = '🟠 نصيب الفرد منخفض جداً (أقل من 500 ج.م)';
+                recommendation = 'الأسرة تحت خط الكفاية - يوصى بدعم عاجل';
+            } else if (perCapita < 1000) {
+                analysis = '🟡 نصيب الفرد متوسط';
+                recommendation = 'يوصى بالمتابعة وإعادة التقييم خلال 6 أشهر';
+            } else {
+                analysis = '✅ الحالة مستقرة مالياً';
+                recommendation = 'يمكن الاستمرار في الدعم الحالي';
+            }
+            
+            document.getElementById('aiQuickAnalysis').innerHTML = `
+                • إجمالي الدخل: ${totalIncome.toFixed(2)} ج.م<br>
+                • إجمالي المصروفات: ${totalExpenses.toFixed(2)} ج.م<br>
+                • صافي الدخل: ${net.toFixed(2)} ج.م<br>
+                • عدد أفراد الأسرة: ${familyCount}<br>
+                • نصيب الفرد: ${perCapita.toFixed(2)} ج.م<br>
+                • التحليل: ${analysis}
+            `;
+            document.getElementById('aiQuickRecommendation').innerHTML = recommendation;
+        }
+
+        function calculateTotalIncomeFromData(data) {
+            let total = 0;
+            const income = data.income || {};
+            income.pensions?.forEach(p => total += parseFloat(p.value) || 0);
+            income.work?.forEach(w => total += parseFloat(w.value) || 0);
+            income.charities?.forEach(c => total += parseFloat(c.value) || 0);
+            income.relatives?.forEach(r => total += parseFloat(r.value) || 0);
+            return total;
+        }
+
+        function calculateTotalExpensesFromData(data) {
+            const exp = data.expenses || {};
+            return (parseFloat(exp.rent) || 0) + (parseFloat(exp.electricity) || 0) +
+                   (parseFloat(exp.water) || 0) + (parseFloat(exp.gas) || 0) +
+                   (parseFloat(exp.internet) || 0) + (parseFloat(exp.mobile) || 0) +
+                   (parseFloat(exp.medical) || 0) + (parseFloat(exp.lessons) || 0) +
+                   (parseFloat(exp.installments) || 0) + (parseFloat(exp.other) || 0) +
+                   ((parseFloat(exp.dailyFood) || 0) * 30);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+        }
+
+        // ============================================================
+        // التهيئة
+        // ============================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            setupPhotoButton();
+            
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (!input.classList.contains('income') && !input.classList.contains('expense')) {
+                    input.addEventListener('change', () => {});
+                }
+            });
+            
+            window.parent.postMessage({ type: 'REQUEST_CURRENT_CASE' }, '*');
+            setTimeout(() => window.parent.postMessage({ type: 'REQUEST_CURRENT_CASE' }, '*'), 500);
+        });
+
+        window.calculate = calculate;
+        window.addFamilyRow = addFamilyRow;
+        window.deleteFamilyRow = deleteFamilyRow;
+        window.openAIAssistant = openAIAssistant;
+        window.updateHumanReport = updateHumanReport;
+        window.updateHumanRecommendation = updateHumanRecommendation;
+        window.updateDonorOpinion = updateDonorOpinion;
+    </script>
+</body>
+</html>
+                        <tr><td>إجمالي الدخل</td><td id="totalIncome">0</td><td>إجمالي المصروفات</td><td id="totalExpenses">0</td></tr>
+                        <tr><td>الصافي</td><td id="net">0</td><td>أفراد الأسرة</td><td><input type="number" id="members" value="1" oninput="calculate()" style="width:100%;"></td></tr>
+                        <tr><td>نصيب الفرد</td><td id="share">0</td><td>بدون دروس</td><td id="shareNoLessons">0</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- جدول الأسرة -->
+        <div class="family-container">
+            <h2 style="text-align:center; color: #2c3e50;">جدول تكوين الأسرة</h2>
+            <table id="familyTable" class="family-table">
+                <thead>
+                    <tr>
+                        <th>م</th>
+                        <th>اسم الفرد</th>
+                        <th>صلة القرابة</th>
+                        <th>الحالة الاجتماعية</th>
+                        <th>العمل</th>
+                        <th>السن</th>
+                        <th>ملاحظات</th>
+                        <th class="print-hide">حذف</th>
+                    </tr>
+                </thead>
+                <tbody id="familyTableBody">
+                </tbody>
+            </table>
+            <button class="btn-add print-hide" onclick="addFamilyRow()">+ إضافة فرد جديد</button>
+        </div>
+
+        <h3 style="text-align:center;">التقرير</h3>
+        <textarea class="textarea-clean" id="reportText" oninput="document.getElementById('out_human_report').innerText=this.value"></textarea>
+
+        <h4>التوصية</h4>
+        <input class="input-clean" id="recommendation" oninput="document.getElementById('out_human_rec').innerText=this.value">
+    </div>
+
+    <!-- الصفحة الثانية -->
+    <div class="page">
+        <h3 style="text-align:center;">التقرير الذكي</h3>
+        <textarea class="textarea-clean" id="smartReportText" oninput="document.getElementById('out_ai_report').innerText=this.value"></textarea>
+
+        <h4>التوصية الذكية</h4>
+        <input class="input-clean" id="smartRecommendation" oninput="document.getElementById('out_ai_rec').innerText=this.value">
+    </div>
+
+    <!-- الصفحة الثالثة -->
+    <div class="page">
+        <h3 style="text-align:center;">الرأي</h3>
+        <div class="dotted-line"></div>
+        <input class="input-clean" id="opinion" oninput="document.getElementById('out_donor').innerText=this.value">
+        <div class="dotted-line"></div>
+        <div class="donor-footer">
+            <div class="approve-left">يعتمد</div>
+            <div class="date-center">
+                التاريخ :
+                <input type="date" id="approvalDate" style="border:none;outline:none;">
+            </div>
+        </div>
+    </div>
+
+    <!-- زر المساعد الذكي -->
+    <button class="floating-ai-btn pulse print-hide" onclick="openAIAssistant()">
+        🤖
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        // ============================================================
+        // دوال جدول الأسرة (من الكود الأصلي مع القوائم الكاملة)
+        // ============================================================
+        
+        function addFamilyRow() {
+            const tbody = document.getElementById('familyTableBody');
+            if (!tbody) return;
+            const rowCount = tbody.rows.length + 1;
+            const newRow = tbody.insertRow();
+
+            newRow.innerHTML = `
+                <td class="index">${rowCount}</td>
+                <td><input type="text" placeholder="الاسم الكامل" class="family-name" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;"></td>
+                <td>
+                    <select class="family-relation" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                        <option value="">اختر القربى</option>
+                        <option>رب الأسرة</option><option>زوج</option><option>زوجة</option>
+                        <option>ابن</option><option>ابنة</option><option>ابن الأخ</option>
+                        <option>ابنة الأخ</option><option>ابن الأخت</option><option>ابنة الأخت</option>
+                        <option>جد</option><option>جدة</option><option>زوج الأخت</option>
+                        <option>زوجة الأخ</option><option>زوج الأم</option><option>زوجة الأب</option>
+                        <option>ابن العم</option><option>ابن الخال</option><option>ابنة العم</option>
+                        <option>ابنة الخال</option><option>حفيد</option><option>حفيدة</option>
+                        <option>أخ</option><option>أخت</option><option>والد</option>
+                        <option>والدة</option><option>قريب</option><option>آخر</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="family-status" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                        <option value="">اختر الحالة</option>
+                        <option>متزوج</option><option>متزوجة</option><option>أعزب</option>
+                        <option>انسة</option><option>أرمل</option><option>ارملة</option>
+                        <option>مطلق</option><option>مطلقة</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="family-work" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                        <option value="">اختر العمل</option>
+                        <option>ربة منزل</option><option>لا يعمل</option><option>طالب</option>
+                        <option>عاملة</option><option>عامل</option><option>مديرة منزل</option>
+                        <option>موظف</option><option>بالمعاش</option><option>مجند</option><option>طفل</option>
+                    </select>
+                </td>
+                <td><input type="number" min="0" max="120" class="family-age" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;"></td>
+                <td><input type="text" class="family-notes" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;"></td>
+                <td class="print-hide"><button class="btn-del" onclick="deleteFamilyRow(this)">✖</button></td>
+            `;
+            
+            saveToLocalStorage();
+        }
+        
+        function deleteFamilyRow(btn) {
+            const row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            reorderFamilyRows();
+            saveToLocalStorage();
         }
         
         function reorderFamilyRows() {
@@ -194,129 +1794,310 @@
             });
         }
         
-        // ============================================================
-        // دوال حساب الإجماليات (كما كانت في الأصل)
-        // ============================================================
-        
-        function calculateTotal() {
-            let totalIncome = 0;
-            let totalExpenses = 0;
-            let lessonsTotal = 0;
-            
-            document.querySelectorAll('.income').forEach(input => {
-                totalIncome += parseFloat(input.value) || 0;
-            });
-            document.querySelectorAll('.expense').forEach(input => {
-                const val = parseFloat(input.value) || 0;
-                totalExpenses += val;
-                if (input.classList.contains('lessons')) lessonsTotal += val;
-            });
-            
-            const net = totalIncome - totalExpenses;
-            const members = parseFloat(document.getElementById('members')?.value) || 1;
-            
-            document.getElementById('totalIncome').innerText = totalIncome.toFixed(2);
-            document.getElementById('totalExpenses').innerText = totalExpenses.toFixed(2);
-            const netCell = document.getElementById('net');
-            netCell.innerText = net.toFixed(2);
-            if (net > 0) netCell.style.background = 'lightgreen';
-            else if (net < 0) netCell.style.background = 'lightcoral';
-            else netCell.style.background = 'yellow';
-            document.getElementById('share').innerText = (net / members).toFixed(2);
-            document.getElementById('shareNoLessons').innerText = ((net + lessonsTotal) / members).toFixed(2);
+        function saveFamilyToLocalStorage() {
+            const rows = document.querySelectorAll('#familyTableBody tr');
+            const familyData = Array.from(rows).map(row => ({
+                name: row.querySelector('.family-name')?.value || '',
+                relation: row.querySelector('.family-relation')?.value || '',
+                status: row.querySelector('.family-status')?.value || '',
+                work: row.querySelector('.family-work')?.value || '',
+                age: row.querySelector('.family-age')?.value || '',
+                notes: row.querySelector('.family-notes')?.value || ''
+            }));
+            localStorage.setItem('familyData', JSON.stringify(familyData));
         }
         
-        // ============================================================
-        // ربط البيانات مع App (مضاف فقط ولا يؤثر على الشكل)
-        // ============================================================
+        function loadFamilyFromLocalStorage() {
+            const saved = localStorage.getItem('familyData');
+            if (saved) {
+                const familyData = JSON.parse(saved);
+                const tbody = document.getElementById('familyTableBody');
+                tbody.innerHTML = '';
+                familyData.forEach(member => {
+                    const newRow = tbody.insertRow();
+                    newRow.innerHTML = `
+                        <td class="index"></td>
+                        <td><input type="text" placeholder="الاسم الكامل" class="family-name" value="${escapeHtml(member.name)}" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;"></td>
+                        <td><select class="family-relation" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;">${getRelationOptions(member.relation)}</select></td>
+                        <td><select class="family-status" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;">${getStatusOptions(member.status)}</select></td>
+                        <td><select class="family-work" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;">${getWorkOptions(member.work)}</select></td>
+                        <td><input type="number" min="0" max="120" class="family-age" value="${member.age}" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;"></td>
+                        <td><input type="text" class="family-notes" value="${escapeHtml(member.notes)}" style="width:95%; padding:8px; border:1px solid #ccc; border-radius:4px;"></td>
+                        <td class="print-hide"><button class="btn-del" onclick="deleteFamilyRow(this)">✖</button></td>
+                    `;
+                });
+                reorderFamilyRows();
+            }
+        }
         
-        function saveToApp() {
-            if (!window.parent || !window.parent.App) return;
-            const app = window.parent.App;
-            if (!app.currentCase) return;
+        function getRelationOptions(selected) {
+            const options = ['رب الأسرة','زوج','زوجة','ابن','ابنة','ابن الأخ','ابنة الأخ','ابن الأخت','ابنة الأخت','جد','جدة','زوج الأخت','زوجة الأخ','زوج الأم','زوجة الأب','ابن العم','ابن الخال','ابنة العم','ابنة الخال','حفيد','حفيدة','أخ','أخت','والد','والدة','قريب','آخر'];
+            return '<option value="">اختر القربى</option>' + options.map(opt => `<option ${opt === selected ? 'selected' : ''}>${opt}</option>`).join('');
+        }
+        
+        function getStatusOptions(selected) {
+            const options = ['متزوج','متزوجة','أعزب','انسة','أرمل','ارملة','مطلق','مطلقة'];
+            return '<option value="">اختر الحالة</option>' + options.map(opt => `<option ${opt === selected ? 'selected' : ''}>${opt}</option>`).join('');
+        }
+        
+        function getWorkOptions(selected) {
+            const options = ['ربة منزل','لا يعمل','طالب','عاملة','عامل','مديرة منزل','موظف','بالمعاش','مجند','طفل'];
+            return '<option value="">اختر العمل</option>' + options.map(opt => `<option ${opt === selected ? 'selected' : ''}>${opt}</option>`).join('');
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        function saveToLocalStorage() {
+            saveFamilyToLocalStorage();
             
-            app.currentCase.data = {
-                case_serial: document.getElementById('caseSerial')?.value || '',
-                case_mm: document.getElementById('caseMM')?.value || '',
-                home_visit: document.getElementById('homeVisit')?.value || '',
-                office_researcher: document.getElementById('officeResearcher')?.value || '',
-                case_date: document.getElementById('caseDate')?.value || '',
-                case_status: document.getElementById('caseStatus')?.value || '',
-                full_name: document.getElementById('fullName')?.value || '',
-                national_id: document.getElementById('nationalId')?.value || '',
+            // حفظ باقي البيانات
+            const allData = {
+                caseSerial: document.getElementById('caseSerial')?.value || '',
+                caseMM: document.getElementById('caseMM')?.value || '',
+                homeVisit: document.getElementById('homeVisit')?.value || '',
+                officeResearcher: document.getElementById('officeResearcher')?.value || '',
+                caseDate: document.getElementById('caseDate')?.value || '',
+                caseStatus: document.getElementById('caseStatus')?.value || '',
+                fullName: document.getElementById('fullName')?.value || '',
+                nationalId: document.getElementById('nationalId')?.value || '',
                 residence: document.getElementById('residence')?.value || '',
                 governorate: document.getElementById('governorate')?.value || '',
                 district: document.getElementById('district')?.value || '',
                 phone: document.getElementById('phone')?.value || '',
-                research_purpose: document.getElementById('researchPurpose')?.value || '',
-                report_text: document.getElementById('reportText')?.value || '',
+                researchPurpose: document.getElementById('researchPurpose')?.value || '',
+                reportText: document.getElementById('reportText')?.value || '',
                 recommendation: document.getElementById('recommendation')?.value || '',
-                smart_report_text: document.getElementById('smartReportText')?.value || '',
-                smart_recommendation: document.getElementById('smartRecommendation')?.value || '',
+                smartReportText: document.getElementById('smartReportText')?.value || '',
+                smartRecommendation: document.getElementById('smartRecommendation')?.value || '',
                 opinion: document.getElementById('opinion')?.value || '',
-                approval_date: document.getElementById('approvalDate')?.value || '',
-                members: parseInt(document.getElementById('members')?.value) || 1
+                approvalDate: document.getElementById('approvalDate')?.value || '',
+                members: document.getElementById('members')?.value || '1'
             };
+            localStorage.setItem('mccFormData', JSON.stringify(allData));
         }
         
-        function loadFromApp() {
-            if (!window.parent || !window.parent.App) return;
-            const app = window.parent.App;
-            const data = app.currentCase?.data || {};
-            
-            if (document.getElementById('caseSerial')) document.getElementById('caseSerial').value = data.case_serial || '';
-            if (document.getElementById('caseMM')) document.getElementById('caseMM').value = data.case_mm || '';
-            if (document.getElementById('homeVisit')) document.getElementById('homeVisit').value = data.home_visit || '';
-            if (document.getElementById('officeResearcher')) document.getElementById('officeResearcher').value = data.office_researcher || '';
-            if (document.getElementById('caseDate')) document.getElementById('caseDate').value = data.case_date || '';
-            if (document.getElementById('caseStatus')) document.getElementById('caseStatus').value = data.case_status || 'حالة جديدة';
-            if (document.getElementById('fullName')) document.getElementById('fullName').value = data.full_name || '';
-            if (document.getElementById('nationalId')) document.getElementById('nationalId').value = data.national_id || '';
-            if (document.getElementById('residence')) document.getElementById('residence').value = data.residence || '';
-            if (document.getElementById('governorate')) document.getElementById('governorate').value = data.governorate || '';
-            if (document.getElementById('district')) document.getElementById('district').value = data.district || '';
-            if (document.getElementById('phone')) document.getElementById('phone').value = data.phone || '';
-            if (document.getElementById('researchPurpose')) document.getElementById('researchPurpose').value = data.research_purpose || '';
-            if (document.getElementById('reportText')) document.getElementById('reportText').value = data.report_text || '';
-            if (document.getElementById('recommendation')) document.getElementById('recommendation').value = data.recommendation || '';
-            if (document.getElementById('smartReportText')) document.getElementById('smartReportText').value = data.smart_report_text || '';
-            if (document.getElementById('smartRecommendation')) document.getElementById('smartRecommendation').value = data.smart_recommendation || '';
-            if (document.getElementById('opinion')) document.getElementById('opinion').value = data.opinion || '';
-            if (document.getElementById('approvalDate')) document.getElementById('approvalDate').value = data.approval_date || '';
-            if (document.getElementById('members')) document.getElementById('members').value = data.members || 1;
-            
-            calculateTotal();
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('mccFormData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (document.getElementById('caseSerial')) document.getElementById('caseSerial').value = data.caseSerial || '';
+                if (document.getElementById('caseMM')) document.getElementById('caseMM').value = data.caseMM || '';
+                if (document.getElementById('homeVisit')) document.getElementById('homeVisit').value = data.homeVisit || '';
+                if (document.getElementById('officeResearcher')) document.getElementById('officeResearcher').value = data.officeResearcher || '';
+                if (document.getElementById('caseDate')) document.getElementById('caseDate').value = data.caseDate || '2026-02-11';
+                if (document.getElementById('caseStatus')) document.getElementById('caseStatus').value = data.caseStatus || 'حالة جديدة';
+                if (document.getElementById('fullName')) document.getElementById('fullName').value = data.fullName || '';
+                if (document.getElementById('nationalId')) document.getElementById('nationalId').value = data.nationalId || '';
+                if (document.getElementById('residence')) document.getElementById('residence').value = data.residence || '';
+                if (document.getElementById('governorate')) document.getElementById('governorate').value = data.governorate || '';
+                if (document.getElementById('district')) document.getElementById('district').value = data.district || '';
+                if (document.getElementById('phone')) document.getElementById('phone').value = data.phone || '';
+                if (document.getElementById('researchPurpose')) document.getElementById('researchPurpose').value = data.researchPurpose || '';
+                if (document.getElementById('reportText')) document.getElementById('reportText').value = data.reportText || '';
+                if (document.getElementById('recommendation')) document.getElementById('recommendation').value = data.recommendation || '';
+                if (document.getElementById('smartReportText')) document.getElementById('smartReportText').value = data.smartReportText || '';
+                if (document.getElementById('smartRecommendation')) document.getElementById('smartRecommendation').value = data.smartRecommendation || '';
+                if (document.getElementById('opinion')) document.getElementById('opinion').value = data.opinion || '';
+                if (document.getElementById('approvalDate')) document.getElementById('approvalDate').value = data.approvalDate || '';
+                if (document.getElementById('members')) document.getElementById('members').value = data.members || '1';
+            }
+            loadFamilyFromLocalStorage();
+            calculate();
         }
         
-        // ربط جميع الحقول لحفظ البيانات تلقائياً
-        function bindAutoSave() {
-            const allInputs = document.querySelectorAll('input, select, textarea');
-            allInputs.forEach(input => {
-                input.addEventListener('change', () => saveToApp());
-                input.addEventListener('input', () => saveToApp());
+        // ============================================================
+        // دوال الحسابات (نفس الكود الأصلي)
+        // ============================================================
+        
+        function calculate() {
+            const incomes = document.querySelectorAll('.income');
+            const expenses = document.querySelectorAll('.expense');
+            const lessons = document.querySelectorAll('.expense.lessons');
+            
+            let totalIncome = 0;
+            let totalExpenses = 0;
+            let lessonsTotal = 0;
+
+            incomes.forEach(i => totalIncome += parseFloat(i.value) || 0);
+            expenses.forEach(e => totalExpenses += parseFloat(e.value) || 0);
+            lessons.forEach(l => lessonsTotal += parseFloat(l.value) || 0);
+
+            const net = totalIncome - totalExpenses;
+            const members = parseFloat(document.getElementById('members').value) || 1;
+            
+            document.getElementById('totalIncome').innerText = totalIncome.toFixed(2);
+            document.getElementById('totalExpenses').innerText = totalExpenses.toFixed(2);
+            
+            const netCell = document.getElementById('net');
+            netCell.innerText = net.toFixed(2);
+            if(net > 0) netCell.style.background = 'lightgreen';
+            else if(net < 0) netCell.style.background = 'lightcoral';
+            else netCell.style.background = 'yellow';
+
+            document.getElementById('share').innerText = (net / members).toFixed(2);
+            document.getElementById('shareNoLessons').innerText = ((net + lessonsTotal) / members).toFixed(2);
+            
+            saveToLocalStorage();
+        }
+        
+        // ============================================================
+        // زر الصورة (يعمل مع PDF والصور)
+        // ============================================================
+        
+        function setupPhotoButton() {
+            const photoBtn = document.getElementById('photoBtn');
+            const photoInput = document.getElementById('photoInput');
+            const photoPlaceholder = document.getElementById('photoPlaceholder');
+            const photoPreview = document.getElementById('photoPreview');
+            
+            photoBtn.addEventListener('click', () => {
+                photoInput.click();
+            });
+            
+            photoInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                if (file.type === 'application/pdf') {
+                    // للـ PDF: نعرض أيقونة PDF
+                    photoPlaceholder.style.display = 'none';
+                    photoPreview.style.display = 'block';
+                    photoPreview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+                    photoPreview.style.objectFit = 'contain';
+                    photoPreview.style.background = '#fff';
+                    photoPreview.style.padding = '2px';
+                    localStorage.setItem('photoData', JSON.stringify({ type: 'pdf', name: file.name }));
+                    Swal.fire('تم', 'تم رفع ملف PDF بنجاح', 'success');
+                } 
+                else if (file.type.startsWith('image/')) {
+                    // للصور: نعرض معاينة الصورة
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        photoPlaceholder.style.display = 'none';
+                        photoPreview.style.display = 'block';
+                        photoPreview.src = e.target.result;
+                        localStorage.setItem('photoData', JSON.stringify({ type: 'image', data: e.target.result }));
+                    };
+                    reader.readAsDataURL(file);
+                    Swal.fire('تم', 'تم رفع الصورة بنجاح', 'success');
+                }
+                else {
+                    Swal.fire('تنبيه', 'الرجاء اختيار صورة أو ملف PDF', 'warning');
+                }
             });
         }
         
-        // الاستماع لرسائل من الإطار الأب
+        function loadSavedPhoto() {
+            const saved = localStorage.getItem('photoData');
+            if (saved) {
+                const photoData = JSON.parse(saved);
+                const photoPlaceholder = document.getElementById('photoPlaceholder');
+                const photoPreview = document.getElementById('photoPreview');
+                
+                if (photoData.type === 'pdf') {
+                    photoPlaceholder.style.display = 'none';
+                    photoPreview.style.display = 'block';
+                    photoPreview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+                    photoPreview.style.objectFit = 'contain';
+                } else if (photoData.type === 'image' && photoData.data) {
+                    photoPlaceholder.style.display = 'none';
+                    photoPreview.style.display = 'block';
+                    photoPreview.src = photoData.data;
+                }
+            }
+        }
+        
+        // ============================================================
+        // ربط الحقول للحفظ التلقائي
+        // ============================================================
+        
+        function bindAutoSave() {
+            const allInputs = document.querySelectorAll('input, select, textarea');
+            allInputs.forEach(input => {
+                input.addEventListener('change', () => saveToLocalStorage());
+                input.addEventListener('input', () => saveToLocalStorage());
+            });
+        }
+        
+        // ============================================================
+        // المساعد الذكي
+        // ============================================================
+        
+        function openAIAssistant() {
+            if (window.AppController) {
+                window.AppController.openAIAssistant();
+            } else {
+                Swal.fire('تنبيه', 'جاري تحميل المساعد الذكي...', 'info');
+                const script = document.createElement('script');
+                script.src = '/ui/components/ai_assistant_popup.js';
+                script.onload = () => {
+                    if (window.AIAssistantPopup) {
+                        new window.AIAssistantPopup().open();
+                    }
+                };
+                document.head.appendChild(script);
+            }
+        }
+        
+        // ============================================================
+        // استقبال البيانات من شاشة الحالة
+        // ============================================================
+        
         window.addEventListener('message', function(event) {
             if (event.data && event.data.type === 'UPDATE_CASE') {
-                loadFromApp();
+                const caseData = event.data.data;
+                const data = caseData.data || caseData;
+                
+                if (data.full_name) {
+                    const nameField = document.getElementById('fullName');
+                    if (nameField) nameField.value = data.full_name;
+                }
+                if (data.national_id) {
+                    const nationalField = document.getElementById('nationalId');
+                    if (nationalField) nationalField.value = data.national_id;
+                }
+                if (data.address) {
+                    const addressField = document.getElementById('residence');
+                    if (addressField) addressField.value = data.address;
+                }
+                if (data.phone) {
+                    const phoneField = document.getElementById('phone');
+                    if (phoneField) phoneField.value = data.phone;
+                }
+                saveToLocalStorage();
             }
         });
         
-        // عند تحميل الصفحة
+        // ============================================================
+        // التهيئة
+        // ============================================================
+        
         window.addEventListener('DOMContentLoaded', () => {
             bindAutoSave();
-            loadFromApp();
+            loadFromLocalStorage();
+            setupPhotoButton();
+            loadSavedPhoto();
+            
             if (document.getElementById('familyTableBody')?.children.length === 0) {
                 addFamilyRow();
             }
+            
+            window.addEventListener('beforeunload', () => saveToLocalStorage());
         });
         
         // تصدير الدوال للنطاق العام
-        window.calculateTotal = calculateTotal;
+        window.calculate = calculate;
         window.addFamilyRow = addFamilyRow;
-        window.reorderFamilyRows = reorderFamilyRows;
+        window.deleteFamilyRow = deleteFamilyRow;
+        window.openAIAssistant = openAIAssistant;
     </script>
 </body>
 </html>

@@ -2,10 +2,15 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة البحث الاجتماعي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>نظام إدارة البحث الاجتماعي - جمعية الرحمة الخيرية</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --bg-primary: #0F1117;
             --bg-secondary: #1A1D27;
@@ -14,88 +19,543 @@
             --text-primary: #E8EBF4;
             --text-secondary: #6B7280;
             --accent: #4F8EF7;
+            --accent-hover: #3b7ae0;
             --success: #2DD4BF;
             --warning: #F59E0B;
             --danger: #F87171;
             --gold: #F5C842;
+            --transition: all 0.3s ease;
         }
+
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+
         body {
             font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             direction: rtl;
             min-height: 100vh;
+            transition: var(--transition);
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            text-align: center;
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .logo {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
+
+        .logo-area h1 {
+            font-size: 20px;
+            font-weight: 700;
             background: linear-gradient(90deg, var(--gold), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
         }
-        .subtitle {
+
+        .logo-area p {
+            font-size: 11px;
             color: var(--text-secondary);
-            margin-bottom: 40px;
+            margin-top: 4px;
         }
-        .buttons {
+
+        .user-area {
             display: flex;
-            gap: 20px;
-            justify-content: center;
+            align-items: center;
+            gap: 15px;
             flex-wrap: wrap;
         }
-        .btn {
-            padding: 15px 40px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-        .btn-secondary {
-            background: var(--bg-secondary);
+
+        .theme-toggle, .logout-btn {
+            background: var(--bg-primary);
             border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Modules Navigation */
+        .modules-nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .module-nav-btn {
+            padding: 10px 20px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
             color: var(--text-primary);
         }
-        .btn:hover {
-            transform: translateY(-3px);
-            opacity: 0.9;
+
+        .module-nav-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
         }
-        .footer {
-            margin-top: 60px;
+
+        /* Assistant Card */
+        .assistant-card {
+            background: linear-gradient(135deg, rgba(79,142,247,0.1), rgba(46,202,171,0.05));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 24px 24px;
+        }
+
+        .assistant-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .assistant-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .assistant-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .assistant-role {
+            font-size: 11px;
             color: var(--text-secondary);
-            font-size: 12px;
+        }
+
+        .assistant-bubble {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .msg-line {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .msg-icon { font-size: 18px; }
+        .msg-text { font-size: 13px; line-height: 1.5; flex: 1; }
+
+        /* Recent Cases */
+        .recent-list {
+            padding: 0 24px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .recent-item:hover {
+            border-color: var(--accent);
+        }
+
+        .recent-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .recent-info { flex: 1; }
+        .recent-name { font-weight: 600; font-size: 14px; }
+        .recent-date { font-size: 11px; color: var(--text-secondary); }
+
+        /* Control Buttons */
+        .control-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-logout { background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .modules-nav { justify-content: center; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">✨</div>
-        <h1>نظام إدارة البحث الاجتماعي</h1>
-        <div class="subtitle">جمعية الرحمة الخيرية</div>
-        <div class="buttons">
-            <a href="/login" class="btn btn-primary">🔑 تسجيل الدخول</a>
-            <a href="#" class="btn btn-secondary" onclick="alert('للحصول على نسخة تجريبية، يرجى التواصل مع المدير')">📱 نسخة تجريبية</a>
-        </div>
-        <div class="footer">
-            © 2026 جمعية الرحمة الخيرية - جميع الحقوق محفوظة
+
+<div class="header">
+    <div class="logo-area">
+        <h1 id="orgName">✨ جمعية الرحمة الخيرية ✨</h1>
+        <p>نظام إدارة البحث الاجتماعي</p>
+    </div>
+    <div class="user-area">
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        <button class="logout-btn" onclick="logout()">🔒 تسجيل خروج</button>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">👤</div>
+            <div>
+                <div class="user-name" id="userName"></div>
+                <div class="user-role" id="userRole"></div>
+            </div>
         </div>
     </div>
+</div>
+
+<div class="modules-nav" id="modulesNav"></div>
+
+<div class="stats-grid" id="statsGrid"></div>
+
+<div class="assistant-card">
+    <div class="assistant-header">
+        <div class="assistant-avatar" id="aiAvatar">🤖</div>
+        <div>
+            <div class="assistant-name" id="aiName">المساعد الذكي</div>
+            <div class="assistant-role">محلل البيانات</div>
+        </div>
+    </div>
+    <div class="assistant-bubble" id="assistantBubble"></div>
+</div>
+
+<div class="recent-list" id="recentList"></div>
+
+<div class="control-buttons">
+    <button class="control-btn btn-logout" onclick="logout()">🔒 تسجيل خروج</button>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    // ============================================================
+    // بيانات المستخدم الحالي
+    // ============================================================
+    let currentUser = null;
+    
+    function loadCurrentUser() {
+        const saved = localStorage.getItem('currentUser');
+        if (saved) {
+            currentUser = JSON.parse(saved);
+            document.getElementById('userAvatar').innerText = currentUser.avatar || '👤';
+            document.getElementById('userName').innerText = currentUser.name;
+            document.getElementById('userRole').innerText = currentUser.role === 'admin' ? 'مدير النظام' : 'باحث';
+        } else {
+            window.location.href = '/login.html';
+        }
+    }
+
+    // ============================================================
+    // بيانات تجريبية (سيتم ربطها بقاعدة البيانات)
+    // ============================================================
+    let stats = {
+        total: 1250,
+        pending: 45,
+        approved: 680,
+        underReview: 120
+    };
+
+    let recentCases = [
+        { name: "أحمد محمود علي", date: "2026-04-05", status: "قيد المراجعة" },
+        { name: "فاطمة حسن إبراهيم", date: "2026-04-04", status: "مقبولة" },
+        { name: "محمود سامي خليل", date: "2026-04-04", status: "قيد المراجعة" },
+        { name: "سارة أحمد فتحي", date: "2026-04-03", status: "مقبولة" }
+    ];
+
+    // ============================================================
+    // تحميل الوحدات حسب الصلاحيات
+    // ============================================================
+    const modules = {
+        admin: [
+            { name: "إدارة الحالات", icon: "🏠", link: "/modules/cases/index.html" },
+            { name: "الموظفين (HR)", icon: "👥", link: "/modules/hr/index.html" },
+            { name: "الحسابات", icon: "💰", link: "/modules/accounting/index.html" },
+            { name: "خطط الزيارات", icon: "🗺️", link: "/modules/cases/visit_management/index.html" },
+            { name: "حالات خاصة", icon: "⭐", link: "/modules/cases/special_cases/index.html" },
+            { name: "الإعدادات", icon: "⚙️", link: "/admin" }
+        ],
+        researcher: [
+            { name: "إدارة الحالات", icon: "🏠", link: "/modules/cases/index.html" },
+            { name: "الموظفين (HR)", icon: "👥", link: "/modules/hr/index.html" },
+            { name: "الحسابات", icon: "💰", link: "/modules/accounting/index.html" },
+            { name: "خطط الزيارات", icon: "🗺️", link: "/modules/cases/visit_management/index.html" }
+        ]
+    };
+
+    function loadModules() {
+        const container = document.getElementById('modulesNav');
+        const userModules = currentUser?.role === 'admin' ? modules.admin : modules.researcher;
+        container.innerHTML = userModules.map(m => `
+            <button class="module-nav-btn" onclick="navigateTo('${m.link}')">
+                <span>${m.icon}</span> ${m.name}
+            </button>
+        `).join('');
+    }
+
+    // ============================================================
+    // تحميل الإحصائيات
+    // ============================================================
+    function loadStats() {
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card" onclick="navigateTo('/modules/cases/index.html')">
+                <div class="value">${stats.total}</div>
+                <div class="label">إجمالي الحالات</div>
+            </div>
+            <div class="stat-card" onclick="navigateTo('/modules/cases/index.html?filter=pending')">
+                <div class="value">${stats.pending}</div>
+                <div class="label">قيد المراجعة</div>
+            </div>
+            <div class="stat-card" onclick="navigateTo('/modules/cases/index.html?filter=approved')">
+                <div class="value">${stats.approved}</div>
+                <div class="label">مقبولة</div>
+            </div>
+            <div class="stat-card" onclick="navigateTo('/modules/cases/index.html?filter=underReview')">
+                <div class="value">${stats.underReview}</div>
+                <div class="label">تحت الدراسة</div>
+            </div>
+        `;
+    }
+
+    // ============================================================
+    // تحميل آخر الحالات
+    // ============================================================
+    function loadRecentCases() {
+        const container = document.getElementById('recentList');
+        container.innerHTML = recentCases.map(c => `
+            <div class="recent-item" onclick="openCase('${c.name}')">
+                <div class="recent-avatar">${c.name.charAt(0)}</div>
+                <div class="recent-info">
+                    <div class="recent-name">${c.name}</div>
+                    <div class="recent-date">${c.date} - ${c.status}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ============================================================
+    // تحميل المساعد الذكي
+    // ============================================================
+    function loadAssistant() {
+        const aiName = localStorage.getItem('aiName') || 'عارف';
+        const aiAvatar = localStorage.getItem('aiAvatar');
+        
+        document.getElementById('aiName').innerHTML = aiName;
+        if (aiAvatar) {
+            document.getElementById('aiAvatar').innerHTML = `<img src="${aiAvatar}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">`;
+        }
+        
+        const isAdmin = currentUser?.role === 'admin';
+        const message = isAdmin 
+            ? `📊 مرحباً مدير، هناك ${stats.pending} حالة تحتاج مراجعتك.`
+            : `👋 مرحباً ${currentUser?.name}، لديك مهام جديدة في انتظارك.`;
+        
+        document.getElementById('assistantBubble').innerHTML = `
+            <div class="msg-line">
+                <span class="msg-icon">🤖</span>
+                <span class="msg-text">${message}</span>
+            </div>
+            <div class="msg-line">
+                <span class="msg-icon">📌</span>
+                <span class="msg-text">يمكنك البدء من قائمة الموديولات أعلاه.</span>
+            </div>
+        `;
+    }
+
+    // ============================================================
+    // دوال مساعدة
+    // ============================================================
+    function navigateTo(link) {
+        showToast(`جاري فتح ${link}`);
+        window.location.href = link;
+    }
+
+    function openCase(name) {
+        showToast(`فتح حالة: ${name}`);
+    }
+
+    function logout() {
+        if (confirm('هل تريد تسجيل الخروج؟')) {
+            localStorage.removeItem('currentUser');
+            showToast('جاري تسجيل الخروج...');
+            setTimeout(() => {
+                window.location.href = '/login.html';
+            }, 1000);
+        }
+    }
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.querySelector('.theme-toggle').textContent = newTheme === 'light' ? '🌙' : '☀️';
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
+    }
+
+    // ============================================================
+    // التهيئة
+    // ============================================================
+    function init() {
+        loadCurrentUser();
+        loadModules();
+        loadStats();
+        loadRecentCases();
+        loadAssistant();
+        loadTheme();
+    }
+
+    init();
+</script>
+
 </body>
 </html>

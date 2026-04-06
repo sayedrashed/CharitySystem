@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>خطط الزيارات - نظام إدارة البحث الاجتماعي</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
             margin: 0;
@@ -34,6 +36,7 @@
             overflow: hidden;
         }
 
+        /* Header */
         .header {
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
@@ -64,6 +67,7 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* Filter Bar */
         .filter-bar {
             padding: 12px 20px;
             background: var(--bg-secondary);
@@ -103,14 +107,23 @@
             border: none;
         }
 
-        .btn-filter { background: var(--accent); color: white; }
-        .btn-generate { background: var(--success); color: #0F1117; }
+        .btn-filter {
+            background: var(--accent);
+            color: white;
+        }
 
+        .btn-generate {
+            background: var(--success);
+            color: #0F1117;
+        }
+
+        /* Main Layout */
         .main-layout {
             display: flex;
             height: calc(100vh - 105px);
         }
 
+        /* Plans Section (Right) */
         .plans-section {
             width: 40%;
             overflow-y: auto;
@@ -118,6 +131,7 @@
             border-left: 1px solid var(--border);
         }
 
+        /* Map Section (Left) */
         .map-section {
             width: 60%;
             position: relative;
@@ -129,6 +143,7 @@
             height: 100%;
         }
 
+        /* Plan Cards */
         .plan-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -146,7 +161,7 @@
 
         .plan-card.selected {
             border-color: var(--accent);
-            box-shadow: 0 0 0 2px rgba(79,142,247,0.3);
+            box-shadow: 0 0 0 2px rgba(79, 142, 247, 0.3);
         }
 
         .plan-header {
@@ -237,6 +252,7 @@
             border-color: var(--accent);
         }
 
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -263,6 +279,7 @@
             max-width: 90%;
         }
 
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -298,105 +315,468 @@
 </div>
 
 <div class="filter-bar">
-    <div class="filter-group"><label>المحافظة</label><select id="filterGovernorate"><option value="">الكل</option><option>القاهرة</option><option>الجيزة</option><option>القليوبية</option></select></div>
-    <div class="filter-group"><label>الفئة</label><select id="filterCategory"><option value="">الكل</option><option>شبرا</option><option>النهضة</option><option>معاقين</option><option>الشركة</option></select></div>
-    <div class="filter-group"><label>نوع الزيارة</label><select id="filterType"><option value="all">الكل</option><option value="reeval">إعادة تقييم</option><option value="new">جديدة</option></select></div>
-    <div class="filter-group"><label>المدى الزمني</label><select id="planDuration"><option value="week">أسبوع</option><option value="month" selected>شهر</option><option value="year">سنة</option></select></div>
-    <div class="filter-group"><label>حجم الخطة</label><input type="number" id="planSize" value="6" min="4" max="10" style="width:70px"></div>
+    <div class="filter-group">
+        <label>المحافظة</label>
+        <select id="filterGovernorate">
+            <option value="">الكل</option>
+            <option>القاهرة</option>
+            <option>الجيزة</option>
+            <option>القليوبية</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>الفئة</label>
+        <select id="filterCategory">
+            <option value="">الكل</option>
+            <option>شبرا</option>
+            <option>النهضة</option>
+            <option>معاقين</option>
+            <option>الشركة</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>نوع الزيارة</label>
+        <select id="filterType">
+            <option value="all">الكل</option>
+            <option value="reeval">إعادة تقييم</option>
+            <option value="new">جديدة</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>المدى الزمني</label>
+        <select id="planDuration">
+            <option value="week">أسبوع</option>
+            <option value="month" selected>شهر</option>
+            <option value="year">سنة</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>حجم الخطة</label>
+        <input type="number" id="planSize" value="6" min="4" max="10" style="width:70px">
+    </div>
     <button class="btn-filter" onclick="applyFilters()">🔍 بحث</button>
     <button class="btn-generate" onclick="generatePlans()">🔄 توليد خطط</button>
 </div>
 
 <div class="main-layout">
+    <!-- القسم الأيمن: الخطط -->
     <div class="plans-section" id="plansSection">
-        <div style="text-align:center; padding:40px; color:var(--text-secondary);">اضغط "توليد خطط" لبدء التخطيط</div>
+        <div style="text-align:center; padding:40px; color:var(--text-secondary);">
+            اضغط "توليد خطط" لبدء التخطيط
+        </div>
     </div>
+
+    <!-- القسم الأيسر: الخريطة -->
     <div class="map-section">
         <div id="mapContainer" style="width:100%; height:100%;"></div>
     </div>
 </div>
 
-<div id="editModal" class="modal"><div class="modal-content"><h3>✏️ تعديل الخطة</h3><div id="editModalContent"></div><div class="modal-buttons" style="margin-top:15px"><button class="btn-save" onclick="savePlanEdit()">حفظ</button><button onclick="closeModal()">إلغاء</button></div></div></div>
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h3>✏️ تعديل الخطة</h3>
+        <div id="editModalContent"></div>
+        <div class="modal-buttons" style="margin-top:15px">
+            <button class="btn-plan" onclick="savePlanEdit()">💾 حفظ</button>
+            <button class="btn-plan" onclick="closeModal()">❌ إلغاء</button>
+        </div>
+    </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&language=ar&region=EG" async defer></script>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-    // بيانات تجريبية - سيتم ربطها بقاعدة البيانات لاحقاً
+    // ============================================================
+    // بيانات تجريبية (سيتم استبدالها من currentCase.data لاحقاً)
+    // ============================================================
     let allCases = [
-        { id:1, name:"أحمد محمود", serial:101, category:"شبرا", governorate:"القليوبية", area:"شبرا الخيمة", address:"شارع محمد فريد", lat:30.12, lng:31.25, type:"reeval", focus:"تحديث البطاقة" },
-        { id:2, name:"سارة علي", serial:102, category:"النهضة", governorate:"القليوبية", area:"النهضة", address:"شارع الجيش", lat:30.13, lng:31.26, type:"reeval", focus:"إيصال كهرباء" },
-        { id:3, name:"محمود خالد", serial:103, category:"معاقين", governorate:"القاهرة", area:"مدينة نصر", address:"عباس العقاد", lat:30.04, lng:31.32, type:"reeval", focus:"تقرير طبي" },
-        { id:4, name:"فاطمة حسن", serial:104, category:"شبرا", governorate:"القليوبية", area:"شبرا الخيمة", address:"شارع الترعة", lat:30.12, lng:31.24, type:"reeval", focus:"" },
-        { id:5, name:"علي إبراهيم", serial:105, category:"الشركة", governorate:"القاهرة", area:"العبور", address:"المنطقة الصناعية", lat:30.17, lng:31.48, type:"new", focus:"جديدة" },
-        { id:6, name:"نورا أحمد", serial:106, category:"النهضة", governorate:"القليوبية", area:"النهضة", address:"شارع المدارس", lat:30.13, lng:31.27, type:"reeval", focus:"تغيير عنوان" },
-        { id:7, name:"يوسف سامي", serial:107, category:"معاقين", governorate:"القاهرة", area:"المقطم", address:"شارع 9", lat:30.02, lng:31.28, type:"new", focus:"" },
-        { id:8, name:"ليلى محمود", serial:108, category:"شبرا", governorate:"القليوبية", area:"شبرا الخيمة", address:"شارع بورسعيد", lat:30.12, lng:31.23, type:"reeval", focus:"تغيير دخل" },
-        { id:9, name:"كريم أحمد", serial:109, category:"النهضة", governorate:"القليوبية", area:"النهضة", address:"شارع الجمهورية", lat:30.14, lng:31.27, type:"new", focus:"" },
-        { id:10, name:"منى خالد", serial:110, category:"شبرا", governorate:"القليوبية", area:"شبرا الخيمة", address:"شارع النصر", lat:30.11, lng:31.25, type:"reeval", focus:"" }
+        { id: 1, name: "أحمد محمود", serial: 101, category: "شبرا", governorate: "القليوبية", area: "شبرا الخيمة", address: "شارع محمد فريد", lat: 30.12, lng: 31.25, type: "reeval", focus: "تحديث البطاقة" },
+        { id: 2, name: "سارة علي", serial: 102, category: "النهضة", governorate: "القليوبية", area: "النهضة", address: "شارع الجيش", lat: 30.13, lng: 31.26, type: "reeval", focus: "إيصال كهرباء" },
+        { id: 3, name: "محمود خالد", serial: 103, category: "معاقين", governorate: "القاهرة", area: "مدينة نصر", address: "عباس العقاد", lat: 30.04, lng: 31.32, type: "reeval", focus: "تقرير طبي" },
+        { id: 4, name: "فاطمة حسن", serial: 104, category: "شبرا", governorate: "القليوبية", area: "شبرا الخيمة", address: "شارع الترعة", lat: 30.12, lng: 31.24, type: "reeval", focus: "" },
+        { id: 5, name: "علي إبراهيم", serial: 105, category: "الشركة", governorate: "القاهرة", area: "العبور", address: "المنطقة الصناعية", lat: 30.17, lng: 31.48, type: "new", focus: "جديدة" },
+        { id: 6, name: "نورا أحمد", serial: 106, category: "النهضة", governorate: "القليوبية", area: "النهضة", address: "شارع المدارس", lat: 30.13, lng: 31.27, type: "reeval", focus: "تغيير عنوان" },
+        { id: 7, name: "يوسف سامي", serial: 107, category: "معاقين", governorate: "القاهرة", area: "المقطم", address: "شارع 9", lat: 30.02, lng: 31.28, type: "new", focus: "" },
+        { id: 8, name: "ليلى محمود", serial: 108, category: "شبرا", governorate: "القليوبية", area: "شبرا الخيمة", address: "شارع بورسعيد", lat: 30.12, lng: 31.23, type: "reeval", focus: "تغيير دخل" },
+        { id: 9, name: "كريم أحمد", serial: 109, category: "النهضة", governorate: "القليوبية", area: "النهضة", address: "شارع الجمهورية", lat: 30.14, lng: 31.27, type: "new", focus: "" },
+        { id: 10, name: "منى خالد", serial: 110, category: "شبرا", governorate: "القليوبية", area: "شبرا الخيمة", address: "شارع النصر", lat: 30.11, lng: 31.25, type: "reeval", focus: "" }
     ];
-    
-    let researchers = [{name:"علي",gender:"male"},{name:"بشرى",gender:"female"},{name:"أشرف",gender:"male"},{name:"آية",gender:"female"},{name:"ريهام",gender:"female"}];
-    let currentPlans = [], currentFilter = {governorate:"",category:"",type:"all",planSize:6,duration:"month"}, selectedPlan = null, map = null, markers = [];
 
-    function calculateDistance(lat1,lng1,lat2,lng2){ let R=6371; let dLat=(lat2-lat1)*Math.PI/180; let dLng=(lng2-lng1)*Math.PI/180; let a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2); let c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); return R*c; }
-    function groupByLocation(cases,maxDist=2){ let groups=[]; let used=new Set(); for(let i=0;i<cases.length;i++){ if(used.has(i)) continue; let group=[cases[i]]; used.add(i); for(let j=i+1;j<cases.length;j++){ if(used.has(j)) continue; let dist=calculateDistance(cases[i].lat,cases[i].lng,cases[j].lat,cases[j].lng); if(dist<=maxDist){ group.push(cases[j]); used.add(j); } } groups.push(group); } return groups; }
-    function splitToPlans(groups,planSize){ let plans=[]; for(let group of groups){ for(let i=0;i<group.length;i+=planSize){ let planCases=group.slice(i,i+planSize); if(planCases.length){ let male=researchers.filter(r=>r.gender==='male')[Math.floor(Math.random()*researchers.filter(r=>r.gender==='male').length)]; let female=researchers.filter(r=>r.gender==='female')[Math.floor(Math.random()*researchers.filter(r=>r.gender==='female').length)]; plans.push({ id:plans.length+1, cases:planCases, area:planCases[0].area, governorate:planCases[0].governorate, researchers:[male.name,female.name] }); } } } return plans; }
-    function getDaysByDuration(duration){ if(duration==='week') return 6; if(duration==='month') return 24; return 288; }
-    function calculateNeededPlans(totalCases,planSize,duration){ let days=getDaysByDuration(duration); let maxPlans=days; let casesPerDay=Math.ceil(totalCases/days); let neededPlans=Math.ceil(totalCases/planSize); return Math.min(neededPlans,maxPlans); }
+    let researchers = [
+        { name: "علي", gender: "male" },
+        { name: "بشرى", gender: "female" },
+        { name: "أشرف", gender: "male" },
+        { name: "آية", gender: "female" },
+        { name: "ريهام", gender: "female" }
+    ];
 
-    function generatePlans(){
-        let filtered=allCases.filter(c=>{ if(currentFilter.governorate && c.governorate!==currentFilter.governorate) return false; if(currentFilter.category && c.category!==currentFilter.category) return false; if(currentFilter.type==='reeval' && c.type!=='reeval') return false; if(currentFilter.type==='new' && c.type!=='new') return false; return true; });
-        if(filtered.length===0){ showToast("لا توجد حالات"); renderPlans([]); return; }
-        let needed=calculateNeededPlans(filtered.length,currentFilter.planSize,currentFilter.duration);
-        let groups=groupByLocation(filtered);
-        let plans=splitToPlans(groups,currentFilter.planSize);
-        if(plans.length>needed) plans=plans.slice(0,needed);
-        currentPlans=plans;
+    let currentPlans = [];
+    let currentFilter = {
+        governorate: "",
+        category: "",
+        type: "all",
+        planSize: 6,
+        duration: "month"
+    };
+    let selectedPlan = null;
+    let map = null;
+    let markers = [];
+
+    // ============================================================
+    // دوال مساعدة
+    // ============================================================
+    function calculateDistance(lat1, lng1, lat2, lng2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    function groupByLocation(cases, maxDist = 2) {
+        const groups = [];
+        const used = new Set();
+        
+        for (let i = 0; i < cases.length; i++) {
+            if (used.has(i)) continue;
+            const group = [cases[i]];
+            used.add(i);
+            
+            for (let j = i + 1; j < cases.length; j++) {
+                if (used.has(j)) continue;
+                const dist = calculateDistance(cases[i].lat, cases[i].lng, cases[j].lat, cases[j].lng);
+                if (dist <= maxDist) {
+                    group.push(cases[j]);
+                    used.add(j);
+                }
+            }
+            groups.push(group);
+        }
+        return groups;
+    }
+
+    function splitToPlans(groups, planSize) {
+        const plans = [];
+        for (const group of groups) {
+            for (let i = 0; i < group.length; i += planSize) {
+                const planCases = group.slice(i, i + planSize);
+                if (planCases.length) {
+                    const male = researchers.filter(r => r.gender === 'male')[Math.floor(Math.random() * researchers.filter(r => r.gender === 'male').length)];
+                    const female = researchers.filter(r => r.gender === 'female')[Math.floor(Math.random() * researchers.filter(r => r.gender === 'female').length)];
+                    plans.push({
+                        id: plans.length + 1,
+                        cases: planCases,
+                        area: planCases[0].area,
+                        governorate: planCases[0].governorate,
+                        researchers: [male.name, female.name]
+                    });
+                }
+            }
+        }
+        return plans;
+    }
+
+    function getDaysByDuration(duration) {
+        if (duration === 'week') return 6;
+        if (duration === 'month') return 24;
+        return 288;
+    }
+
+    function calculateNeededPlans(totalCases, planSize, duration) {
+        const days = getDaysByDuration(duration);
+        const maxPlans = days;
+        const neededPlans = Math.ceil(totalCases / planSize);
+        return Math.min(neededPlans, maxPlans);
+    }
+
+    // ============================================================
+    // توليد الخطط
+    // ============================================================
+    function generatePlans() {
+        let filtered = allCases.filter(c => {
+            if (currentFilter.governorate && c.governorate !== currentFilter.governorate) return false;
+            if (currentFilter.category && c.category !== currentFilter.category) return false;
+            if (currentFilter.type === 'reeval' && c.type !== 'reeval') return false;
+            if (currentFilter.type === 'new' && c.type !== 'new') return false;
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            showToast("لا توجد حالات");
+            renderPlans([]);
+            return;
+        }
+
+        const needed = calculateNeededPlans(filtered.length, currentFilter.planSize, currentFilter.duration);
+        const groups = groupByLocation(filtered);
+        let plans = splitToPlans(groups, currentFilter.planSize);
+        
+        if (plans.length > needed) plans = plans.slice(0, needed);
+        
+        currentPlans = plans;
         renderPlans(plans);
-        if(plans.length>0) selectPlan(plans[0].id);
+        
+        if (plans.length > 0) selectPlan(plans[0].id);
+        
         showToast(`تم توليد ${plans.length} خطة`);
     }
 
-    function renderPlans(plans){
-        let container=document.getElementById('plansSection');
-        if(!plans.length){ container.innerHTML='<div style="text-align:center;padding:40px;">لا توجد خطط</div>'; return; }
-        container.innerHTML=plans.map(p=>`<div class="plan-card ${selectedPlan?.id===p.id?'selected':''}" data-plan-id="${p.id}" onclick="selectPlan(${p.id})"><div class="plan-header"><span class="plan-number">🗺️ خطة رقم ${p.id}</span><span class="plan-area">📍 ${p.area}</span></div><div class="plan-researchers"><span class="researcher-tag">👨 ${p.researchers[0]}</span><span class="researcher-tag">👩 ${p.researchers[1]}</span></div><div class="plan-stats">📊 ${p.cases.length} حالة | ${p.cases.filter(c=>c.type==='reeval').length} إعادة تقييم | ${p.cases.filter(c=>c.type==='new').length} جديدة</div><div class="cases-preview">${p.cases.slice(0,4).map(c=>`<div class="case-preview-item"><span class="case-preview-serial">${c.serial}</span><span class="case-preview-name">${c.name}</span></div>`).join('')}${p.cases.length>4?'<div style="font-size:11px;color:var(--text-secondary);padding:4px;">+'+(p.cases.length-4)+' حالات أخرى...</div>':''}</div><div class="plan-footer"><button class="btn-plan" onclick="event.stopPropagation();viewOnMap(${p.id})"><span>🗺️</span> عرض على الخريطة</button><button class="btn-plan" onclick="event.stopPropagation();editPlan(${p.id})"><span>✏️</span> تعديل</button><button class="btn-plan" onclick="event.stopPropagation();printPlan(${p.id})"><span>🖨️</span> طباعة</button></div></div>`).join('');
+    // ============================================================
+    // عرض الخطط
+    // ============================================================
+    function renderPlans(plans) {
+        const container = document.getElementById('plansSection');
+        
+        if (!plans.length) {
+            container.innerHTML = '<div style="text-align:center;padding:40px;">لا توجد خطط</div>';
+            return;
+        }
+        
+        container.innerHTML = plans.map(p => `
+            <div class="plan-card ${selectedPlan?.id === p.id ? 'selected' : ''}" data-plan-id="${p.id}" onclick="selectPlan(${p.id})">
+                <div class="plan-header">
+                    <span class="plan-number">🗺️ خطة رقم ${p.id}</span>
+                    <span class="plan-area">📍 ${p.area}</span>
+                </div>
+                <div class="plan-researchers">
+                    <span class="researcher-tag">👨 ${p.researchers[0]}</span>
+                    <span class="researcher-tag">👩 ${p.researchers[1]}</span>
+                </div>
+                <div class="plan-stats">
+                    📊 ${p.cases.length} حالة | ${p.cases.filter(c => c.type === 'reeval').length} إعادة تقييم | ${p.cases.filter(c => c.type === 'new').length} جديدة
+                </div>
+                <div class="cases-preview">
+                    ${p.cases.slice(0, 4).map(c => `
+                        <div class="case-preview-item">
+                            <span class="case-preview-serial">${c.serial}</span>
+                            <span class="case-preview-name">${c.name}</span>
+                        </div>
+                    `).join('')}
+                    ${p.cases.length > 4 ? '<div style="font-size:11px;color:var(--text-secondary);padding:4px;">+' + (p.cases.length - 4) + ' حالات أخرى...</div>' : ''}
+                </div>
+                <div class="plan-footer">
+                    <button class="btn-plan" onclick="event.stopPropagation();viewOnMap(${p.id})"><span>🗺️</span> عرض على الخريطة</button>
+                    <button class="btn-plan" onclick="event.stopPropagation();editPlan(${p.id})"><span>✏️</span> تعديل</button>
+                    <button class="btn-plan" onclick="event.stopPropagation();printPlan(${p.id})"><span>🖨️</span> طباعة</button>
+                </div>
+            </div>
+        `).join('');
     }
 
-    function selectPlan(planId){ selectedPlan=currentPlans.find(p=>p.id===planId); renderPlans(currentPlans); viewOnMap(planId); }
-
-    function viewOnMap(planId){
-        let plan=currentPlans.find(p=>p.id===planId);
-        if(!plan || !plan.cases.length) return;
-        if(!map){ initMap(); setTimeout(()=>showOnMap(plan),500); } else showOnMap(plan);
+    function selectPlan(planId) {
+        selectedPlan = currentPlans.find(p => p.id === planId);
+        renderPlans(currentPlans);
+        viewOnMap(planId);
     }
-    
-    function showOnMap(plan){
-        if(!map) return;
-        markers.forEach(m=>m.setMap(null)); markers=[];
-        let bounds=new google.maps.LatLngBounds();
-        plan.cases.forEach((c,idx)=>{ let pos={lat:c.lat,lng:c.lng}; let marker=new google.maps.Marker({position:pos,map:map,title:`${c.name} (${c.serial})`,label:{text:`${idx+1}`,color:'white',fontWeight:'bold'}}); marker.addListener('click',()=>{ let info=new google.maps.InfoWindow({content:`<div dir="rtl"><strong>${c.name}</strong><br>م.ع ${c.serial}<br>${c.address}<br><button onclick="removeFromPlan(${c.id},${plan.id})">❌ إزالة</button></div>`}); info.open(map,marker); }); markers.push(marker); bounds.extend(pos); });
+
+    // ============================================================
+    // عرض على الخريطة
+    // ============================================================
+    function viewOnMap(planId) {
+        const plan = currentPlans.find(p => p.id === planId);
+        if (!plan || !plan.cases.length) return;
+        
+        if (!map) {
+            initMap();
+            setTimeout(() => showOnMap(plan), 500);
+        } else {
+            showOnMap(plan);
+        }
+    }
+
+    function initMap() {
+        map = L.map('mapContainer').setView([30.1, 31.3], 10);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 19,
+            minZoom: 3
+        }).addTo(map);
+        
+        if (selectedPlan) showOnMap(selectedPlan);
+    }
+
+    function showOnMap(plan) {
+        if (!map) return;
+        
+        // إزالة العلامات القديمة
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+        
+        const bounds = L.latLngBounds();
+        
+        plan.cases.forEach((c, idx) => {
+            const marker = L.marker([c.lat, c.lng], {
+                title: `${c.name} (${c.serial})`
+            }).addTo(map);
+            
+            marker.bindPopup(`
+                <div dir="rtl">
+                    <strong>${c.name}</strong><br>
+                    م.ع: ${c.serial}<br>
+                    ${c.address}<br>
+                    <button onclick="removeFromPlan(${c.id}, ${plan.id})">❌ إزالة من الخطة</button>
+                </div>
+            `);
+            
+            marker.on('click', () => marker.openPopup());
+            
+            markers.push(marker);
+            bounds.extend([c.lat, c.lng]);
+        });
+        
         map.fitBounds(bounds);
-        if(plan.cases.length===1) map.setZoom(14);
+        if (plan.cases.length === 1) map.setZoom(14);
     }
-    
-    function removeFromPlan(caseId,planId){ let plan=currentPlans.find(p=>p.id===planId); if(plan){ plan.cases=plan.cases.filter(c=>c.id!==caseId); if(plan.cases.length===0) currentPlans=currentPlans.filter(p=>p.id!==planId); renderPlans(currentPlans); if(currentPlans.length) selectPlan(currentPlans[0].id); showToast("تم إزالة الحالة"); } }
-    
-    function editPlan(planId){ let plan=currentPlans.find(p=>p.id===planId); if(plan){ document.getElementById('editModalContent').innerHTML=`<div class="form-group"><label>تعديل الباحثين</label><input type="text" id="editResearcher1" value="${plan.researchers[0]}"><input type="text" id="editResearcher2" value="${plan.researchers[1]}"></div><div class="form-group"><label>ملاحظات الخطة</label><textarea id="planNotes" rows="3"></textarea></div>`; document.getElementById('editModal').classList.add('active'); window.currentEditPlanId=planId; } }
-    
-    function savePlanEdit(){ let plan=currentPlans.find(p=>p.id===window.currentEditPlanId); if(plan){ plan.researchers=[document.getElementById('editResearcher1').value,document.getElementById('editResearcher2').value]; renderPlans(currentPlans); showToast("تم حفظ التعديلات"); } closeModal(); }
-    
-    function printPlan(planId){ let plan=currentPlans.find(p=>p.id===planId); if(!plan) return; let win=window.open('','_blank'); win.document.write(`<html dir="rtl"><head><meta charset="UTF-8"><title>خطة زيارة ${planId}</title><style>body{font-family:'Times New Roman';margin:20px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #000;padding:8px;text-align:center;}th{background:#f0f0f0;}</style></head><body><h2>خطة الزيارات رقم ${planId}</h2><p>المنطقة: ${plan.area} | المحافظة: ${plan.governorate}</p><p>الباحثون: ${plan.researchers.join(' - ')}</p><table><thead><tr><th>م.ع</th><th>الاسم</th><th>العنوان</th><th>نوع الزيارة</th><th>ملاحظات</th></tr></thead><tbody>${plan.cases.map(c=>`<tr><td>${c.serial}</td><td>${c.name}</td><td>${c.address}</td><td>${c.type==='reeval'?'إعادة تقييم':'جديدة'}</td><td>${c.focus||'—'}</td></tr>`).join('')}</tbody></table></body></html>`); win.document.close(); win.print(); }
-    
-    function applyFilters(){ currentFilter.governorate=document.getElementById('filterGovernorate').value; currentFilter.category=document.getElementById('filterCategory').value; currentFilter.type=document.getElementById('filterType').value; currentFilter.planSize=parseInt(document.getElementById('planSize').value); currentFilter.duration=document.getElementById('planDuration').value; generatePlans(); }
-    
-    function initMap(){ map=new google.maps.Map(document.getElementById('mapContainer'),{center:{lat:30.1,lng:31.3},zoom:10,mapTypeId:'roadmap'}); if(selectedPlan) showOnMap(selectedPlan); }
-    
-    function showToast(msg){ let t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',3000); }
-    function closeModal(){ document.getElementById('editModal').classList.remove('active'); }
-    function goBack(){ window.location.href='/index.html'; }
-    
-    document.addEventListener('DOMContentLoaded',()=>{ let user=JSON.parse(localStorage.getItem('currentUser')||'{"name":"باحث"}'); document.getElementById('userName').innerText=user.name; generatePlans(); });
+
+    // ============================================================
+    // تعديل وحذف
+    // ============================================================
+    function removeFromPlan(caseId, planId) {
+        const plan = currentPlans.find(p => p.id === planId);
+        if (plan) {
+            plan.cases = plan.cases.filter(c => c.id !== caseId);
+            if (plan.cases.length === 0) {
+                currentPlans = currentPlans.filter(p => p.id !== planId);
+            }
+            renderPlans(currentPlans);
+            if (currentPlans.length) selectPlan(currentPlans[0].id);
+            showToast("تم إزالة الحالة");
+        }
+    }
+
+    function editPlan(planId) {
+        const plan = currentPlans.find(p => p.id === planId);
+        if (plan) {
+            document.getElementById('editModalContent').innerHTML = `
+                <div class="form-group">
+                    <label>تعديل الباحثين</label>
+                    <input type="text" id="editResearcher1" value="${plan.researchers[0]}">
+                    <input type="text" id="editResearcher2" value="${plan.researchers[1]}">
+                </div>
+                <div class="form-group">
+                    <label>ملاحظات الخطة</label>
+                    <textarea id="planNotes" rows="3"></textarea>
+                </div>
+            `;
+            document.getElementById('editModal').classList.add('active');
+            window.currentEditPlanId = planId;
+        }
+    }
+
+    function savePlanEdit() {
+        const plan = currentPlans.find(p => p.id === window.currentEditPlanId);
+        if (plan) {
+            plan.researchers = [
+                document.getElementById('editResearcher1').value,
+                document.getElementById('editResearcher2').value
+            ];
+            renderPlans(currentPlans);
+            showToast("تم حفظ التعديلات");
+        }
+        closeModal();
+    }
+
+    // ============================================================
+    // طباعة الخطة
+    // ============================================================
+    function printPlan(planId) {
+        const plan = currentPlans.find(p => p.id === planId);
+        if (!plan) return;
+        
+        const win = window.open('', '_blank');
+        win.document.write(`
+            <!DOCTYPE html>
+            <html dir="rtl">
+            <head>
+                <meta charset="UTF-8">
+                <title>خطة زيارة ${planId}</title>
+                <style>
+                    body { font-family: 'Times New Roman', serif; margin: 20px; }
+                    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                    th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+                    th { background: #f0f0f0; }
+                    h2 { text-align: center; }
+                </style>
+            </head>
+            <body>
+                <h2>خطة الزيارات رقم ${planId}</h2>
+                <p>المنطقة: ${plan.area} | المحافظة: ${plan.governorate}</p>
+                <p>الباحثون: ${plan.researchers.join(' - ')}</p>
+                <table>
+                    <thead>
+                        <tr><th>م.ع</th><th>الاسم</th><th>العنوان</th><th>نوع الزيارة</th><th>ملاحظات</th></tr>
+                    </thead>
+                    <tbody>
+                        ${plan.cases.map(c => `
+                            <tr>
+                                <td>${c.serial}</td>
+                                <td>${c.name}</td>
+                                <td>${c.address}</td>
+                                <td>${c.type === 'reeval' ? 'إعادة تقييم' : 'جديدة'}</td>
+                                <td>${c.focus || '—'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `);
+        win.document.close();
+        win.print();
+    }
+
+    // ============================================================
+    // الفلاتر والمساعدة
+    // ============================================================
+    function applyFilters() {
+        currentFilter.governorate = document.getElementById('filterGovernorate').value;
+        currentFilter.category = document.getElementById('filterCategory').value;
+        currentFilter.type = document.getElementById('filterType').value;
+        currentFilter.planSize = parseInt(document.getElementById('planSize').value);
+        currentFilter.duration = document.getElementById('planDuration').value;
+        generatePlans();
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').classList.remove('active');
+    }
+
+    function goBack() {
+        window.location.href = '/index.html';
+    }
+
+    // ============================================================
+    // تحميل معلومات المستخدم
+    // ============================================================
+    function loadUserInfo() {
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{"name":"باحث"}');
+        document.getElementById('userName').innerText = user.name || 'باحث';
+    }
+
+    // ============================================================
+    // التهيئة
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        loadUserInfo();
+        generatePlans();
+    });
 </script>
 </body>
 </html>

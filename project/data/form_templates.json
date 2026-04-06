@@ -1,0 +1,140 @@
+{
+  "version": "2.0.0",
+  "lastUpdated": "2026-04-06T00:00:00.000Z",
+  
+  "templates": [
+    {
+      "id": "office_search",
+      "name": "استمارة البحث المكتبي",
+      "description": "تستخدم لتسجيل بيانات الحالة أثناء البحث المكتبي الأولي",
+      "version": "1.0",
+      "isActive": true,
+      "fields": [
+        { "id": "fullName", "label": "الاسم الكامل", "type": "text", "required": true, "source": "case_data", "order": 1 },
+        { "id": "nationalId", "label": "الرقم القومي", "type": "text", "required": true, "source": "case_data", "order": 2, "validation": { "pattern": "^[0-9]{14}$", "message": "الرقم القومي يجب أن يكون 14 رقم" } },
+        { "id": "phone", "label": "رقم الهاتف", "type": "text", "required": true, "source": "case_data", "order": 3 },
+        { "id": "address", "label": "العنوان", "type": "textarea", "required": true, "source": "case_data", "order": 4, "lines": 2 },
+        { "id": "governorate", "label": "المحافظة", "type": "text", "source": "case_data", "order": 5 },
+        { "id": "district", "label": "الحي / المركز", "type": "text", "source": "case_data", "order": 6 },
+        { "id": "purpose", "label": "الغرض من البحث", "type": "select", "options": ["مساعدة مالية", "مساعدة طبية", "تجهيز عرائس", "غارمين / ديون"], "source": "case_data", "order": 7 },
+        { "id": "notes", "label": "ملاحظات أولية", "type": "textarea", "source": "empty", "order": 8, "lines": 3 }
+      ]
+    },
+    {
+      "id": "home_visit",
+      "name": "استمارة الزيارة المنزلية",
+      "description": "تستخدم أثناء الزيارة الميدانية للحالة",
+      "version": "1.0",
+      "isActive": true,
+      "fields": [
+        { "id": "visitDate", "label": "تاريخ الزيارة", "type": "date", "required": true, "source": "empty", "order": 1 },
+        { "id": "visitTime", "label": "وقت الزيارة", "type": "time", "source": "empty", "order": 2 },
+        { "id": "researchers", "label": "فريق الزيارة", "type": "text", "required": true, "source": "case_data", "order": 3 },
+        { "id": "housingType", "label": "نوع السكن", "type": "select", "options": ["شقة إيجار", "منزل ورثة", "شقة مشتركة", "شقة مستقلة", "منزل ريفي", "غرفة منفصلة", "إقامة في العمل", "أخرى"], "source": "empty", "order": 4 },
+        { "id": "housingDescription", "label": "وصف السكن", "type": "textarea", "source": "empty", "order": 5, "lines": 2 },
+        { "id": "furniture", "label": "الأثاث الموجود", "type": "textarea", "source": "empty", "order": 6, "lines": 2 },
+        { "id": "appliances", "label": "الأجهزة الموجودة", "type": "textarea", "source": "empty", "order": 7, "lines": 2 },
+        { "id": "familyCondition", "label": "حالة الأسرة", "type": "textarea", "source": "empty", "order": 8, "lines": 3 },
+        { "id": "visitResult", "label": "نتيجة الزيارة", "type": "select", "options": ["تم العثور على الحالة", "لم توجد الحالة", "رفضت الاستقبال", "تم التحدث مع الجيران"], "source": "empty", "order": 9 },
+        { "id": "visitNotes", "label": "ملاحظات الزيارة", "type": "textarea", "source": "empty", "order": 10, "lines": 4 }
+      ]
+    },
+    {
+      "id": "cash_card",
+      "name": "بطاقة الكاش",
+      "description": "قائمة الحالات المستحقة للصرف الشهري",
+      "version": "1.0",
+      "isActive": true,
+      "fields": [
+        { "id": "month", "label": "الشهر", "type": "text", "required": true, "source": "empty", "order": 1 },
+        { "id": "year", "label": "السنة", "type": "number", "required": true, "source": "empty", "order": 2 },
+        { "id": "cases", "label": "قائمة الحالات", "type": "table", "source": "cases_list", "order": 3, "columns": ["م", "الاسم", "المبلغ", "الرقم القومي", "التوقيع"] }
+      ]
+    },
+    {
+      "id": "zarf",
+      "name": "ظرف القبض",
+      "description": "ظرف يحتوي على المبلغ المصروف للحالة",
+      "version": "1.0",
+      "isActive": true,
+      "fields": [
+        { "id": "caseName", "label": "اسم الحالة", "type": "text", "required": true, "source": "case_data", "order": 1 },
+        { "id": "caseSerial", "label": "رقم الحالة", "type": "text", "required": true, "source": "case_data", "order": 2 },
+        { "id": "amount", "label": "المبلغ", "type": "number", "required": true, "source": "case_data", "order": 3 },
+        { "id": "month", "label": "الشهر", "type": "text", "required": true, "source": "empty", "order": 4 },
+        { "id": "year", "label": "السنة", "type": "number", "required": true, "source": "empty", "order": 5 },
+        { "id": "grants", "label": "المنح المضافة", "type": "textarea", "source": "case_data", "order": 6, "lines": 2 },
+        { "id": "total", "label": "الإجمالي", "type": "number", "required": true, "source": "calculated", "order": 7 }
+      ]
+    },
+    {
+      "id": "id_card",
+      "name": "كارنيه الحالة",
+      "description": "بطاقة تعريف للحالة تحتوي على الصورة والبيانات الأساسية",
+      "version": "1.0",
+      "isActive": true,
+      "fields": [
+        { "id": "photo", "label": "الصورة الشخصية", "type": "image", "required": true, "source": "case_photo", "order": 1 },
+        { "id": "fullName", "label": "الاسم الكامل", "type": "text", "required": true, "source": "case_data", "order": 2 },
+        { "id": "nationalId", "label": "الرقم القومي", "type": "text", "required": true, "source": "case_data", "order": 3 },
+        { "id": "caseSerial", "label": "رقم الحالة", "type": "text", "required": true, "source": "case_data", "order": 4 },
+        { "id": "address", "label": "العنوان المختصر", "type": "text", "required": true, "source": "case_data", "order": 5 },
+        { "id": "phone", "label": "رقم الهاتف", "type": "text", "source": "case_data", "order": 6 }
+      ]
+    },
+    {
+      "id": "income_expense",
+      "name": "بيان الدخل والمصروفات",
+      "description": "تحليل مفصل للدخل والمصروفات الشهرية",
+      "version": "1.0",
+      "isActive": true,
+      "fields": [
+        { "id": "incomes", "label": "مصادر الدخل", "type": "dynamic_table", "source": "income_data", "order": 1, "columns": ["المصدر", "القيمة", "الملاحظات"] },
+        { "id": "expenses", "label": "المصروفات", "type": "dynamic_table", "source": "expense_data", "order": 2, "columns": ["نوع المصروف", "القيمة", "الملاحظات"] },
+        { "id": "totalIncome", "label": "إجمالي الدخل", "type": "number", "source": "calculated", "order": 3 },
+        { "id": "totalExpenses", "label": "إجمالي المصروفات", "type": "number", "source": "calculated", "order": 4 },
+        { "id": "netBalance", "label": "صافي الدخل", "type": "number", "source": "calculated", "order": 5 },
+        { "id": "familyCount", "label": "عدد أفراد الأسرة", "type": "number", "source": "case_data", "order": 6 },
+        { "id": "perCapita", "label": "نصيب الفرد", "type": "number", "source": "calculated", "order": 7 }
+      ]
+    },
+    {
+      "id": "human_report",
+      "name": "التقرير البشري",
+      "description": "تقرير الباحث عن الحالة",
+      "version": "1.0",
+      "isActive": true,
+      "fields": [
+        { "id": "researcherId", "label": "معرف الباحث", "type": "text", "required": true, "source": "user", "order": 1 },
+        { "id": "researcherName", "label": "اسم الباحث", "type": "text", "required": true, "source": "user", "order": 2 },
+        { "id": "reportDate", "label": "تاريخ التقرير", "type": "date", "required": true, "source": "empty", "order": 3 },
+        { "id": "report", "label": "التقرير", "type": "textarea", "required": true, "source": "empty", "order": 4, "lines": 8 },
+        { "id": "recommendation", "label": "التوصية", "type": "textarea", "required": true, "source": "empty", "order": 5, "lines": 4 }
+      ]
+    },
+    {
+      "id": "ai_report",
+      "name": "التقرير الذكي",
+      "description": "تحليل وتوصية من الذكاء الاصطناعي",
+      "version": "1.0",
+      "isActive": true,
+      "fields": [
+        { "id": "analysis", "label": "تحليل الذكاء الاصطناعي", "type": "textarea", "required": true, "source": "ai", "order": 1, "lines": 8 },
+        { "id": "recommendation", "label": "توصية الذكاء الاصطناعي", "type": "textarea", "required": true, "source": "ai", "order": 2, "lines": 4 },
+        { "id": "suggestedAmount", "label": "المبلغ المقترح", "type": "number", "source": "ai", "order": 3 }
+      ]
+    },
+    {
+      "id": "donor_opinion",
+      "name": "رأي المتبرع",
+      "description": "توقيع وموافقة المتبرع",
+      "version": "1.0",
+      "isActive": true,
+      "fields": [
+        { "id": "opinion", "label": "الرأي", "type": "textarea", "required": true, "source": "empty", "order": 1, "lines": 3 },
+        { "id": "signature", "label": "التوقيع", "type": "signature", "source": "empty", "order": 2 },
+        { "id": "date", "label": "التاريخ", "type": "date", "required": true, "source": "empty", "order": 3 }
+      ]
+    }
+  ]
+}

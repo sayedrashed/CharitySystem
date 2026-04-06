@@ -1,7 +1,14 @@
 // =====================================================================
-// core/app/app_controller.js - المتحكم الرئيسي للتطبيق
-// المرجع: Master Plan v1.0 - 5 أبريل 2026
+// core/app/app_controller.js
+// المتحكم الرئيسي للتطبيق - App Controller
+// المرجع: PROJECT_CONTEXT.txt
 // المبادئ: currentCase.data هو مصدر الحقيقة، Event Bus للإشعارات
+// المهام:
+// 1. إدارة currentCase (مصدر الحقيقة الوحيد)
+// 2. فتح وحفظ وحذف الحالات
+// 3. Event Bus للتواصل بين المكونات
+// 4. ربط case_view.html و mcc.html
+// 5. إدارة المستخدم الحالي والصلاحيات
 // =====================================================================
 
 const EventEmitter = require('events');
@@ -10,95 +17,156 @@ const caseStore = require('../cases/case_store');
 // =====================================================================
 // Event Bus - نظام الإشعارات المركزي
 // =====================================================================
+
 class AppEventBus extends EventEmitter {
     constructor() {
         super();
-        this.setMaxListeners(50); // زيادة عدد المستمعين المسموح به
+        this.setMaxListeners(50);
     }
     
-    // إطلاق حدث تغيير البيانات
     emitDataChange(eventType, data) {
         this.emit('dataChange', { type: eventType, data, timestamp: new Date().toISOString() });
     }
     
-    // إطلاق حدث تغيير currentCase
     emitCurrentCaseChanged(caseData) {
         this.emit('currentCaseChanged', caseData);
         this.emitDataChange('currentCaseChanged', caseData);
     }
     
-    // إطلاق حدث حفظ الحالة
     emitCaseSaved(caseId) {
         this.emit('caseSaved', caseId);
         this.emitDataChange('caseSaved', { caseId });
     }
     
-    // إطلاق حدث حذف الحالة
     emitCaseDeleted(caseId) {
         this.emit('caseDeleted', caseId);
         this.emitDataChange('caseDeleted', { caseId });
     }
     
-    // إطلاق حدث خطأ
     emitError(error, context) {
         this.emit('error', { error, context, timestamp: new Date().toISOString() });
+    }
+    
+    emitFieldUpdated(fieldPath, oldValue, newValue) {
+        this.emit('fieldUpdated', { fieldPath, oldValue, newValue, timestamp: new Date().toISOString() });
     }
 }
 
 // =====================================================================
 // المتحكم الرئيسي للتطبيق (Singleton)
 // =====================================================================
+
 class AppController {
     constructor() {
         // الحالة الحالية (مصدر الحقيقة الوحيد)
         this.currentCase = {
             caseId: null,
             data: {
-                // بنية الحالة الأساسية
-                caseNo: '',
-                fullName: '',
-                phone: '',
-                nationalId: '',
-                address: '',
-                city: '',
-                status: 'new',      // new, pending, active, closed
-                priority: 'medium',  // low, medium, high, critical
-                createdAt: null,
-                updatedAt: null,
+                // البيانات الأساسية
+                caseSerial: '',
+                caseMM: '',
+                caseDate: new Date().toISOString().split('T')[0],
+                officeResearcher: '',
+                visitTeam: '',
+                status: 'new',
+                priority: 'medium',
+                category: '',
+                branch: '',
                 
-                // بيانات البطاقات (سيتم ملؤها من 1.html إلى 8.html)
-                personalInfo: {},
-                socialStatus: {},
-                financialInfo: {},
-                healthStatus: {},
-                childrenInfo: {},
-                housingInfo: {},
-                workInfo: {},
-                additionalNotes: {}
+                // التاريخ التطوري
+                historyLog: [],
+                
+                // البيانات الديموغرافية
+                fullName: '',
+                nationalId: '',
+                shortAddress: '',
+                detailedAddress: '',
+                gpsLink: '',
+                lat: '',
+                lng: '',
+                phones: [],
+                visaNumber: '',
+                governorate: '',
+                district: '',
+                
+                // الأسرة والأفراد
+                familyMembers: [],
+                individuals: {},
+                
+                // الدخل والمصروفات
+                income: {
+                    pensions: [],
+                    work: [],
+                    charities: [],
+                    relatives: [],
+                    others: []
+                },
+                expenses: {
+                    rent: 0,
+                    electricity: 0,
+                    water: 0,
+                    gas: 0,
+                    internet: 0,
+                    mobile: 0,
+                    medical: 0,
+                    lessons: 0,
+                    installments: 0,
+                    other: 0,
+                    dailyFood: 0
+                },
+                
+                // التقارير
+                humanReports: {},
+                aiReport: '',
+                aiRecommendation: '',
+                
+                // توثيق المتبرع
+                donorOpinion: '',
+                approvalDate: '',
+                donorSignatureImage: '',
+                
+                // المنح
+                grants: {
+                    ramadan: { enabled: false, amount: 200, type: 'both' },
+                    eidFitr: { enabled: false, amount: 150, type: 'cash' },
+                    eidAdha: { enabled: false, amount: 200, type: 'cash' },
+                    study: { enabled: false, amount: 300, type: 'cash' }
+                },
+                exemptedGrants: [],
+                
+                // إعدادات النظام
+                systemConfig: {
+                    theme: 'dark',
+                    fontSize: 'medium',
+                    itemsPerPage: 10,
+                    cardsConfig: null
+                },
+                
+                createdAt: null,
+                updatedAt: null
             },
             createdAt: null,
             updatedAt: null
         };
         
-        // Event Bus
         this.eventBus = new AppEventBus();
-        
-        // مستمعي الأحداث (للواجهة)
         this.listeners = [];
-        
-        // حالة التحميل
         this.isLoading = false;
+        this.autoSaveTimeout = null;
+        this.currentUser = null;
         
-        // تهيئة المجلدات
         this.init();
     }
     
     // =================================================================
     // التهيئة
     // =================================================================
+    
     async init() {
         try {
             await caseStore.ensureDirectories();
+            this.loadSystemConfig();
+            this.loadCurrentUser();
             console.log('[AppController] تم تهيئة المتحكم بنجاح');
         } catch (error) {
             console.error('[AppController] خطأ في التهيئة:', error);
@@ -106,37 +174,79 @@ class AppController {
         }
     }
     
+    loadSystemConfig() {
+        try {
+            const saved = localStorage.getItem('system_config');
+            if (saved) {
+                const config = JSON.parse(saved);
+                this.currentCase.data.systemConfig = { ...this.currentCase.data.systemConfig, ...config };
+            }
+        } catch (error) {
+            console.error('[AppController] خطأ في تحميل إعدادات النظام:', error);
+        }
+    }
+    
+    loadCurrentUser() {
+        try {
+            const saved = localStorage.getItem('currentUser');
+            if (saved) {
+                this.currentUser = JSON.parse(saved);
+            }
+        } catch (error) {
+            console.error('[AppController] خطأ في تحميل المستخدم الحالي:', error);
+        }
+    }
+    
     // =================================================================
     // إدارة الحالة الحالية (currentCase)
     // =================================================================
     
-    /**
-     * فتح حالة جديدة (مسح البيانات الحالية)
-     * @returns {Object} - الحالة الجديدة الفارغة
-     */
     newCase() {
         const now = new Date().toISOString();
         this.currentCase = {
             caseId: null,
             data: {
-                caseNo: '',
-                fullName: '',
-                phone: '',
-                nationalId: '',
-                address: '',
-                city: '',
+                caseSerial: '',
+                caseMM: '',
+                caseDate: new Date().toISOString().split('T')[0],
+                officeResearcher: '',
+                visitTeam: '',
                 status: 'new',
                 priority: 'medium',
+                category: '',
+                branch: '',
+                historyLog: [],
+                fullName: '',
+                nationalId: '',
+                shortAddress: '',
+                detailedAddress: '',
+                gpsLink: '',
+                lat: '',
+                lng: '',
+                phones: [],
+                visaNumber: '',
+                governorate: '',
+                district: '',
+                familyMembers: [],
+                individuals: {},
+                income: { pensions: [], work: [], charities: [], relatives: [], others: [] },
+                expenses: { rent: 0, electricity: 0, water: 0, gas: 0, internet: 0, mobile: 0, medical: 0, lessons: 0, installments: 0, other: 0, dailyFood: 0 },
+                humanReports: {},
+                aiReport: '',
+                aiRecommendation: '',
+                donorOpinion: '',
+                approvalDate: '',
+                donorSignatureImage: '',
+                grants: {
+                    ramadan: { enabled: false, amount: 200, type: 'both' },
+                    eidFitr: { enabled: false, amount: 150, type: 'cash' },
+                    eidAdha: { enabled: false, amount: 200, type: 'cash' },
+                    study: { enabled: false, amount: 300, type: 'cash' }
+                },
+                exemptedGrants: [],
+                systemConfig: this.currentCase.data.systemConfig,
                 createdAt: now,
-                updatedAt: now,
-                personalInfo: {},
-                socialStatus: {},
-                financialInfo: {},
-                healthStatus: {},
-                childrenInfo: {},
-                housingInfo: {},
-                workInfo: {},
-                additionalNotes: {}
+                updatedAt: now
             },
             createdAt: now,
             updatedAt: now
@@ -147,11 +257,6 @@ class AppController {
         return this.currentCase;
     }
     
-    /**
-     * فتح حالة موجودة من التخزين
-     * @param {string} caseId - معرف الحالة
-     * @returns {Promise<Object|null>} - الحالة المفتوحة أو null
-     */
     async openCase(caseId) {
         this.isLoading = true;
         this.eventBus.emit('loadingStart', { action: 'openCase', caseId });
@@ -165,23 +270,15 @@ class AppController {
                 return null;
             }
             
-            // تحديث currentCase بالبيانات المحملة
             this.currentCase = {
                 caseId: loadedCase.caseId,
-                data: loadedCase.data || loadedCase, // التوافق مع البنى المختلفة
+                data: loadedCase.data || loadedCase,
                 createdAt: loadedCase.createdAt,
                 updatedAt: loadedCase.updatedAt
             };
             
-            // التأكد من وجود البنية الأساسية للبيانات
-            if (!this.currentCase.data.personalInfo) this.currentCase.data.personalInfo = {};
-            if (!this.currentCase.data.socialStatus) this.currentCase.data.socialStatus = {};
-            if (!this.currentCase.data.financialInfo) this.currentCase.data.financialInfo = {};
-            if (!this.currentCase.data.healthStatus) this.currentCase.data.healthStatus = {};
-            if (!this.currentCase.data.childrenInfo) this.currentCase.data.childrenInfo = {};
-            if (!this.currentCase.data.housingInfo) this.currentCase.data.housingInfo = {};
-            if (!this.currentCase.data.workInfo) this.currentCase.data.workInfo = {};
-            if (!this.currentCase.data.additionalNotes) this.currentCase.data.additionalNotes = {};
+            // التأكد من وجود البنية الأساسية
+            this.ensureDataStructure();
             
             console.log(`[AppController] تم فتح الحالة: ${caseId}`);
             this.eventBus.emitCurrentCaseChanged(this.currentCase);
@@ -197,18 +294,31 @@ class AppController {
         }
     }
     
-    /**
-     * حفظ الحالة الحالية
-     * @returns {Promise<Object>} - الحالة المحفوظة
-     */
+    ensureDataStructure() {
+        const data = this.currentCase.data;
+        if (!data.income) data.income = { pensions: [], work: [], charities: [], relatives: [], others: [] };
+        if (!data.expenses) data.expenses = { rent: 0, electricity: 0, water: 0, gas: 0, internet: 0, mobile: 0, medical: 0, lessons: 0, installments: 0, other: 0, dailyFood: 0 };
+        if (!data.humanReports) data.humanReports = {};
+        if (!data.familyMembers) data.familyMembers = [];
+        if (!data.individuals) data.individuals = {};
+        if (!data.phones) data.phones = [];
+        if (!data.historyLog) data.historyLog = [];
+        if (!data.grants) data.grants = {
+            ramadan: { enabled: false, amount: 200, type: 'both' },
+            eidFitr: { enabled: false, amount: 150, type: 'cash' },
+            eidAdha: { enabled: false, amount: 200, type: 'cash' },
+            study: { enabled: false, amount: 300, type: 'cash' }
+        };
+        if (!data.exemptedGrants) data.exemptedGrants = [];
+    }
+    
     async saveCase() {
-        if (!this.currentCase.data.caseNo || this.currentCase.data.caseNo === '') {
-            // إذا لم يكن هناك رقم حالة، نستخدم الوقت الحالي
+        if (!this.currentCase.data.fullName && !this.currentCase.data.caseSerial) {
+            // حالة جديدة بدون بيانات كافية، نعطيها معرف مؤقت
             const now = new Date();
-            this.currentCase.data.caseNo = `CASE-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}-${now.getTime().toString().slice(-6)}`;
+            this.currentCase.data.caseSerial = `TMP-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}-${now.getTime().toString().slice(-6)}`;
         }
         
-        // تحديث وقت التعديل
         const now = new Date().toISOString();
         this.currentCase.updatedAt = now;
         this.currentCase.data.updatedAt = now;
@@ -218,10 +328,11 @@ class AppController {
             this.currentCase.data.createdAt = now;
         }
         
+        // إضافة سجل في التاريخ التطوري
+        this.addToHistory('تم حفظ الحالة');
+        
         try {
             const savedCase = await caseStore.saveCase(this.currentCase);
-            
-            // تحديث currentCase بالبيانات المحفوظة (بما في ذلك caseId إذا كان جديداً)
             this.currentCase.caseId = savedCase.caseId;
             this.currentCase.createdAt = savedCase.createdAt;
             
@@ -237,11 +348,6 @@ class AppController {
         }
     }
     
-    /**
-     * حفظ حالة معينة (بدون تغيير currentCase)
-     * @param {Object} caseObj - كائن الحالة
-     * @returns {Promise<Object>}
-     */
     async saveSpecificCase(caseObj) {
         try {
             const savedCase = await caseStore.saveCase(caseObj);
@@ -254,11 +360,7 @@ class AppController {
         }
     }
     
-    /**
-     * حذف الحالة الحالية
-     * @returns {Promise<boolean>}
-     */
-    async deleteCurrentCase() {
+    async deleteCurrentCase(permanent = false) {
         if (!this.currentCase.caseId) {
             console.log('[AppController] لا توجد حالة حالية للحذف');
             return false;
@@ -267,10 +369,10 @@ class AppController {
         const caseId = this.currentCase.caseId;
         
         try {
-            const result = await caseStore.deleteCase(caseId);
+            const result = await caseStore.deleteCase(caseId, permanent);
             
             if (result) {
-                // إنشاء حالة جديدة فارغة بعد الحذف
+                this.addToHistory(`تم حذف الحالة (${permanent ? 'دائم' : 'soft'})`);
                 this.newCase();
                 this.eventBus.emitCaseDeleted(caseId);
                 console.log(`[AppController] تم حذف الحالة: ${caseId}`);
@@ -284,16 +386,10 @@ class AppController {
         }
     }
     
-    /**
-     * تحديث حقل معين في currentCase.data
-     * @param {string} fieldPath - مسار الحقل (مثل 'personalInfo.name')
-     * @param {any} value - القيمة الجديدة
-     */
     updateField(fieldPath, value) {
         const parts = fieldPath.split('.');
         let target = this.currentCase.data;
         
-        // الوصول إلى الحقل المطلوب (إنشاء المسارات الوسيطة إذا لم تكن موجودة)
         for (let i = 0; i < parts.length - 1; i++) {
             if (!target[parts[i]]) {
                 target[parts[i]] = {};
@@ -305,26 +401,18 @@ class AppController {
         const oldValue = target[lastPart];
         target[lastPart] = value;
         
-        // تحديث وقت التعديل
         this.currentCase.updatedAt = new Date().toISOString();
         this.currentCase.data.updatedAt = this.currentCase.updatedAt;
         
         console.log(`[AppController] تحديث الحقل: ${fieldPath} =`, value);
+        this.eventBus.emitFieldUpdated(fieldPath, oldValue, value);
         
-        // إطلاق حدث تحديث الحقل
-        this.eventBus.emit('fieldUpdated', { fieldPath, oldValue, newValue: value });
-        
-        // حفظ تلقائي (اختياري - يمكن تفعيله حسب الحاجة)
-        // this.autoSave();
+        // حفظ تلقائي
+        this.autoSave();
         
         return true;
     }
     
-    /**
-     * الحصول على قيمة حقل معين
-     * @param {string} fieldPath - مسار الحقل
-     * @returns {any} - القيمة
-     */
     getField(fieldPath) {
         const parts = fieldPath.split('.');
         let target = this.currentCase.data;
@@ -339,15 +427,53 @@ class AppController {
         return target;
     }
     
+    addToHistory(action, details = '') {
+        const historyEntry = {
+            timestamp: new Date().toISOString(),
+            action: action,
+            details: details,
+            user: this.currentUser?.name || 'system',
+            userId: this.currentUser?.id || null
+        };
+        
+        if (!this.currentCase.data.historyLog) {
+            this.currentCase.data.historyLog = [];
+        }
+        
+        this.currentCase.data.historyLog.unshift(historyEntry);
+        
+        // الاحتفاظ بآخر 100 سجل فقط
+        if (this.currentCase.data.historyLog.length > 100) {
+            this.currentCase.data.historyLog.pop();
+        }
+    }
+    
+    // =================================================================
+    // حفظ تلقائي
+    // =================================================================
+    
+    autoSave() {
+        if (this.autoSaveTimeout) {
+            clearTimeout(this.autoSaveTimeout);
+        }
+        
+        this.autoSaveTimeout = setTimeout(async () => {
+            if (this.currentCase.data.fullName || this.currentCase.data.caseSerial) {
+                try {
+                    await this.saveCase();
+                    console.log('[AppController] حفظ تلقائي تم بنجاح');
+                    this.eventBus.emit('autoSaveCompleted', { caseId: this.currentCase.caseId });
+                } catch (error) {
+                    console.error('[AppController] خطأ في الحفظ التلقائي:', error);
+                }
+            }
+        }, 3000);
+    }
+    
     // =================================================================
     // دوال مساعدة للواجهة
     // =================================================================
     
-    /**
-     * الحصول على قائمة بجميع الحالات (للعرض في Dashboard)
-     * @param {Object} filters - فلاتر اختيارية
-     * @returns {Promise<Array>}
-     */
     async getAllCasesList(filters = {}) {
         try {
             return await caseStore.getAllCases(filters);
@@ -358,25 +484,17 @@ class AppController {
         }
     }
     
-    /**
-     * الحصول على إحصائيات سريعة للحالات
-     * @returns {Promise<Object>}
-     */
     async getDashboardStats() {
         try {
             const allCases = await caseStore.getAllCases();
             
-            const stats = {
+            return {
                 total: allCases.length,
-                critical: allCases.filter(c => c.priority === 'critical').length,
-                stable: allCases.filter(c => c.priority === 'low' || c.priority === 'medium').length,
-                strong: allCases.filter(c => c.priority === 'high').length,
-                byStatus: {
-                    new: allCases.filter(c => c.status === 'new').length,
-                    pending: allCases.filter(c => c.status === 'pending').length,
-                    active: allCases.filter(c => c.status === 'active').length,
-                    closed: allCases.filter(c => c.status === 'closed').length
-                },
+                new: allCases.filter(c => c.status === 'new').length,
+                pending: allCases.filter(c => c.status === 'pending').length,
+                active: allCases.filter(c => c.status === 'active').length,
+                closed: allCases.filter(c => c.status === 'closed').length,
+                cancelled: allCases.filter(c => c.status === 'cancelled').length,
                 byPriority: {
                     low: allCases.filter(c => c.priority === 'low').length,
                     medium: allCases.filter(c => c.priority === 'medium').length,
@@ -385,26 +503,30 @@ class AppController {
                 },
                 lastUpdated: new Date().toISOString()
             };
-            
-            return stats;
         } catch (error) {
             console.error('[AppController] خطأ في جلب الإحصائيات:', error);
             return {
                 total: 0,
-                critical: 0,
-                stable: 0,
-                strong: 0,
-                byStatus: { new: 0, pending: 0, active: 0, closed: 0 },
+                new: 0,
+                pending: 0,
+                active: 0,
+                closed: 0,
+                cancelled: 0,
                 byPriority: { low: 0, medium: 0, high: 0, critical: 0 },
                 error: error.message
             };
         }
     }
     
-    /**
-     * التصدير للنسخ الاحتياطي
-     * @returns {Promise<Object>}
-     */
+    async searchCases(query, filters = {}) {
+        try {
+            return await caseStore.searchCases(query, filters);
+        } catch (error) {
+            console.error('[AppController] خطأ في البحث:', error);
+            return [];
+        }
+    }
+    
     async exportBackup() {
         try {
             return await caseStore.exportAllData();
@@ -414,11 +536,6 @@ class AppController {
         }
     }
     
-    /**
-     * الاستيراد من نسخة احتياطية
-     * @param {Object} backupData - بيانات النسخة الاحتياطية
-     * @returns {Promise<number>}
-     */
     async importBackup(backupData) {
         try {
             const count = await caseStore.importAllData(backupData);
@@ -434,29 +551,16 @@ class AppController {
     // إدارة الأحداث (Event Management)
     // =================================================================
     
-    /**
-     * التسجيل لحدث معين
-     * @param {string} event - اسم الحدث
-     * @param {Function} callback - الدالة المستدعاة
-     */
     on(event, callback) {
         this.eventBus.on(event, callback);
         this.listeners.push({ event, callback });
     }
     
-    /**
-     * إلغاء التسجيل من حدث
-     * @param {string} event - اسم الحدث
-     * @param {Function} callback - الدالة المستدعاة
-     */
     off(event, callback) {
         this.eventBus.off(event, callback);
         this.listeners = this.listeners.filter(l => !(l.event === event && l.callback === callback));
     }
     
-    /**
-     * تنظيف جميع المستمعين (عند إغلاق التطبيق)
-     */
     cleanup() {
         this.listeners.forEach(({ event, callback }) => {
             this.eventBus.off(event, callback);
@@ -466,32 +570,62 @@ class AppController {
         console.log('[AppController] تم تنظيف جميع المستمعين');
     }
     
-    /**
-     * حفظ تلقائي (اختياري)
-     */
-    async autoSave() {
-        if (this.autoSaveTimeout) {
-            clearTimeout(this.autoSaveTimeout);
+    // =================================================================
+    // إدارة المستخدم
+    // =================================================================
+    
+    setCurrentUser(user) {
+        this.currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        this.eventBus.emit('userChanged', user);
+    }
+    
+    getCurrentUser() {
+        return this.currentUser;
+    }
+    
+    logout() {
+        this.currentUser = null;
+        localStorage.removeItem('currentUser');
+        this.eventBus.emit('userLoggedOut');
+    }
+    
+    // =================================================================
+    // إدارة الأرقام التسلسلية
+    // =================================================================
+    
+    async getNextSerialNumbers(category) {
+        try {
+            const globalSerial = await caseStore.getNextGlobalSerial();
+            const accountingSerial = await caseStore.getNextAccountingSerial(category);
+            return { global: globalSerial, accounting: accountingSerial };
+        } catch (error) {
+            console.error('[AppController] خطأ في جلب الأرقام التسلسلية:', error);
+            return { global: null, accounting: null };
         }
-        
-        this.autoSaveTimeout = setTimeout(async () => {
-            if (this.currentCase.data.caseNo && this.currentCase.data.fullName) {
-                try {
-                    await this.saveCase();
-                    console.log('[AppController] حفظ تلقائي تم بنجاح');
-                    this.eventBus.emit('autoSaveCompleted', { caseId: this.currentCase.caseId });
-                } catch (error) {
-                    console.error('[AppController] خطأ في الحفظ التلقائي:', error);
-                }
+    }
+    
+    async releaseSerialNumbers(caseSerial, category, accountingSerial) {
+        try {
+            if (caseSerial) {
+                await caseStore.releaseGlobalSerial(parseInt(caseSerial));
             }
-        }, 3000); // حفظ بعد 3 ثوان من آخر تغيير
+            if (category && accountingSerial) {
+                await caseStore.releaseAccountingSerial(category, parseInt(accountingSerial));
+            }
+            return true;
+        } catch (error) {
+            console.error('[AppController] خطأ في تحرير الأرقام التسلسلية:', error);
+            return false;
+        }
     }
 }
 
 // =====================================================================
-// تصدير نسخة واحدة (Singleton) للاستخدام في جميع أنحاء التطبيق
+// إنشاء نسخة واحدة (Singleton)
 // =====================================================================
+
 const appController = new AppController();
 
 module.exports = appController;
-module.exports.AppController = AppController; // للاختبار والاستخدام المتقدم
+module.exports.AppController = AppController;

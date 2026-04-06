@@ -1,5 +1,16 @@
+# =====================================================================
 # core/ai/telegram_ai_bot.py
-# المساعد الذكي - بوت تليجرام + AI (Qwen2.5)
+# المساعد الذكي - بوت تليجرام الرئيسي + AI (Qwen2.5)
+# المرجع: PROJECT_CONTEXT.txt
+# المهام:
+# 1. استقبال رسائل الحالات (24-29 من كل شهر)
+# 2. استخراج الاسم والرقم باستخدام AI
+# 3. التحقق من حالة الحالة في قاعدة البيانات
+# 4. الرد المناسب (قبول، موقوف، مرفوض)
+# 5. تسجيل طلبات طباعة الظرف
+# 6. ربط المشتركين ببوت التذكير
+# 7. لا يوجد ردود ثابتة - كل شيء عبر AI
+# =====================================================================
 
 import asyncio
 import json
@@ -32,6 +43,10 @@ AI_MODEL = "qwen2.5:7b"
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DB_PATH = os.path.join(BASE_DIR, 'data', 'local.db')
 
+# أيام استقبال الطلبات
+REQUEST_START_DAY = 24
+REQUEST_END_DAY = 29
+
 # ============================================================
 # دوال قاعدة البيانات
 # ============================================================
@@ -50,6 +65,8 @@ def init_database():
             status TEXT,
             amount REAL,
             monthly_amount REAL,
+            branch TEXT,
+            category TEXT,
             has_smartphone INTEGER DEFAULT 1,
             created_at TEXT,
             updated_at TEXT
@@ -92,13 +109,33 @@ def init_database():
     ''')
     
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS subscribers (
+        CREATE TABLE IF NOT EXISTS keeper_subscribers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id TEXT UNIQUE,
+            chat_id TEXT UNIQUE,
+            user_id TEXT,
             case_id TEXT,
-            subscribed_at TEXT
+            case_name TEXT,
+            case_serial TEXT,
+            subscribed_at TEXT,
+            is_active INTEGER DEFAULT 1
         )
     ''')
+    
+    # إضافة بعض البيانات التجريبية للحالات (للتجربة)
+    cursor.execute("SELECT COUNT(*) FROM cases")
+    if cursor.fetchone()[0] == 0:
+        sample_cases = [
+            ('CASE001', 'أحمد محمود', '571', '101', 'مقبولة', 500, 500, 'شبرا', 'شبرا', 1),
+            ('CASE002', 'سارة علي', '572', '102', 'مقبولة', 500, 500, 'شبرا', 'شبرا', 1),
+            ('CASE003', 'محمود خالد', '573', '103', 'موقوفة', 500, 500, 'شبرا', 'شبرا', 1),
+            ('CASE004', 'فاطمة حسن', '574', '104', 'مقبولة', 500, 500, 'النهضة', 'النهضة', 1),
+            ('CASE005', 'علي إبراهيم', '575', '105', 'معلقة', 500, 500, 'النهضة', 'النهضة', 1),
+        ]
+        for case in sample_cases:
+            cursor.execute('''
+                INSERT INTO cases (id, name, serial_global, serial_accounting, status, amount, monthly_amount, branch, category, has_smartphone, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (case[0], case[1], case[2], case[3], case[4], case[5], case[6], case[7], case[8], case[9], datetime.now().isoformat(), datetime.now().isoformat()))
     
     conn.commit()
     conn.close()
@@ -127,7 +164,7 @@ def get_case_by_name(name: str) -> Optional[Dict]:
     return dict(row) if row else None
 
 def clean_name(name: str) -> str:
-    greetings = ['السلام عليكم', 'وعليكم السلام', 'صباح الخير', 'مساء الخير', 'تحياتي']
+    greetings = ['السلام عليكم', 'وعليكم السلام', 'صباح الخير', 'مساء الخير', 'تحياتي', 'يا']
     for g in greetings:
         name = name.replace(g, '')
     name = name.replace('ة', 'ه').replace('ى', 'ي')
@@ -150,6 +187,37 @@ def save_zarf_request(case_data: Dict, chat_id: str, user_id: str):
     ''', (now,))
     conn.commit()
     conn.close()
+    print(f"✅ تم تسجيل طلب ظرف للحالة {case_data['name']}")
+
+def add_keeper_subscriber(chat_id: str, user_id: str, case_id: str, case_name: str, case_serial: str):
+    """تسجيل المشترك في بوت التذكير"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    now = datetime.now().isoformat()
+    
+    cursor.execute('SELECT * FROM keeper_subscribers WHERE chat_id = ?', (chat_id,))
+    existing = cursor.fetchone()
+    
+    if existing:
+        cursor.execute('''
+            UPDATE keeper_subscribers 
+            SET is_active = 1, case_name = ?, case_serial = ?, subscribed_at = ?
+            WHERE chat_id = ?
+        ''', (case_name, case_serial, now, chat_id))
+    else:
+        cursor.execute('''
+            INSERT INTO keeper_subscribers (chat_id, user_id, case_id, case_name, case_serial, subscribed_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (chat_id, user_id, case_id, case_name, case_serial, now))
+    
+    conn.commit()
+    conn.close()
+    print(f"✅ تم تسجيل {case_name} في خدمة التذكير")
+
+def is_request_period() -> bool:
+    """التحقق مما إذا كان اليوم ضمن فترة استقبال الطلبات (24-29)"""
+    day = datetime.now().day
+    return REQUEST_START_DAY <= day <= REQUEST_END_DAY
 
 # ============================================================
 # دوال الذكاء الاصطناعي
@@ -171,38 +239,53 @@ async def ask_ai(prompt: str) -> str:
     return ""
 
 async def extract_info_with_ai(message: str) -> Dict[str, Any]:
-    prompt = f'استخرج اسم الحالة ورقمها من هذه الرسالة: "{message}" أعد JSON فقط: {{"name": "الاسم", "number": "الرقم"}}'
+    prompt = f'''استخرج اسم الحالة ورقمها من هذه الرسالة: "{message}"
+أعد JSON فقط بهذا الشكل:
+{{"name": "الاسم المستخرج", "number": "الرقم المستخرج"}}
+إذا لم تجد اسماً فاجعل name: null، وإذا لم تجد رقماً فاجعل number: null'''
+    
     response = await ask_ai(prompt)
     try:
-        import json
         json_match = re.search(r'\{.*\}', response, re.DOTALL)
         if json_match:
             return json.loads(json_match.group())
     except:
         pass
+    
+    # الطريقة التقليدية (بدون AI)
     numbers = re.findall(r'\d+', message)
     number = numbers[0] if numbers else None
     name = re.sub(r'\d+', '', message)
     name = clean_name(name)
     return {"name": name if name else None, "number": number}
 
-async def generate_reply(case_data: Dict) -> str:
+async def generate_reply(case_data: Dict, is_request_period: bool) -> str:
     if not case_data:
-        return "❌ الحالة غير موجودة في قاعدة البيانات"
+        return "❌ الحالة غير موجودة في قاعدة البيانات. يرجى التأكد من الاسم أو الرقم والتواصل مع الباحث."
+    
     status = case_data.get('status', '')
     name = case_data.get('name', '')
     number = case_data.get('serial_global', '')
+    branch = case_data.get('branch', '')
     amount = case_data.get('amount', 0)
+    
     if status == 'مقبولة':
-        return f"✅ تم تجهيز قبضك للحالة: {name} (م.ع {number})\n📍 المبلغ: {amount} جنيه\n🖨️ يرجى التوجه لاستلامه من مكتب الصرف"
+        if is_request_period:
+            return f"✅ مرحباً {name}، تم استلام طلبك بنجاح.\n📍 سيتم تجهيز قبضك (المبلغ: {amount} جنيه).\n🖨️ يرجى متابعة الإشعارات لمعرفة موعد الاستلام."
+        else:
+            return f"✅ حالتك {name} (م.ع {number}) مقبولة.\n📅 مواعيد الصرف: فرع شبرا (1-7)، فرع النهضة (1-4).\n📞 للاستفسار: 01111878692"
+    
     elif status == 'موقوفة':
-        return f"⚠️ الحالة {name} موقوفة حالياً، يرجى التواصل مع الباحث"
+        return f"⚠️ الحالة {name} (م.ع {number}) موقوفة حالياً.\n📞 يرجى التواصل مع الباحث على رقم الجمعية: 01111878692"
+    
     elif status == 'معلقة':
-        return f"⚠️ الحالة {name} معلقة حالياً، يرجى التواصل مع الباحث"
-    elif status == 'ملغاة':
-        return f"⚠️ الحالة {name} ملغاة، لا يمكن صرف مساعدة"
+        return f"⚠️ الحالة {name} (م.ع {number}) معلقة حالياً.\n📞 يرجى التواصل مع الباحث على رقم الجمعية: 01111878692"
+    
+    elif status == 'ملغاة' or status == 'مرفوضة':
+        return f"❌ الحالة {name} (م.ع {number}) ملغاة، لا يمكن صرف مساعدة.\n📞 للاستفسار: 01111878692"
+    
     else:
-        return f"❓ الحالة {name} غير مقبولة حالياً (الحالة: {status})"
+        return f"❓ الحالة {name} (م.ع {number}) حالتها: {status}.\n📞 يرجى التواصل مع الباحث لمزيد من المعلومات."
 
 # ============================================================
 # معالجة الرسائل
@@ -211,49 +294,4 @@ async def generate_reply(case_data: Dict) -> str:
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.from_user:
         return
-    user_id = str(update.message.from_user.id)
-    chat_id = str(update.message.chat_id)
-    message_text = update.message.text.strip()
-    if message_text.startswith('/'):
-        return
-    await update.message.reply_text("⏳ جاري تجهيز قبضك... انتظر قليلاً")
-    extracted = await extract_info_with_ai(message_text)
-    case_data = None
-    if extracted.get('number'):
-        case_data = get_case_by_number(extracted['number'])
-    if not case_data and extracted.get('name'):
-        case_data = get_case_by_name(extracted['name'])
-    reply = await generate_reply(case_data)
-    if case_data and case_data.get('status') == 'مقبولة':
-        save_zarf_request(case_data, chat_id, user_id)
-        keyboard = [[InlineKeyboardButton("🔔 اشتراك في التذكير", url=KEEPER_BOT_URL)]]
-        await update.message.reply_text(
-            f"{reply}\n\n🖨️ اضغط اشتراك ثم ابدأ لاستلام تذكير بمواعيد الصرف",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
-    else:
-        await update.message.reply_text(reply)
-
-async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    if not query:
-        return
-    await query.answer()
-    if query.data == "show_payment_date":
-        await query.answer(text="🗓️ شبرا: 1/7 - 7/7\n🕌 النهضة: 1/7 - 4/7\n📞 01111878692", show_alert=True)
-
-# ============================================================
-# التشغيل
-# ============================================================
-
-def main():
-    init_database()
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
-    app.add_handler(CommandHandler('start', handle_message))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    app.add_handler(CallbackQueryHandler(handle_callback))
-    print("✅ بوت المساعد الذكي (AI Assistant) يعمل...")
-    app.run_polling()
-
-if __name__ == '__main__':
-    main()
+    

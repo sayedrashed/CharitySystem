@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>لوحة الباحث - نظام إدارة البحث الاجتماعي</title>
     <style>
         * {
@@ -23,6 +23,7 @@
             --warning: #F59E0B;
             --danger: #F87171;
             --gold: #F5C842;
+            --transition: all 0.3s ease;
         }
 
         [data-theme="light"] {
@@ -40,6 +41,7 @@
             color: var(--text-primary);
             direction: rtl;
             min-height: 100vh;
+            transition: var(--transition);
         }
 
         .header {
@@ -59,12 +61,21 @@
             background: linear-gradient(90deg, var(--gold), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-        .logo-area p { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
 
-        .user-area { display: flex; align-items: center; gap: 15px; }
-        .theme-toggle {
+        .logo-area p {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-toggle, .logout-btn {
             background: var(--bg-primary);
             border: 1px solid var(--border);
             border-radius: 30px;
@@ -72,7 +83,13 @@
             cursor: pointer;
             font-size: 14px;
         }
-        .user-info { display: flex; align-items: center; gap: 12px; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -91,6 +108,7 @@
             gap: 20px;
             padding: 24px;
         }
+
         .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -98,11 +116,25 @@
             padding: 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
-        .stat-card:hover { transform: translateY(-4px); border-color: var(--accent); }
-        .stat-card .value { font-size: 32px; font-weight: 800; color: var(--accent); }
-        .stat-card .label { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
 
         .modules-nav {
             background: var(--bg-secondary);
@@ -112,20 +144,25 @@
             gap: 8px;
             flex-wrap: wrap;
         }
+
         .module-nav-btn {
-            padding: 8px 16px;
+            padding: 10px 20px;
             background: var(--bg-primary);
             border: 1px solid var(--border);
             border-radius: 30px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             color: var(--text-primary);
         }
-        .module-nav-btn:hover { border-color: var(--accent); }
+
+        .module-nav-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
 
         .assistant-card {
             background: linear-gradient(135deg, rgba(79,142,247,0.1), rgba(46,202,171,0.05));
@@ -134,26 +171,47 @@
             padding: 20px;
             margin: 0 24px 24px;
         }
-        .assistant-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+
+        .assistant-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
         .assistant-avatar {
             width: 50px;
             height: 50px;
             background: linear-gradient(135deg, var(--accent), var(--success));
-            border-radius: 14px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
         }
-        .assistant-name { font-weight: 700; font-size: 16px; }
-        .assistant-role { font-size: 11px; color: var(--text-secondary); }
+
+        .assistant-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .assistant-role {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
         .assistant-bubble {
             background: var(--bg-secondary);
             border-radius: 16px;
             padding: 16px;
-            position: relative;
         }
-        .msg-line { display: flex; gap: 10px; margin-bottom: 10px; }
+
+        .msg-line {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
         .msg-icon { font-size: 18px; }
         .msg-text { font-size: 13px; line-height: 1.5; flex: 1; }
 
@@ -163,6 +221,7 @@
             flex-direction: column;
             gap: 10px;
         }
+
         .recent-item {
             display: flex;
             align-items: center;
@@ -173,7 +232,11 @@
             border-radius: 12px;
             cursor: pointer;
         }
-        .recent-item:hover { border-color: var(--accent); }
+
+        .recent-item:hover {
+            border-color: var(--accent);
+        }
+
         .recent-avatar {
             width: 40px;
             height: 40px;
@@ -184,9 +247,18 @@
             justify-content: center;
             font-weight: bold;
         }
+
         .recent-info { flex: 1; }
         .recent-name { font-weight: 600; font-size: 14px; }
         .recent-date { font-size: 11px; color: var(--text-secondary); }
+
+        .control-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+        }
 
         .toast {
             position: fixed;
@@ -216,6 +288,7 @@
     </div>
     <div class="user-area">
         <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        <button class="logout-btn" onclick="logout()">🔒 تسجيل خروج</button>
         <div class="user-info">
             <div class="user-avatar" id="userAvatar">👤</div>
             <div>
@@ -241,7 +314,7 @@
         <div class="value" id="pendingCases">0</div>
         <div class="label">قيد المراجعة</div>
     </div>
-    <div class="stat-card" onclick="navigateTo('/modules/hr/index.html')">
+    <div class="stat-card" onclick="navigateTo('/modules/hr/salaries.html')">
         <div class="value" id="mySalary">0</div>
         <div class="label">مرتب هذا الشهر</div>
     </div>
@@ -249,9 +322,9 @@
 
 <div class="assistant-card">
     <div class="assistant-header">
-        <div class="assistant-avatar">🤖</div>
+        <div class="assistant-avatar" id="aiAvatar">🤖</div>
         <div>
-            <div class="assistant-name">المساعد الذكي</div>
+            <div class="assistant-name" id="aiName">المساعد الذكي</div>
             <div class="assistant-role">مساعدك الشخصي</div>
         </div>
     </div>
@@ -263,15 +336,42 @@
 <div id="toast" class="toast"></div>
 
 <script>
-    let currentUser = { id: 1, name: "بشرى أحمد", role: "researcher", avatar: "👩" };
-    let stats = { myCases: 45, myVisits: 6, pendingCases: 12, mySalary: 4200 };
+    // ============================================================
+    // بيانات المستخدم الحالي
+    // ============================================================
+    let currentUser = null;
+    
+    function loadCurrentUser() {
+        const saved = localStorage.getItem('currentUser');
+        if (saved) {
+            currentUser = JSON.parse(saved);
+            document.getElementById('userAvatar').innerText = currentUser.avatar || '👤';
+            document.getElementById('userName').innerText = currentUser.name;
+        } else {
+            window.location.href = '/login.html';
+        }
+    }
+
+    // ============================================================
+    // بيانات تجريبية
+    // ============================================================
+    let stats = {
+        myCases: 45,
+        myVisits: 6,
+        pendingCases: 12,
+        mySalary: 4200
+    };
+
     let recentCases = [
-        { name: "أحمد محمود علي", date: "23 مارس", status: "قيد المراجعة" },
-        { name: "فاطمة حسن إبراهيم", date: "22 مارس", status: "مقبولة" },
-        { name: "محمود سامي خليل", date: "22 مارس", status: "قيد المراجعة" }
+        { name: "أحمد محمود علي", date: "2026-04-05", status: "قيد المراجعة" },
+        { name: "فاطمة حسن إبراهيم", date: "2026-04-04", status: "مقبولة" },
+        { name: "محمود سامي خليل", date: "2026-04-04", status: "قيد المراجعة" }
     ];
 
-    const researcherModules = [
+    // ============================================================
+    // تحميل الوحدات
+    // ============================================================
+    const modules = [
         { name: "إدارة الحالات", icon: "🏠", link: "/modules/cases/index.html" },
         { name: "خطط الزيارات", icon: "🗺️", link: "/modules/cases/visit_management/index.html" },
         { name: "الموظفين (HR)", icon: "👥", link: "/modules/hr/index.html" },
@@ -279,11 +379,17 @@
     ];
 
     function loadModules() {
-        document.getElementById('modulesNav').innerHTML = researcherModules.map(m => 
-            `<button class="module-nav-btn" onclick="navigateTo('${m.link}')"><span>${m.icon}</span> ${m.name}</button>`
-        ).join('');
+        const container = document.getElementById('modulesNav');
+        container.innerHTML = modules.map(m => `
+            <button class="module-nav-btn" onclick="navigateTo('${m.link}')">
+                <span>${m.icon}</span> ${m.name}
+            </button>
+        `).join('');
     }
 
+    // ============================================================
+    // تحميل الإحصائيات
+    // ============================================================
     function loadStats() {
         document.getElementById('myCases').innerText = stats.myCases;
         document.getElementById('myVisits').innerText = stats.myVisits;
@@ -291,8 +397,12 @@
         document.getElementById('mySalary').innerText = stats.mySalary.toLocaleString('ar-EG');
     }
 
-    function loadRecent() {
-        document.getElementById('recentList').innerHTML = recentCases.map(c => `
+    // ============================================================
+    // تحميل آخر الحالات
+    // ============================================================
+    function loadRecentCases() {
+        const container = document.getElementById('recentList');
+        container.innerHTML = recentCases.map(c => `
             <div class="recent-item" onclick="openCase('${c.name}')">
                 <div class="recent-avatar">${c.name.charAt(0)}</div>
                 <div class="recent-info">
@@ -303,35 +413,89 @@
         `).join('');
     }
 
+    // ============================================================
+    // تحميل المساعد الذكي
+    // ============================================================
     function loadAssistant() {
+        const aiName = localStorage.getItem('aiName') || 'عارف';
+        document.getElementById('aiName').innerHTML = aiName;
+        
         document.getElementById('assistantBubble').innerHTML = `
-            <div class="msg-line"><span class="msg-icon">👋</span><span class="msg-text">مرحباً ${currentUser.name}</span></div>
-            <div class="msg-line"><span class="msg-icon">📌</span><span class="msg-text">لديك ${stats.pendingCases} حالة تحتاج مراجعة</span></div>
-            <div class="msg-line"><span class="msg-icon">🗺️</span><span class="msg-text">لديك ${stats.myVisits} زيارة هذا الأسبوع</span></div>
+            <div class="msg-line">
+                <span class="msg-icon">👋</span>
+                <span class="msg-text">مرحباً ${currentUser?.name || 'باحث'}</span>
+            </div>
+            <div class="msg-line">
+                <span class="msg-icon">📌</span>
+                <span class="msg-text">لديك ${stats.pendingCases} حالة تحتاج مراجعة</span>
+            </div>
+            <div class="msg-line">
+                <span class="msg-icon">🗺️</span>
+                <span class="msg-text">لديك ${stats.myVisits} زيارة هذا الأسبوع</span>
+            </div>
         `;
     }
 
-    function loadUserInfo() {
-        document.getElementById('userAvatar').innerText = currentUser.avatar;
-        document.getElementById('userName').innerText = currentUser.name;
+    // ============================================================
+    // دوال مساعدة
+    // ============================================================
+    function navigateTo(link) {
+        showToast(`جاري فتح ${link}`);
+        window.location.href = link;
     }
 
-    function navigateTo(link) { window.location.href = link; }
-    function openCase(name) { alert(`فتح حالة: ${name}`); }
-    function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
-    function toggleTheme() { let html = document.documentElement; let newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; html.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); document.querySelector('.theme-toggle').textContent = newTheme === 'light' ? '🌙' : '☀️'; }
+    function openCase(name) {
+        showToast(`فتح حالة: ${name}`);
+    }
 
-    function init() {
-        loadUserInfo();
-        loadModules();
-        loadStats();
-        loadRecent();
-        loadAssistant();
-        let savedTheme = localStorage.getItem('theme') || 'dark';
+    function logout() {
+        if (confirm('هل تريد تسجيل الخروج؟')) {
+            localStorage.removeItem('currentUser');
+            showToast('جاري تسجيل الخروج...');
+            setTimeout(() => {
+                window.location.href = '/login.html';
+            }, 1000);
+        }
+    }
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.querySelector('.theme-toggle').textContent = newTheme === 'light' ? '🌙' : '☀️';
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
     }
+
+    // ============================================================
+    // التهيئة
+    // ============================================================
+    function init() {
+        loadCurrentUser();
+        loadModules();
+        loadStats();
+        loadRecentCases();
+        loadAssistant();
+        loadTheme();
+    }
+
     init();
 </script>
+
 </body>
 </html>

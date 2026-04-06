@@ -21,7 +21,6 @@
             --accent: #4F8EF7;
             --success: #2DD4BF;
             --gold: #F5C842;
-            --danger: #EF4444;
         }
 
         body {
@@ -33,6 +32,7 @@
             overflow: hidden;
         }
 
+        /* تخطيط الشاشة: يسار = mcc (إخراج)، يمين = بطاقات (إدخال) */
         .case-layout {
             display: flex;
             height: 100vh;
@@ -61,6 +61,7 @@
             order: 2;
         }
 
+        /* بنل الأدوات */
         .tools-bar {
             padding: 10px 12px;
             background: #1A1D27;
@@ -104,6 +105,7 @@
             background: #fff;
         }
 
+        /* شريط التنقل بين البطاقات */
         .nav-bar {
             display: flex;
             justify-content: space-between;
@@ -111,8 +113,6 @@
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid #2E3250;
-            flex-wrap: wrap;
-            gap: 10px;
         }
 
         .nav-buttons { display: flex; gap: 10px; }
@@ -187,155 +187,6 @@
             font-size: 13px;
         }
 
-        /* ============================================================ */
-        /* أيقونة المساعد الذكي العائمة - فوق كل شيء */
-        /* ============================================================ */
-        .floating-ai-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1abc9c, #3498db);
-            color: white;
-            border: none;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 10000;
-            font-size: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .floating-ai-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        /* نافذة المساعد الذكي المنبثقة */
-        .ai-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 500px;
-            max-width: 90vw;
-            height: 600px;
-            max-height: 80vh;
-            background: #1A1D27;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            z-index: 10001;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #4F8EF7;
-        }
-
-        .ai-popup.hidden {
-            display: none;
-        }
-
-        .ai-popup-header {
-            padding: 15px 20px;
-            background: linear-gradient(135deg, #1abc9c, #3498db);
-            border-radius: 20px 20px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .ai-popup-header button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .ai-popup-header button:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .ai-popup-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            color: #E8EBF4;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .ai-loading {
-            text-align: center;
-            padding: 40px;
-            color: #F5C842;
-        }
-
-        .ai-message {
-            background: #2E3250;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-
-        .ai-message.user {
-            background: #4F8EF7;
-            margin-right: 20px;
-        }
-
-        .ai-message.ai {
-            background: #1A1D27;
-            border: 1px solid #4F8EF7;
-            margin-left: 20px;
-        }
-
-        .ai-input-area {
-            padding: 15px;
-            border-top: 1px solid #2E3250;
-            display: flex;
-            gap: 10px;
-        }
-
-        .ai-input-area input {
-            flex: 1;
-            padding: 10px;
-            border-radius: 25px;
-            border: 1px solid #4F8EF7;
-            background: #2E3250;
-            color: white;
-            outline: none;
-        }
-
-        .ai-input-area button {
-            padding: 10px 20px;
-            border-radius: 25px;
-            background: #4F8EF7;
-            border: none;
-            color: white;
-            cursor: pointer;
-        }
-
         @media (max-width: 900px) { .output-panel { width: 50%; } }
     </style>
 </head>
@@ -377,33 +228,11 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- أيقونة المساعد الذكي العائمة -->
-<!-- ============================================================ -->
-<button id="floatingAIBtn" class="floating-ai-btn pulse" onclick="openAIAssistant()">
-    🤖
-</button>
-
-<!-- نافذة المساعد الذكي المنبثقة -->
-<div id="aiPopup" class="ai-popup hidden">
-    <div class="ai-popup-header">
-        <span>🤖 المساعد الذكي - محلل البيانات</span>
-        <button onclick="closeAIAssistant()">✖</button>
-    </div>
-    <div class="ai-popup-body" id="aiPopupBody">
-        <div class="ai-loading">جاري تحليل البيانات...</div>
-    </div>
-    <div class="ai-input-area">
-        <input type="text" id="aiUserInput" placeholder="اسأل المساعد الذكي..." onkeypress="if(event.key==='Enter') sendToAI()">
-        <button onclick="sendToAI()">إرسال</button>
-    </div>
-</div>
-
 <div id="toast" class="toast"></div>
 
 <script>
     // ============================================================
-    // تسجيل البطاقات
+    // تسجيل البطاقات - متوافق مع البطاقات الموجودة
     // ============================================================
     const CARDS = [
         { id: "step1", name: "مقدمة البحث", file: "cards/1.html" },
@@ -418,12 +247,11 @@
 
     let currentIndex = 0;
     let autoSaveEnabled = true;
-    let pendingSaveTimeout = null;
     let cardFrame = document.getElementById("cardFrame");
     let mccFrame = document.getElementById("mccFrame");
 
     // دور المستخدم (يتم تعيينه من نظام تسجيل الدخول)
-    let currentUserRole = 'researcher';  // 'researcher' أو 'manager'
+    let currentUserRole = 'researcher';
     let currentResearcherId = 'researcher_001';
     let currentResearcherName = 'الباحث';
 
@@ -435,287 +263,34 @@
         createdAt: null,
         updatedAt: null,
         data: {
-            caseSerial: '', caseMM: '', caseDate: '', officeResearcher: '', visitTeam: '', historyLog: [],
-            fullName: '', nationalId: '', shortAddress: '', detailedAddress: '', gpsLink: '', lat: '', lng: '', phones: [], visaNumber: '',
-            familyMembers: [], individuals: {},
+            caseSerial: '',
+            caseMM: '',
+            caseDate: new Date().toISOString().split('T')[0],
+            officeResearcher: '',
+            visitTeam: '',
+            historyLog: [],
+            fullName: '',
+            nationalId: '',
+            shortAddress: '',
+            detailedAddress: '',
+            gpsLink: '',
+            lat: '',
+            lng: '',
+            phones: [],
+            visaNumber: '',
+            familyMembers: [],
+            individuals: {},
             income: { pensions: [], work: [], charities: [], relatives: [], others: [] },
             expenses: { rent: 0, electricity: 0, water: 0, gas: 0, internet: 0, mobile: 0, medical: 0, lessons: 0, installments: 0, other: 0, dailyFood: 0 },
-            humanReports: {}, aiReport: '', aiRecommendation: '', donorOpinion: '', approvalDate: '', donorSignatureImage: ''
+            humanReports: {},
+            aiReport: '',
+            aiRecommendation: '',
+            donorOpinion: '',
+            approvalDate: '',
+            donorSignatureImage: ''
         }
     };
 
-    // ============================================================
-    // دوال المساعد الذكي
-    // ============================================================
-    
-    let aiAnalysisInterval = null;
-    
-    function openAIAssistant() {
-        const popup = document.getElementById('aiPopup');
-        popup.classList.remove('hidden');
-        analyzeCurrentData();
-        
-        // بدء المراقبة المستمرة للبيانات (تحديث كل 5 ثواني)
-        if (aiAnalysisInterval) clearInterval(aiAnalysisInterval);
-        aiAnalysisInterval = setInterval(() => {
-            if (!popup.classList.contains('hidden')) {
-                analyzeCurrentData();
-            }
-        }, 5000);
-    }
-    
-    function closeAIAssistant() {
-        const popup = document.getElementById('aiPopup');
-        popup.classList.add('hidden');
-        if (aiAnalysisInterval) {
-            clearInterval(aiAnalysisInterval);
-            aiAnalysisInterval = null;
-        }
-    }
-    
-    async function analyzeCurrentData() {
-        const body = document.getElementById('aiPopupBody');
-        
-        // عرض تحليل ملخص للبيانات الحالية
-        const summary = generateDataSummary();
-        
-        body.innerHTML = `
-            <div class="ai-message ai">
-                <strong>📊 تحليل البيانات الحالية:</strong><br>
-                ${summary}
-            </div>
-            <div class="ai-message ai">
-                <strong>💡 توصيات ذكية:</strong><br>
-                ${generateRecommendations()}
-            </div>
-            <div class="ai-message ai">
-                <strong>⚠️ ملاحظات واقتراحات:</strong><br>
-                ${generateSuggestions()}
-            </div>
-            <div class="ai-message ai">
-                <strong>📋 حالة المستندات:</strong><br>
-                ${generateDocumentsStatus()}
-            </div>
-        `;
-    }
-    
-    function generateDataSummary() {
-        const data = currentCase.data;
-        const totalIncome = calculateTotalIncome();
-        const totalExpenses = calculateTotalExpenses();
-        const netBalance = totalIncome - totalExpenses;
-        const familyCount = data.familyMembers?.length || 0;
-        
-        return `
-            • 👤 اسم الحالة: ${data.fullName || 'غير مسجل'}<br>
-            • 🆔 م.ع: ${data.caseSerial || 'غير مسجل'} | م.م: ${data.caseMM || 'غير مسجل'}<br>
-            • 👨‍👩‍👧‍👦 عدد أفراد الأسرة: ${familyCount}<br>
-            • 💰 إجمالي الدخل: ${totalIncome.toFixed(2)} ج.م<br>
-            • 💸 إجمالي المصروفات: ${totalExpenses.toFixed(2)} ج.م<br>
-            • 📊 صافي الدخل: ${netBalance.toFixed(2)} ج.م ${netBalance >= 0 ? '✅' : '⚠️'}<br>
-            • 📱 عدد الهواتف المسجلة: ${data.phones?.length || 0}<br>
-            • 📝 عدد التقارير البشرية: ${Object.keys(data.humanReports || {}).length}
-        `;
-    }
-    
-    function calculateTotalIncome() {
-        let total = 0;
-        const inc = currentCase.data.income;
-        if (inc) {
-            inc.pensions?.forEach(p => total += parseFloat(p.value) || 0);
-            inc.work?.forEach(w => total += parseFloat(w.value) || 0);
-            inc.charities?.forEach(c => total += parseFloat(c.value) || 0);
-            inc.relatives?.forEach(r => total += parseFloat(r.value) || 0);
-            inc.others?.forEach(o => total += parseFloat(o.value) || 0);
-        }
-        return total;
-    }
-    
-    function calculateTotalExpenses() {
-        const exp = currentCase.data.expenses;
-        if (!exp) return 0;
-        return (parseFloat(exp.rent) || 0) + (parseFloat(exp.electricity) || 0) +
-               (parseFloat(exp.water) || 0) + (parseFloat(exp.gas) || 0) +
-               (parseFloat(exp.internet) || 0) + (parseFloat(exp.mobile) || 0) +
-               (parseFloat(exp.medical) || 0) + (parseFloat(exp.lessons) || 0) +
-               (parseFloat(exp.installments) || 0) + (parseFloat(exp.other) || 0) +
-               ((parseFloat(exp.dailyFood) || 0) * 30);
-    }
-    
-    function generateRecommendations() {
-        const totalIncome = calculateTotalIncome();
-        const totalExpenses = calculateTotalExpenses();
-        const netBalance = totalIncome - totalExpenses;
-        const familyCount = currentCase.data.familyMembers?.length || 1;
-        const perCapita = netBalance / familyCount;
-        
-        let recommendations = [];
-        
-        if (netBalance < 0) {
-            recommendations.push('🔴 يوجد عجز مالي كبير - يوصى بمراجعة المصروفات وتقليلها');
-            recommendations.push('🟡 يوصى بطلب مساعدة عاجلة أو إعادة تقييم الدخل');
-        } else if (perCapita < 500) {
-            recommendations.push('🟠 نصيب الفرد منخفض جداً - الأسرة تحت خط الكفاية');
-            recommendations.push('🟢 يوصى بزيادة الدعم أو البحث عن مصادر دخل إضافية');
-        } else if (perCapita < 1000) {
-            recommendations.push('🟡 نصيب الفرد متوسط - يوصى بالمتابعة');
-        } else {
-            recommendations.push('✅ نصيب الفرد جيد - الحالة مستقرة');
-        }
-        
-        if (!currentCase.data.fullName) recommendations.push('⚠️ يرجى استكمال البيانات الأساسية (الاسم الكامل)');
-        if (!currentCase.data.caseSerial) recommendations.push('⚠️ يرجى تعيين م.ع (مسلسل عام)');
-        if (!currentCase.data.caseMM) recommendations.push('⚠️ يرجى تعيين م.م (مسلسل محاسبي)');
-        
-        return recommendations.join('<br>') || '✅ لا توجد توصيات خاصة حالياً';
-    }
-    
-    function generateSuggestions() {
-        let suggestions = [];
-        
-        if (Object.keys(currentCase.data.humanReports || {}).length < 2) {
-            suggestions.push('📝 يوصى بأخذ آراء باحثين إضافيين لتكوين رؤية متكاملة');
-        }
-        
-        if (currentCase.data.income?.charities?.length === 0) {
-            suggestions.push('🏢 لم يتم تسجيل أي جمعيات أو مساجد - قد تكون هناك مصادر دعم غير مكتشفة');
-        }
-        
-        if (currentCase.data.income?.relatives?.length === 0) {
-            suggestions.push('👨‍👩‍👧 قد يكون هناك أقارب يساعدون - يوصى بالسؤال عن ذلك');
-        }
-        
-        if (suggestions.length === 0) {
-            suggestions.push('✅ جميع البيانات تبدو مكتملة - استمر في المتابعة');
-        }
-        
-        return suggestions.join('<br>');
-    }
-    
-    function generateDocumentsStatus() {
-        let status = [];
-        
-        // التحقق من المستندات المرفقة (حسب البطاقات)
-        const hasNationalId = currentCase.data.nationalId && currentCase.data.nationalId.length === 14;
-        status.push(`🪪 الرقم القومي: ${hasNationalId ? '✅ مسجل' : '❌ غير مسجل'}`);
-        
-        const hasAddress = currentCase.data.shortAddress || currentCase.data.detailedAddress;
-        status.push(`📍 العنوان: ${hasAddress ? '✅ مسجل' : '❌ غير مسجل'}`);
-        
-        const hasPhone = currentCase.data.phones?.length > 0;
-        status.push(`📱 الهاتف: ${hasPhone ? '✅ مسجل (' + currentCase.data.phones.length + ' أرقام)' : '❌ غير مسجل'}`);
-        
-        return status.join('<br>');
-    }
-    
-    async function sendToAI() {
-        const input = document.getElementById('aiUserInput');
-        const question = input.value.trim();
-        if (!question) return;
-        
-        const body = document.getElementById('aiPopupBody');
-        
-        // إضافة سؤال المستخدم
-        body.innerHTML += `
-            <div class="ai-message user">
-                <strong>👤 أنت:</strong><br>
-                ${escapeHtml(question)}
-            </div>
-        `;
-        
-        input.value = '';
-        body.scrollTop = body.scrollHeight;
-        
-        // إظهار مؤشر تحميل
-        body.innerHTML += `
-            <div class="ai-message ai" id="aiResponse">
-                <strong>🤖 المساعد:</strong><br>
-                <span class="ai-loading-text">جاري التفكير...</span>
-            </div>
-        `;
-        
-        // محاكاة رد الذكاء الاصطناعي (يمكن ربطه بـ API حقيقي)
-        setTimeout(() => {
-            const response = generateAIResponse(question);
-            document.getElementById('aiResponse').innerHTML = `
-                <strong>🤖 المساعد:</strong><br>
-                ${response}
-            `;
-            body.scrollTop = body.scrollHeight;
-        }, 1000);
-    }
-    
-    function generateAIResponse(question) {
-        const q = question.toLowerCase();
-        const data = currentCase.data;
-        
-        if (q.includes('دخل') || q.includes('مرتب')) {
-            return `💰 إجمالي الدخل الشهري: ${calculateTotalIncome().toFixed(2)} ج.م<br>
-                    مصادر الدخل: ${getIncomeSources()}`;
-        }
-        
-        if (q.includes('مصروف') || q.includes('فواتير')) {
-            return `💸 إجمالي المصروفات الشهرية: ${calculateTotalExpenses().toFixed(2)} ج.م<br>
-                    أكبر بند مصروفات: ${getHighestExpense()}`;
-        }
-        
-        if (q.includes('عجز') || q.includes('صافي')) {
-            const net = calculateTotalIncome() - calculateTotalExpenses();
-            return `📊 صافي الدخل الشهري: ${net.toFixed(2)} ج.م<br>
-                    ${net < 0 ? '⚠️ يوجد عجز مالي يوصى بمراجعة المصروفات' : '✅ الحالة لديها فائض مالي'}`;
-        }
-        
-        if (q.includes('توصية')) {
-            return generateRecommendations();
-        }
-        
-        if (q.includes('نصيب') || q.includes('فرد')) {
-            const net = calculateTotalIncome() - calculateTotalExpenses();
-            const familyCount = data.familyMembers?.length || 1;
-            const perCapita = net / familyCount;
-            return `👨‍👩‍👧‍👦 نصيب الفرد الشهري: ${perCapita.toFixed(2)} ج.م<br>
-                    ${perCapita < 500 ? '⚠️ أقل من خط الفقر - يوصى بدعم عاجل' : perCapita < 1000 ? '🟡 متوسط - يحتاج متابعة' : '✅ جيد - الحالة مستقرة'}`;
-        }
-        
-        return `📋 بناءً على البيانات المتاحة:<br>
-                - الاسم: ${data.fullName || 'غير مسجل'}<br>
-                - م.ع: ${data.caseSerial || 'غير مسجل'} | م.م: ${data.caseMM || 'غير مسجل'}<br>
-                - عدد أفراد الأسرة: ${data.familyMembers?.length || 0}<br>
-                - حالة الدخل: ${calculateTotalIncome() > 0 ? '✅ مسجل' : '❌ غير مسجل'}<br>
-                - حالة المصروفات: ${calculateTotalExpenses() > 0 ? '✅ مسجل' : '❌ غير مسجل'}<br><br>
-                هل تريد تفاصيل أكثر عن جانب معين؟`;
-    }
-    
-    function getIncomeSources() {
-        const inc = currentCase.data.income;
-        let sources = [];
-        if (inc.pensions?.length) sources.push(`معاشات (${inc.pensions.length})`);
-        if (inc.work?.length) sources.push(`عمل (${inc.work.length})`);
-        if (inc.charities?.length) sources.push(`جمعيات/مساجد (${inc.charities.length})`);
-        if (inc.relatives?.length) sources.push(`أقارب (${inc.relatives.length})`);
-        return sources.length ? sources.join(', ') : 'لا توجد مصادر دخل مسجلة';
-    }
-    
-    function getHighestExpense() {
-        const exp = currentCase.data.expenses;
-        if (!exp) return 'لا توجد بيانات';
-        const expenses = [
-            { name: 'الإيجار', value: parseFloat(exp.rent) || 0 },
-            { name: 'الكهرباء', value: parseFloat(exp.electricity) || 0 },
-            { name: 'المياه', value: parseFloat(exp.water) || 0 },
-            { name: 'الغاز', value: parseFloat(exp.gas) || 0 },
-            { name: 'المصروف اليومي', value: (parseFloat(exp.dailyFood) || 0) * 30 }
-        ];
-        const highest = expenses.reduce((max, e) => e.value > max.value ? e : max, expenses[0]);
-        return `${highest.name}: ${highest.value.toFixed(2)} ج.م`;
-    }
-    
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
     // ============================================================
     // دوال إدارة currentCase
     // ============================================================
@@ -728,7 +303,6 @@
                 currentCase = parsed;
                 console.log('[case_view] تم تحميل الحالة المحفوظة');
             } catch(e) {
-                console.error('خطأ في تحميل الحالة:', e);
                 createNewCase();
             }
         } else {
@@ -738,34 +312,51 @@
         const savedRole = localStorage.getItem('userRole');
         if (savedRole === 'manager') currentUserRole = 'manager';
     }
-    
+
     function createNewCase() {
         const now = new Date().toISOString();
         currentCase = {
-            caseId: `CASE-${Date.now()}`,
+            caseId: null,
             createdAt: now,
             updatedAt: now,
             data: {
-                caseSerial: '', caseMM: '', caseDate: new Date().toISOString().split('T')[0],
-                officeResearcher: '', visitTeam: '', historyLog: [],
-                fullName: '', nationalId: '', shortAddress: '', detailedAddress: '',
-                gpsLink: '', lat: '', lng: '', phones: [], visaNumber: '',
-                familyMembers: [], individuals: {},
+                caseSerial: '',
+                caseMM: '',
+                caseDate: new Date().toISOString().split('T')[0],
+                officeResearcher: '',
+                visitTeam: '',
+                historyLog: [],
+                fullName: '',
+                nationalId: '',
+                shortAddress: '',
+                detailedAddress: '',
+                gpsLink: '',
+                lat: '',
+                lng: '',
+                phones: [],
+                visaNumber: '',
+                familyMembers: [],
+                individuals: {},
                 income: { pensions: [], work: [], charities: [], relatives: [], others: [] },
                 expenses: { rent: 0, electricity: 0, water: 0, gas: 0, internet: 0, mobile: 0, medical: 0, lessons: 0, installments: 0, other: 0, dailyFood: 0 },
-                humanReports: {}, aiReport: '', aiRecommendation: '', donorOpinion: '', approvalDate: '', donorSignatureImage: ''
+                humanReports: {},
+                aiReport: '',
+                aiRecommendation: '',
+                donorOpinion: '',
+                approvalDate: '',
+                donorSignatureImage: ''
             }
         };
         saveCurrentCaseToLocal();
     }
-    
+
     function saveCurrentCaseToLocal() {
         currentCase.updatedAt = new Date().toISOString();
         localStorage.setItem('currentCase', JSON.stringify(currentCase));
     }
-    
-    function updateField(path, value) {
-        const parts = path.split('.');
+
+    function updateField(fieldPath, value) {
+        const parts = fieldPath.split('.');
         let target = currentCase.data;
         
         for (let i = 0; i < parts.length - 1; i++) {
@@ -777,24 +368,14 @@
         currentCase.updatedAt = new Date().toISOString();
         
         if (autoSaveEnabled) {
-            if (pendingSaveTimeout) clearTimeout(pendingSaveTimeout);
-            pendingSaveTimeout = setTimeout(() => {
-                saveCurrentCaseToLocal();
-                broadcastToMCC();
-                updateStatusBar('💾 حفظ تلقائي', 'info');
-                pendingSaveTimeout = null;
-            }, 1000);
+            saveCurrentCaseToLocal();
+            broadcastToMCC();
+            updateStatusBar('💾 حفظ تلقائي', 'info');
         }
         
         broadcastToMCC();
-        
-        // تحديث المساعد الذكي إذا كانت النافذة مفتوحة
-        const popup = document.getElementById('aiPopup');
-        if (!popup.classList.contains('hidden')) {
-            analyzeCurrentData();
-        }
     }
-    
+
     function broadcastToMCC() {
         const message = {
             type: 'UPDATE_CASE',
@@ -807,68 +388,62 @@
         if (mccFrame && mccFrame.contentWindow) {
             mccFrame.contentWindow.postMessage(message, '*');
         }
-        window.parent.postMessage(message, '*');
     }
-    
+
     // ============================================================
-    // التواصل مع البطاقات
+    // Data Binding بين case_view والبطاقات
     // ============================================================
     
-    function setupCardMessaging() {
-        window.addEventListener('message', (event) => {
-            const { type, data, fieldPath, value, cardId, researcherId, researcherName } = event.data;
-            
-            if (type === 'FIELD_UPDATE' && fieldPath !== undefined && value !== undefined) {
-                updateField(fieldPath, value);
-            }
-            
-            if (type === 'BATCH_UPDATE' && data) {
-                for (const [path, val] of Object.entries(data)) {
-                    updateField(path, val);
-                }
-            }
-            
-            if (type === 'REQUEST_CURRENT_CASE' && event.source) {
-                event.source.postMessage({
-                    type: 'LOAD_CURRENT_CASE',
-                    data: currentCase.data,
-                    fullCase: currentCase
-                }, '*');
-            }
-            
-            if (type === 'HUMAN_REPORT_UPDATE' && researcherId) {
-                if (!currentCase.data.humanReports[researcherId]) {
-                    currentCase.data.humanReports[researcherId] = {};
-                }
-                if (data.report) currentCase.data.humanReports[researcherId].report = data.report;
-                if (data.recommendation) currentCase.data.humanReports[researcherId].recommendation = data.recommendation;
-                if (researcherName) currentCase.data.humanReports[researcherId].researcherName = researcherName;
-                saveCurrentCaseToLocal();
-                broadcastToMCC();
-            }
-            
-            if (type === 'AI_REPORT_UPDATE' && currentUserRole === 'manager') {
-                if (data.report) currentCase.data.aiReport = data.report;
-                if (data.recommendation) currentCase.data.aiRecommendation = data.recommendation;
-                saveCurrentCaseToLocal();
-                broadcastToMCC();
-            }
-        });
-    }
-    
-    function sendDataToCurrentCard() {
+    function sendDataToCard(data) {
         if (cardFrame && cardFrame.contentWindow) {
             cardFrame.contentWindow.postMessage({
                 type: 'LOAD_CURRENT_CASE',
-                data: currentCase.data,
-                fullCase: currentCase,
-                userRole: currentUserRole,
-                researcherId: currentResearcherId,
-                researcherName: currentResearcherName
+                data: data,
+                fullCase: { data: data }
             }, '*');
         }
     }
-    
+
+    function handleCardMessage(event) {
+        const { type, data, fieldPath, value, cardId, researcherId, researcherName } = event.data || {};
+
+        if (type === 'FIELD_UPDATE' && fieldPath !== undefined && value !== undefined) {
+            updateField(fieldPath, value);
+        }
+
+        if (type === 'BATCH_UPDATE' && data) {
+            for (const [path, val] of Object.entries(data)) {
+                updateField(path, val);
+            }
+        }
+
+        if (type === 'REQUEST_CURRENT_CASE' && event.source) {
+            event.source.postMessage({
+                type: 'LOAD_CURRENT_CASE',
+                data: currentCase.data,
+                fullCase: currentCase
+            }, '*');
+        }
+
+        if (type === 'HUMAN_REPORT_UPDATE' && researcherId) {
+            if (!currentCase.data.humanReports[researcherId]) {
+                currentCase.data.humanReports[researcherId] = {};
+            }
+            if (data.report) currentCase.data.humanReports[researcherId].report = data.report;
+            if (data.recommendation) currentCase.data.humanReports[researcherId].recommendation = data.recommendation;
+            if (researcherName) currentCase.data.humanReports[researcherId].researcherName = researcherName;
+            saveCurrentCaseToLocal();
+            broadcastToMCC();
+        }
+
+        if (type === 'AI_REPORT_UPDATE' && currentUserRole === 'manager') {
+            if (data.report) currentCase.data.aiReport = data.report;
+            if (data.recommendation) currentCase.data.aiRecommendation = data.recommendation;
+            saveCurrentCaseToLocal();
+            broadcastToMCC();
+        }
+    }
+
     // ============================================================
     // دوال التحكم في البطاقات
     // ============================================================
@@ -881,18 +456,18 @@
         cardFrame.src = card.file;
         
         setTimeout(() => {
-            sendDataToCurrentCard();
+            sendDataToCard(currentCase.data);
         }, 500);
         
         updateNavButtons();
         updateProgressIndicator();
     }
-    
+
     function updateNavButtons() {
         document.getElementById("prevBtn").disabled = (currentIndex === 0);
         document.getElementById("nextBtn").disabled = (currentIndex === CARDS.length - 1);
     }
-    
+
     function updateProgressIndicator() {
         const container = document.getElementById("progressIndicator");
         if (!container) return;
@@ -903,15 +478,15 @@
             return `<div class="progress-dot ${statusClass}" title="${card.name}"></div>`;
         }).join("");
     }
-    
+
     function nextCard() {
         if (currentIndex < CARDS.length - 1) loadCard(currentIndex + 1);
     }
-    
+
     function previousCard() {
         if (currentIndex > 0) loadCard(currentIndex - 1);
     }
-    
+
     function saveCurrentCard() {
         if (cardFrame && cardFrame.contentWindow) {
             cardFrame.contentWindow.postMessage({ type: 'COLLECT_DATA' }, '*');
@@ -924,7 +499,7 @@
             showToast('تم حفظ البيانات', 'success');
         }, 300);
     }
-    
+
     function toggleAutoSave() {
         autoSaveEnabled = !autoSaveEnabled;
         const btn = document.getElementById('autoSaveToggle');
@@ -938,7 +513,7 @@
             updateStatusBar('تم إيقاف الحفظ التلقائي', 'info');
         }
     }
-    
+
     // ============================================================
     // دوال مساعدة
     // ============================================================
@@ -952,7 +527,7 @@
             bar.innerHTML = `✅ جاهز | م.ع: ${caseSerial} | رقم التتبع: ${currentCase.caseId || "---"}`;
         }, 3000);
     }
-    
+
     function showToast(msg, type = "info") {
         const toast = document.getElementById("toast");
         toast.innerHTML = msg;
@@ -962,12 +537,12 @@
             toast.style.display = "none";
         }, 2000);
     }
-    
+
     function printMCC() {
         if (mccFrame && mccFrame.contentWindow) mccFrame.contentWindow.print();
         else window.print();
     }
-    
+
     function openPDF() {
         const input = document.createElement('input');
         input.type = 'file';
@@ -977,7 +552,7 @@
         };
         input.click();
     }
-    
+
     function extractFromPDF() {
         alert("🔓 فك ضغط PDF: سيتم فتح الملف واستخراج صفحاته في مجلد مؤقت");
         const input = document.createElement('input');
@@ -988,7 +563,7 @@
         };
         input.click();
     }
-    
+
     function openWordAssist() {
         const input = document.createElement('input');
         input.type = 'file';
@@ -998,7 +573,7 @@
         };
         input.click();
     }
-    
+
     function scanFromScanner() {
         if (window.electronAPI && window.electronAPI.scanFromScanner) {
             window.electronAPI.scanFromScanner().then(result => {
@@ -1011,19 +586,24 @@
             alert("🖨️ سحب من سكانر: هذه الميزة متاحة فقط في تطبيق سطح المكتب");
         }
     }
-    
+
     // ============================================================
     // التهيئة
     // ============================================================
     
     function init() {
         initCurrentCase();
-        setupCardMessaging();
+        
+        // إعداد مستمع الرسائل
+        window.addEventListener('message', handleCardMessage);
+        
+        // تحميل أول بطاقة
         loadCard(0);
         updateProgressIndicator();
         
+        // عند تحميل iframe، أرسل البيانات
         cardFrame.addEventListener('load', () => {
-            sendDataToCurrentCard();
+            sendDataToCard(currentCase.data);
         });
         
         setTimeout(() => {
@@ -1032,7 +612,7 @@
         
         updateStatusBar('✅ النظام جاهز | تحديث لحظي للمخرجات مفعل');
     }
-    
+
     // تصدير الدوال للنطاق العام
     window.previousCard = previousCard;
     window.nextCard = nextCard;
@@ -1043,12 +623,8 @@
     window.extractFromPDF = extractFromPDF;
     window.openWordAssist = openWordAssist;
     window.scanFromScanner = scanFromScanner;
-    window.openAIAssistant = openAIAssistant;
-    window.closeAIAssistant = closeAIAssistant;
-    window.sendToAI = sendToAI;
-    window.getCurrentCase = () => currentCase;
     window.updateField = updateField;
-    
+
     document.addEventListener("DOMContentLoaded", init);
 </script>
 

@@ -1,0 +1,315 @@
+{
+  "version": "2.0.0",
+  "lastUpdated": "2026-04-06T00:00:00.000Z",
+  
+  "system": {
+    "name": "نظام إدارة البحث الاجتماعي",
+    "environment": "production",
+    "debugMode": false,
+    "maintenanceMode": false
+  },
+  
+  "organization": {
+    "name": "جمعية الرحمة الخيرية",
+    "registration": "986 لسنة 2005",
+    "address": "شبرا الخيمة - مساكن حجازي",
+    "phone": "01111878692",
+    "email": "info@charity.com",
+    "logo": null,
+    "logoLastUpdated": null
+  },
+  
+  "board": {
+    "chairman": "شعبان علي إبراهيم أبو العلا",
+    "secretary": "ناصر سيد إبراهيم أبو العلا",
+    "treasurer": "سعود محمد هاني"
+  },
+  
+  "branches": {
+    "shobra": {
+      "name": "فرع شبرا",
+      "paymentDays": [1, 2, 3, 4, 5, 6, 7],
+      "researchers": ["ali", "ashraf"],
+      "address": "شبرا الخيمة - شارع محمد فريد"
+    },
+    "nahda": {
+      "name": "فرع النهضة",
+      "paymentDays": [1, 2, 3, 4],
+      "researchers": ["beshra", "aya", "reham"],
+      "address": "النهضة - بجوار المدرسة"
+    }
+  },
+  
+  "researchers": {
+    "ali": {
+      "name": "علي",
+      "gender": "male",
+      "custodyRange": [601, 800],
+      "telegramId": null,
+      "avatar": null,
+      "avatarLastSynced": null,
+      "isActive": true,
+      "joinedAt": "2026-01-01"
+    },
+    "ashraf": {
+      "name": "أشرف",
+      "gender": "male",
+      "custodyRange": [801, 1000],
+      "telegramId": null,
+      "avatar": null,
+      "avatarLastSynced": null,
+      "isActive": true,
+      "joinedAt": "2026-01-01"
+    },
+    "beshra": {
+      "name": "بشرى",
+      "gender": "female",
+      "custodyRange": [1, 200],
+      "telegramId": null,
+      "avatar": null,
+      "avatarLastSynced": null,
+      "isActive": true,
+      "joinedAt": "2026-01-01"
+    },
+    "aya": {
+      "name": "آية",
+      "gender": "female",
+      "custodyRange": [201, 400],
+      "telegramId": null,
+      "avatar": null,
+      "avatarLastSynced": null,
+      "isActive": true,
+      "joinedAt": "2026-01-01"
+    },
+    "reham": {
+      "name": "ريهام",
+      "gender": "female",
+      "custodyRange": [401, 600],
+      "telegramId": null,
+      "avatar": null,
+      "avatarLastSynced": null,
+      "isActive": true,
+      "joinedAt": "2026-01-01"
+    }
+  },
+  
+  "visitTeams": {
+    "default": [
+      ["ali", "beshra"],
+      ["ali", "aya"],
+      ["ali", "reham"],
+      ["ashraf", "beshra"],
+      ["ashraf", "aya"],
+      ["ashraf", "reham"]
+    ],
+    "individual": ["ali", "ashraf", "beshra", "aya", "reham"]
+  },
+  
+  "aiPersonality": {
+    "name": "عارف",
+    "gender": "male",
+    "avatar": null,
+    "voice": "male1",
+    "greetings": {
+      "morning": "صباح الخير يا مدير",
+      "evening": "مساء الخير",
+      "default": "السلام عليكم"
+    }
+  },
+  
+  "grants": {
+    "ramadan": {
+      "enabled": true,
+      "name": "قماش رمضان",
+      "defaultAmount": 200,
+      "type": "both",
+      "fabricLimit": 12,
+      "malePiece": 3,
+      "femalePiece": 3,
+      "pants": 1.5,
+      "shirt": 1.5,
+      "minAge": 3
+    },
+    "eidFitr": {
+      "enabled": true,
+      "name": "عيد الفطر",
+      "defaultAmount": 150,
+      "type": "cash"
+    },
+    "eidAdha": {
+      "enabled": true,
+      "name": "عيد الأضحى",
+      "defaultAmount": 200,
+      "type": "cash"
+    },
+    "study": {
+      "enabled": true,
+      "name": "منحة الدراسة",
+      "defaultAmount": 300,
+      "type": "cash"
+    }
+  },
+  
+  "categories": {
+    "shobra": {
+      "name": "شبرا",
+      "serialStart": 1,
+      "serialEnd": 750,
+      "paymentStart": 1,
+      "paymentEnd": 7,
+      "isActive": true
+    },
+    "nahda": {
+      "name": "النهضة",
+      "serialStart": 751,
+      "serialEnd": 1000,
+      "paymentStart": 1,
+      "paymentEnd": 4,
+      "isActive": true
+    },
+    "disabled": {
+      "name": "معاقين",
+      "serialStart": 1,
+      "serialEnd": 200,
+      "paymentStart": 1,
+      "paymentEnd": 7,
+      "isActive": true
+    },
+    "company": {
+      "name": "الشركة",
+      "serialStart": 1,
+      "serialEnd": 100,
+      "paymentStart": 1,
+      "paymentEnd": 4,
+      "isActive": true
+    }
+  },
+  
+  "attendance": {
+    "workStart": "08:00",
+    "workEndMale": "17:00",
+    "workEndFemale": "16:00",
+    "mealAllowance": 10,
+    "transportAllowance": {
+      "shobra": 15,
+      "nahda": 20,
+      "default": 10
+    },
+    "lateDeduction": {
+      "first": 0,
+      "second": 5,
+      "third": 10,
+      "after": 20
+    },
+    "absenceDeduction": {
+      "first": 0,
+      "second": 25,
+      "third": 50,
+      "after": 100
+    }
+  },
+  
+  "telegram": {
+    "mainBot": {
+      "token": "7204378934:AAEhAOi0f5fDdWqoMe7YGrsuxl5hev-w_Yk",
+      "enabled": true
+    },
+    "keeperBot": {
+      "token": "7443426622:AAFbPKjJ0fSweZxHxpglopgdg6hyWkLJgs8",
+      "enabled": true
+    },
+    "workGroupBot": {
+      "token": "7204378934:AAEhAOi0f5fDdWqoMe7YGrsuxl5hev-w_Yk",
+      "enabled": false
+    },
+    "locationsBot": {
+      "token": "7204378934:AAEhAOi0f5fDdWqoMe7YGrsuxl5hev-w_Yk",
+      "enabled": false
+    },
+    "adminId": 2130979393,
+    "groupId": -1001639560426,
+    "reminderTime": "13:00",
+    "reminderStartDaysBefore": 7,
+    "requestPeriodStart": 24,
+    "requestPeriodEnd": 29
+  },
+  
+  "sync": {
+    "role": "user",
+    "managerUrl": null,
+    "syncInterval": 60000,
+    "retryInterval": 300000,
+    "maxRetries": 3,
+    "thresholds": {
+      "warningDays": 3,
+      "staleDays": 10
+    }
+  },
+  
+  "backup": {
+    "autoBackup": true,
+    "maxBackups": 7,
+    "backupIntervalHours": 24,
+    "teraboxEnabled": false,
+    "teraboxToken": null,
+    "lastBackupAt": null,
+    "lastRestoreAt": null
+  },
+  
+  "printing": {
+    "defaultPrinter": null,
+    "pageMargin": 15,
+    "paperSize": "A4",
+    "orientation": "portrait",
+    "printHistory": []
+  },
+  
+  "ui": {
+    "theme": "dark",
+    "fontSize": "medium",
+    "itemsPerPage": 10,
+    "language": "ar",
+    "sidebarCollapsed": false,
+    "animations": true
+  },
+  
+  "notifications": {
+    "newCase": true,
+    "pendingReview": true,
+    "birthday": true,
+    "lowInk": true,
+    "syncError": true
+  },
+  
+  "cards": {
+    "enabled": [1, 2, 3, 4, 5, 6, 7, 8],
+    "order": [1, 2, 3, 4, 5, 6, 7, 8],
+    "customCards": []
+  },
+  
+  "modules": {
+    "cases": { "enabled": true, "order": 1 },
+    "hr": { "enabled": true, "order": 2 },
+    "accounting": { "enabled": true, "order": 3 },
+    "settings": { "enabled": true, "order": 4 },
+    "specialCases": { "enabled": true, "order": 5 },
+    "treasury": { "enabled": true, "order": 6 },
+    "reports": { "enabled": true, "order": 7 }
+  },
+  
+  "permissions": {
+    "admin": ["all"],
+    "researcher": ["cases", "hr", "accounting", "visits"]
+  },
+  
+  "devices": [
+    {
+      "deviceId": "DEV-MASTER-001",
+      "name": "جهاز المدير",
+      "role": "manager",
+      "ip": "192.168.1.101",
+      "lastSyncAt": null,
+      "status": "active"
+    }
+  ]
+}

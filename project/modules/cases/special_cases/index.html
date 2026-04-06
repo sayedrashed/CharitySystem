@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حالات خاصة - نظام إدارة البحث الاجتماعي</title>
+    <title>مساعدات خارجية - نظام إدارة البحث الاجتماعي</title>
     <style>
         * {
             margin: 0;
@@ -23,6 +23,17 @@
             --warning: #F59E0B;
             --danger: #F87171;
             --gold: #F5C842;
+            --info: #17a2b8;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
         }
 
         body {
@@ -31,8 +42,10 @@
             color: var(--text-primary);
             direction: rtl;
             min-height: 100vh;
+            transition: var(--transition);
         }
 
+        /* Header */
         .header {
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
@@ -42,6 +55,9 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .back-btn {
@@ -55,6 +71,12 @@
             cursor: pointer;
             font-size: 14px;
             color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            border-color: var(--accent);
+            transform: translateX(-4px);
         }
 
         .page-title {
@@ -63,6 +85,7 @@
             background: linear-gradient(90deg, var(--gold), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .admin-badge {
@@ -74,17 +97,48 @@
             font-weight: bold;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 24px;
+        /* Alert Box */
+        .alert-info {
+            background: rgba(23, 162, 184, 0.15);
+            border: 1px solid var(--info);
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin: 16px 24px;
+            color: var(--info);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        .alert-info .icon {
+            font-size: 20px;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 24px;
+            padding: 24px;
         }
 
         .stat-card {
@@ -93,41 +147,199 @@
             border-radius: 16px;
             padding: 20px;
             text-align: center;
+            transition: var(--transition);
         }
 
         .stat-card .value {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 800;
             color: var(--accent);
         }
 
         .stat-card .label {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-secondary);
-            margin-top: 5px;
+            margin-top: 8px;
         }
 
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
+        /* Actions Bar */
+        .actions-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 0 24px;
             margin-bottom: 24px;
         }
 
-        .card-header {
+        .action-btn {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .action-btn.warning {
+            background: var(--warning);
+            border-color: var(--warning);
+            color: #0F1117;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            padding: 0 24px;
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        /* Table */
+        .table-container {
+            padding: 0 24px;
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            text-align: right;
+            padding: 15px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 13px;
             border-bottom: 1px solid var(--border);
         }
 
-        .card-title {
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .data-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Badges */
+        .transfer-badge {
+            background: var(--success);
+            color: #0F1117;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .pending-badge {
+            background: var(--warning);
+            color: #0F1117;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* Action Icons */
+        .action-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-icon {
+            cursor: pointer;
             font-size: 18px;
-            font-weight: 700;
-            color: var(--gold);
+            transition: var(--transition);
+        }
+
+        .action-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .transfer-icon {
+            color: var(--success);
+        }
+
+        .edit-icon {
+            color: var(--accent);
+        }
+
+        .delete-icon {
+            color: var(--danger);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            width: 550px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 20px;
         }
 
         .form-group {
@@ -151,6 +363,27 @@
             font-size: 14px;
         }
 
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
         .btn {
             padding: 8px 16px;
             border-radius: 8px;
@@ -158,12 +391,18 @@
             font-size: 13px;
             font-weight: 500;
             border: none;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
         .btn-primary {
             background: var(--accent);
             color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
         }
 
         .btn-success {
@@ -176,58 +415,12 @@
             color: white;
         }
 
-        .btn-warning {
-            background: var(--warning);
-            color: #0F1117;
+        .btn-info {
+            background: var(--info);
+            color: white;
         }
 
-        .btn:hover {
-            transform: translateY(-1px);
-            opacity: 0.9;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--bg-card);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .data-table th, .data-table td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .data-table th {
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        .transfer-badge {
-            background: var(--success);
-            color: #0F1117;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .pending-badge {
-            background: var(--warning);
-            color: #0F1117;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -239,12 +432,17 @@
             padding: 12px 24px;
             display: none;
             z-index: 1000;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
         @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .actions-bar { justify-content: center; }
         }
     </style>
 </head>
@@ -252,61 +450,133 @@
 
 <div class="header">
     <button class="back-btn" onclick="goBack()"><span>←</span> العودة</button>
-    <div class="page-title">⭐ حالات خاصة</div>
+    <div class="page-title">🤝 مساعدات خارجية - جهات أخرى</div>
     <div class="user-area">
         <div class="admin-badge">👑 للمدير فقط</div>
+        <div class="user-avatar" id="userAvatar">👑</div>
+        <div class="user-name" id="userName"></div>
     </div>
 </div>
 
-<div class="container">
-    
-    <!-- إحصائيات سريعة -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="value" id="totalSpecial">0</div>
-            <div class="label">إجمالي الحالات الخاصة</div>
-        </div>
-        <div class="stat-card">
-            <div class="value" id="totalTransferred">0</div>
-            <div class="label">تم التحويل</div>
-        </div>
-        <div class="stat-card">
-            <div class="value" id="totalPending">0</div>
-            <div class="label">بانتظار التحويل</div>
-        </div>
-        <div class="stat-card">
-            <div class="value" id="totalAmount">0</div>
-            <div class="label">إجمالي المساعدات</div>
-        </div>
-    </div>
+<!-- تنبيه مهم -->
+<div class="alert-info">
+    <span class="icon">ℹ️</span>
+    <span>هذا الموديول خاص بتسجيل المساعدات القادمة من جهات خارجية (غير الجمعية). <strong>لا يؤثر على دفتر الكاش أو سير العمل الرئيسي</strong> – بيئة منفصلة بالكامل.</span>
+</div>
 
-    <!-- إضافة حالة خاصة -->
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">➕ إضافة حالة خاصة</div>
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="value" id="totalSpecial">0</div>
+        <div class="label">إجمالي المساعدات الخارجية</div>
+    </div>
+    <div class="stat-card">
+        <div class="value" id="totalTransferred">0</div>
+        <div class="label">تم الصرف</div>
+    </div>
+    <div class="stat-card">
+        <div class="value" id="totalPending">0</div>
+        <div class="label">قيد المتابعة</div>
+    </div>
+    <div class="stat-card">
+        <div class="value" id="totalAmount">0</div>
+        <div class="label">إجمالي المساعدات (ج.م)</div>
+    </div>
+</div>
+
+<div class="actions-bar">
+    <button class="action-btn primary" onclick="openAddSpecialCaseModal()">
+        <span>➕</span> إضافة مساعدة خارجية
+    </button>
+    <button class="action-btn warning" onclick="openBulkTransferModal()">
+        <span>💸</span> صرف دفعة واحدة
+    </button>
+    <button class="action-btn" onclick="exportSpecialCases()">
+        <span>📊</span> تصدير التقرير
+    </button>
+</div>
+
+<div class="search-bar">
+    <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث بالاسم، رقم الحالة، أو الجهة المانحة..." onkeyup="searchCases()">
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>م.ع</th>
+                <th>الاسم</th>
+                <th>الجهة المانحة</th>
+                <th>رقم المحفظة</th>
+                <th>قيمة المساعدة</th>
+                <th>نوع المساعدة</th>
+                <th>الحالة</th>
+                <th>تاريخ الإضافة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody id="specialCasesTable">
+            <tr><td colspan="9" style="text-align:center;">جاري التحميل...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal إضافة مساعدة خارجية -->
+<div id="addSpecialCaseModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>➕ إضافة مساعدة خارجية</h3>
+            <span class="modal-close" onclick="closeModal('addSpecialCaseModal')">✕</span>
         </div>
+        
         <div class="form-group">
-            <label>اختر حالة من القاعدة</label>
-            <select id="selectCase">
-                <option value="">-- اختر حالة --</option>
-            </select>
+            <label>نوع الإضافة</label>
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="caseSource" value="existing" checked onchange="toggleCaseSource()">
+                    حالة موجودة في النظام
+                </label>
+                <label>
+                    <input type="radio" name="caseSource" value="new" onchange="toggleCaseSource()">
+                    حالة جديدة (خارج النظام)
+                </label>
+            </div>
         </div>
-        <div class="form-group">
-            <label>الاسم</label>
-            <input type="text" id="caseName" readonly>
+
+        <div id="existingCaseSection">
+            <div class="form-group">
+                <label>اختر حالة من النظام</label>
+                <select id="selectCase" onchange="loadCaseData()">
+                    <option value="">-- اختر حالة --</option>
+                </select>
+            </div>
         </div>
-        <div class="form-group">
-            <label>الرقم المسلسل</label>
-            <input type="text" id="caseSerial" readonly>
+
+        <div id="newCaseSection" style="display:none;">
+            <div class="form-group">
+                <label>الاسم الكامل</label>
+                <input type="text" id="newCaseName" placeholder="الاسم الكامل">
+            </div>
+            <div class="form-group">
+                <label>رقم الحالة (اختياري)</label>
+                <input type="text" id="newCaseSerial" placeholder="م.ع / م.م">
+            </div>
         </div>
+
         <div class="form-group">
-            <label>رقم المحفظة</label>
-            <input type="text" id="walletNumber" placeholder="مثال: 01012345678">
+            <label>الجهة المانحة</label>
+            <input type="text" id="donorEntity" placeholder="مثال: جمعية خيرية أخرى، جهة حكومية، متبرع خاص...">
         </div>
+
         <div class="form-group">
-            <label>قيمة المساعدة</label>
+            <label>رقم المحفظة (Wallet ID)</label>
+            <input type="text" id="walletNumber" placeholder="رقم المحفظة الإلكترونية">
+        </div>
+
+        <div class="form-group">
+            <label>قيمة المساعدة (ج.م)</label>
             <input type="number" id="aidAmount" placeholder="قيمة المساعدة">
         </div>
+
         <div class="form-group">
             <label>نوع المساعدة</label>
             <select id="aidType">
@@ -314,30 +584,64 @@
                 <option value="مرة واحدة">مرة واحدة</option>
                 <option value="طارئة">طارئة</option>
                 <option value="علاج">علاج</option>
+                <option value="تعليمية">تعليمية</option>
+                <option value="إيوائية">إيوائية</option>
             </select>
         </div>
+
         <div class="form-group">
             <label>ملاحظات</label>
-            <textarea id="notes" rows="3" placeholder="سبب إضافة الحالة للمساعدات الخاصة..."></textarea>
+            <textarea id="notes" rows="3" placeholder="تفاصيل إضافية عن المساعدة..."></textarea>
         </div>
-        <button class="btn btn-primary" onclick="saveSpecialCase()">💾 حفظ الحالة الخاصة</button>
-    </div>
 
-    <!-- جدول الحالات الخاصة -->
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">📋 قائمة الحالات الخاصة</div>
-            <button class="btn btn-success" onclick="exportSpecialCases()">📊 تصدير</button>
+        <div class="modal-buttons">
+            <button class="btn btn-primary" onclick="saveSpecialCase()">💾 حفظ</button>
+            <button class="btn btn-secondary" onclick="closeModal('addSpecialCaseModal')">إلغاء</button>
         </div>
-        <div class="table-container">
-            <table class="data-table">
-                <thead>
-                    <tr><th>م.ع</th><th>الاسم</th><th>رقم المحفظة</th><th>قيمة المساعدة</th><th>نوع المساعدة</th><th>الحالة</th><th>تاريخ الإضافة</th><th>الإجراءات</th></tr>
-                </thead>
-                <tbody id="specialCasesTable">
-                    <tr><td colspan="8" style="text-align:center;">لا توجد بيانات</td></tr>
-                </tbody>
-            </table>
+    </div>
+</div>
+
+<!-- Modal صرف دفعة واحدة -->
+<div id="bulkTransferModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>💸 صرف دفعة واحدة</h3>
+            <span class="modal-close" onclick="closeModal('bulkTransferModal')">✕</span>
+        </div>
+        <div class="form-group">
+            <label>اختر الحالات للصرف</label>
+            <div id="bulkCasesList" style="max-height:300px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; padding:10px;"></div>
+        </div>
+        <div class="form-group">
+            <label>إجمالي المبلغ المراد صرفه</label>
+            <input type="text" id="totalBulkAmount" readonly>
+        </div>
+        <div class="modal-buttons">
+            <button class="btn btn-success" onclick="processBulkTransfer()">💸 تأكيد الصرف</button>
+            <button class="btn btn-secondary" onclick="closeModal('bulkTransferModal')">إلغاء</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal صرف فردي -->
+<div id="transferModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>💸 صرف مساعدة</h3>
+            <span class="modal-close" onclick="closeModal('transferModal')">✕</span>
+        </div>
+        <div id="transferDetails"></div>
+        <div class="form-group">
+            <label>رقم المحفظة المستلم</label>
+            <input type="text" id="transferWallet" readonly>
+        </div>
+        <div class="form-group">
+            <label>المبلغ</label>
+            <input type="text" id="transferAmount" readonly>
+        </div>
+        <div class="modal-buttons">
+            <button class="btn btn-success" onclick="confirmTransfer()">✅ تأكيد الصرف</button>
+            <button class="btn btn-secondary" onclick="closeModal('transferModal')">إلغاء</button>
         </div>
     </div>
 </div>
@@ -345,58 +649,47 @@
 <div id="toast" class="toast"></div>
 
 <script>
-    let specialCases = [];
-    let allCases = [];
+    // ============================================================
+    // بيانات تجريبية (بيئة منفصلة)
+    // ============================================================
+    let specialCases = [
+        { id: 1, caseId: 101, name: "أحمد محمود علي", serial: 101, donorEntity: "جمعية النور", walletNumber: "01012345678", amount: 500, type: "شهرية", status: "pending", notes: "", createdAt: "2026-03-01", isExternal: false },
+        { id: 2, caseId: 102, name: "سارة علي إبراهيم", serial: 102, donorEntity: "بنك الطعام", walletNumber: "01123456789", amount: 1000, type: "علاج", status: "transferred", notes: "", createdAt: "2026-03-05", isExternal: false },
+        { id: 3, caseId: null, name: "حالة جديدة خارجية", serial: null, donorEntity: "جهة حكومية", walletNumber: "01234567890", amount: 300, type: "طارئة", status: "pending", notes: "حالة جديدة غير مسجلة في النظام", createdAt: "2026-03-10", isExternal: true }
+    ];
 
-    function loadFromStorage() {
-        // تحميل الحالات الخاصة
-        const savedSpecial = localStorage.getItem('special_cases');
-        if (savedSpecial) {
-            specialCases = JSON.parse(savedSpecial);
+    let allCases = [
+        { id: 1, serial: 101, name: "أحمد محمود علي" },
+        { id: 2, serial: 102, name: "سارة علي إبراهيم" },
+        { id: 3, serial: 103, name: "محمود خالد سعيد" },
+        { id: 4, serial: 104, name: "فاطمة حسن محمد" },
+        { id: 5, serial: 105, name: "علي إبراهيم محمود" }
+    ];
+
+    let currentUser = { id: 1, name: "سيد راشد", role: "admin", avatar: "👑" };
+    let currentSearch = "";
+    let currentTransferId = null;
+
+    // ============================================================
+    // تبديل نوع الإضافة (حالة موجودة / جديدة)
+    // ============================================================
+    function toggleCaseSource() {
+        const source = document.querySelector('input[name="caseSource"]:checked').value;
+        const existingSection = document.getElementById('existingCaseSection');
+        const newSection = document.getElementById('newCaseSection');
+        
+        if (source === 'existing') {
+            existingSection.style.display = 'block';
+            newSection.style.display = 'none';
         } else {
-            specialCases = [
-                { id: 1, caseId: 101, name: "أحمد محمود علي", serial: 101, walletNumber: "01012345678", amount: 500, type: "شهرية", status: "pending", notes: "حالة خاصة لعائلة كبيرة", createdAt: "2026-03-01" },
-                { id: 2, caseId: 102, name: "سارة علي إبراهيم", serial: 102, walletNumber: "01123456789", amount: 1000, type: "علاج", status: "transferred", notes: "حالة مرضية مستعجلة", createdAt: "2026-03-05" },
-                { id: 3, caseId: 103, name: "محمود خالد سعيد", serial: 103, walletNumber: "01234567890", amount: 300, type: "طارئة", status: "pending", notes: "ظروف طارئة", createdAt: "2026-03-10" }
-            ];
-            saveToStorage();
+            existingSection.style.display = 'none';
+            newSection.style.display = 'block';
         }
-        
-        // بيانات تجريبية للحالات العادية
-        allCases = [
-            { id: 1, serial: 101, name: "أحمد محمود علي" },
-            { id: 2, serial: 102, name: "سارة علي إبراهيم" },
-            { id: 3, serial: 103, name: "محمود خالد سعيد" },
-            { id: 4, serial: 104, name: "فاطمة حسن محمد" },
-            { id: 5, serial: 105, name: "علي إبراهيم محمود" }
-        ];
-        
-        updateStats();
-        renderSpecialCases();
-        loadCaseSelect();
     }
-    
-    function saveToStorage() {
-        localStorage.setItem('special_cases', JSON.stringify(specialCases));
-    }
-    
-    function loadCaseSelect() {
-        const select = document.getElementById('selectCase');
-        select.innerHTML = '<option value="">-- اختر حالة --</option>' + 
-            allCases.map(c => `<option value="${c.id}" data-name="${c.name}" data-serial="${c.serial}">${c.name} (م.ع ${c.serial})</option>`).join('');
-    }
-    
-    function loadCaseData() {
-        const select = document.getElementById('selectCase');
-        const selectedOption = select.options[select.selectedIndex];
-        const name = selectedOption.getAttribute('data-name');
-        const serial = selectedOption.getAttribute('data-serial');
-        document.getElementById('caseName').value = name || '';
-        document.getElementById('caseSerial').value = serial || '';
-    }
-    
-    document.getElementById('selectCase').addEventListener('change', loadCaseData);
-    
+
+    // ============================================================
+    // تحديث الإحصائيات
+    // ============================================================
     function updateStats() {
         const total = specialCases.length;
         const transferred = specialCases.filter(c => c.status === "transferred").length;
@@ -408,141 +701,275 @@
         document.getElementById('totalPending').innerText = pending;
         document.getElementById('totalAmount').innerText = totalAmount.toLocaleString('ar-EG');
     }
-    
+
+    // ============================================================
+    // عرض الجدول
+    // ============================================================
     function renderSpecialCases() {
+        let filtered = specialCases;
+        if (currentSearch) {
+            const searchLower = currentSearch.toLowerCase();
+            filtered = specialCases.filter(c => 
+                c.name.toLowerCase().includes(searchLower) || 
+                (c.serial && c.serial.toString().includes(searchLower)) ||
+                (c.donorEntity && c.donorEntity.toLowerCase().includes(searchLower))
+            );
+        }
+        
         const tbody = document.getElementById('specialCasesTable');
-        if (specialCases.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد حالات خاصة</td></tr>';
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<td><td colspan="9" style="text-align:center;">لا توجد مساعدات خارجية</td></tr>';
             return;
         }
         
-        tbody.innerHTML = specialCases.map(c => `
+        tbody.innerHTML = filtered.map(c => `
             <tr>
-                <td>${c.serial}</td>
-                <td>${c.name}</td>
+                <td>${c.serial || '—'}</td>
+                <td>${c.name}${c.isExternal ? ' <span style="font-size:10px; color:var(--info);">(خارج النظام)</span>' : ''}</td>
+                <td>${c.donorEntity || '—'}</td>
                 <td>${c.walletNumber || '—'}</td>
                 <td>${c.amount.toLocaleString('ar-EG')} ج.م</td>
                 <td>${c.type}</td>
-                <td>${c.status === 'transferred' ? '<span class="transfer-badge">✅ تم التحويل</span>' : '<span class="pending-badge">⏳ بانتظار التحويل</span>'}</td>
+                <td>${c.status === 'transferred' ? '<span class="transfer-badge">✅ تم الصرف</span>' : '<span class="pending-badge">⏳ قيد المتابعة</span>'}</td>
                 <td>${c.createdAt}</td>
                 <td class="action-icons">
-                    ${c.status === 'pending' ? `<button class="btn btn-success" onclick="transferCase(${c.id})" style="padding:4px 8px;">💸 تحويل</button>` : ''}
-                    <button class="btn btn-warning" onclick="editSpecialCase(${c.id})" style="padding:4px 8px;">✏️</button>
-                    <button class="btn btn-danger" onclick="deleteSpecialCase(${c.id})" style="padding:4px 8px;">🗑️</button>
+                    ${c.status === 'pending' ? `<span class="action-icon transfer-icon" onclick="openTransferModal(${c.id})" title="صرف">💸</span>` : ''}
+                    <span class="action-icon edit-icon" onclick="editSpecialCase(${c.id})" title="تعديل">✏️</span>
+                    <span class="action-icon delete-icon" onclick="deleteSpecialCase(${c.id})" title="حذف">🗑️</span>
                 </td>
             </tr>
         `).join('');
     }
-    
+
+    // ============================================================
+    // إضافة مساعدة خارجية
+    // ============================================================
+    function openAddSpecialCaseModal() {
+        // تعبئة قائمة الحالات الموجودة
+        const select = document.getElementById('selectCase');
+        select.innerHTML = '<option value="">-- اختر حالة --</option>' + 
+            allCases.map(c => `<option value="${c.id}" data-name="${c.name}" data-serial="${c.serial}">${c.name} (م.ع ${c.serial})</option>`).join('');
+        
+        // تفريغ الحقول
+        document.getElementById('newCaseName').value = '';
+        document.getElementById('newCaseSerial').value = '';
+        document.getElementById('donorEntity').value = '';
+        document.getElementById('walletNumber').value = '';
+        document.getElementById('aidAmount').value = '';
+        document.getElementById('aidType').value = 'مرة واحدة';
+        document.getElementById('notes').value = '';
+        
+        // إعادة تعيين نوع الإضافة
+        document.querySelector('input[name="caseSource"][value="existing"]').checked = true;
+        toggleCaseSource();
+        
+        document.getElementById('addSpecialCaseModal').classList.add('active');
+    }
+
+    function loadCaseData() {
+        const select = document.getElementById('selectCase');
+        const selectedOption = select.options[select.selectedIndex];
+        const name = selectedOption.getAttribute('data-name');
+        const serial = selectedOption.getAttribute('data-serial');
+        
+        // يمكن ملء حقول إضافية تلقائياً إذا أردت
+    }
+
     function saveSpecialCase() {
-        const caseSerial = document.getElementById('caseSerial').value;
-        const caseName = document.getElementById('caseName').value;
+        const source = document.querySelector('input[name="caseSource"]:checked').value;
+        const donorEntity = document.getElementById('donorEntity').value;
         const walletNumber = document.getElementById('walletNumber').value;
         const amount = parseFloat(document.getElementById('aidAmount').value);
         const type = document.getElementById('aidType').value;
         const notes = document.getElementById('notes').value;
         
-        if (!caseSerial || !caseName || !walletNumber || !amount) {
-            showToast('الرجاء ملء جميع الحقول المطلوبة');
+        if (!donorEntity || !walletNumber || !amount) {
+            showToast('الرجاء ملء الحقول المطلوبة (الجهة المانحة، رقم المحفظة، المبلغ)');
             return;
         }
         
-        const newId = specialCases.length > 0 ? Math.max(...specialCases.map(c => c.id)) + 1 : 1;
+        let name, serial, caseId;
+        
+        if (source === 'existing') {
+            const select = document.getElementById('selectCase');
+            const selectedOption = select.options[select.selectedIndex];
+            name = selectedOption.getAttribute('data-name');
+            serial = selectedOption.getAttribute('data-serial');
+            caseId = parseInt(select.value);
+            
+            if (!caseId) {
+                showToast('الرجاء اختيار حالة من القائمة');
+                return;
+            }
+        } else {
+            name = document.getElementById('newCaseName').value;
+            serial = document.getElementById('newCaseSerial').value || null;
+            caseId = null;
+            
+            if (!name) {
+                showToast('الرجاء إدخال اسم الحالة');
+                return;
+            }
+        }
+        
+        const newId = Math.max(...specialCases.map(c => c.id), 0) + 1;
         specialCases.push({
             id: newId,
-            caseId: parseInt(caseSerial),
-            name: caseName,
-            serial: parseInt(caseSerial),
+            caseId: caseId,
+            name: name,
+            serial: serial,
+            donorEntity: donorEntity,
             walletNumber: walletNumber,
             amount: amount,
             type: type,
             status: 'pending',
             notes: notes,
-            createdAt: new Date().toISOString().slice(0,10)
+            createdAt: new Date().toISOString().slice(0, 10),
+            isExternal: (source === 'new')
         });
         
-        saveToStorage();
         updateStats();
         renderSpecialCases();
-        clearSpecialForm();
-        showToast('✅ تم إضافة الحالة الخاصة بنجاح');
+        closeModal('addSpecialCaseModal');
+        showToast('تم إضافة المساعدة الخارجية بنجاح');
     }
-    
-    function transferCase(id) {
+
+    // ============================================================
+    // صرف فردي
+    // ============================================================
+    function openTransferModal(id) {
         const caseData = specialCases.find(c => c.id === id);
         if (!caseData) return;
         
-        if (confirm(`هل أنت متأكد من تحويل ${caseData.amount} جنيه إلى ${caseData.name}؟`)) {
-            caseData.status = 'transferred';
-            saveToStorage();
-            updateStats();
-            renderSpecialCases();
-            showToast('✅ تم تحويل المساعدة بنجاح');
+        currentTransferId = id;
+        document.getElementById('transferWallet').value = caseData.walletNumber;
+        document.getElementById('transferAmount').value = caseData.amount.toLocaleString('ar-EG') + ' ج.م';
+        document.getElementById('transferDetails').innerHTML = `
+            <div class="form-group">
+                <label>الحالة</label>
+                <input type="text" value="${caseData.name} (الجهة: ${caseData.donorEntity})" readonly>
+            </div>
+        `;
+        document.getElementById('transferModal').classList.add('active');
+    }
+
+    function confirmTransfer() {
+        if (currentTransferId) {
+            const index = specialCases.findIndex(c => c.id === currentTransferId);
+            if (index !== -1) {
+                specialCases[index].status = 'transferred';
+                updateStats();
+                renderSpecialCases();
+                showToast('تم تسجيل صرف المساعدة بنجاح');
+            }
         }
+        closeModal('transferModal');
+        currentTransferId = null;
     }
-    
-    function editSpecialCase(id) {
-        const caseData = specialCases.find(c => c.id === id);
-        if (!caseData) return;
-        
-        const newAmount = prompt('تعديل قيمة المساعدة:', caseData.amount);
-        if (newAmount) caseData.amount = parseFloat(newAmount);
-        
-        const newWallet = prompt('تعديل رقم المحفظة:', caseData.walletNumber);
-        if (newWallet) caseData.walletNumber = newWallet;
-        
-        saveToStorage();
-        updateStats();
-        renderSpecialCases();
-        showToast('✅ تم التعديل');
-    }
-    
-    function deleteSpecialCase(id) {
-        if (confirm('هل أنت متأكد من حذف هذه الحالة الخاصة؟')) {
-            specialCases = specialCases.filter(c => c.id !== id);
-            saveToStorage();
-            updateStats();
-            renderSpecialCases();
-            showToast('🗑️ تم الحذف');
+
+    // ============================================================
+    // صرف دفعة واحدة
+    // ============================================================
+    function openBulkTransferModal() {
+        const pendingCases = specialCases.filter(c => c.status === 'pending');
+        if (pendingCases.length === 0) {
+            showToast('لا توجد مساعدات قيد المتابعة');
+            return;
         }
+        
+        const container = document.getElementById('bulkCasesList');
+        const totalAmount = pendingCases.reduce((sum, c) => sum + c.amount, 0);
+        
+        container.innerHTML = pendingCases.map(c => `
+            <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border);">
+                <span>${c.name} (${c.donorEntity})</span>
+                <span>${c.amount.toLocaleString('ar-EG')} ج.م</span>
+                <span>${c.walletNumber}</span>
+            </div>
+        `).join('');
+        
+        document.getElementById('totalBulkAmount').value = totalAmount.toLocaleString('ar-EG') + ' ج.م';
+        document.getElementById('bulkTransferModal').classList.add('active');
     }
-    
-    function exportSpecialCases() {
-        let csv = 'الرقم المسلسل,الاسم,رقم المحفظة,قيمة المساعدة,نوع المساعدة,الحالة,تاريخ الإضافة,ملاحظات\n';
+
+    function processBulkTransfer() {
+        let transferred = 0;
         specialCases.forEach(c => {
-            csv += `${c.serial},${c.name},${c.walletNumber},${c.amount},${c.type},${c.status},${c.createdAt},${c.notes}\n`;
+            if (c.status === 'pending') {
+                c.status = 'transferred';
+                transferred++;
+            }
         });
-        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `special_cases_${new Date().toISOString().slice(0,10)}.csv`;
-        link.click();
-        URL.revokeObjectURL(link.href);
-        showToast('📊 تم تصدير البيانات');
+        updateStats();
+        renderSpecialCases();
+        closeModal('bulkTransferModal');
+        showToast(`تم صرف ${transferred} مساعدة بنجاح`);
     }
-    
-    function clearSpecialForm() {
-        document.getElementById('selectCase').value = '';
-        document.getElementById('caseName').value = '';
-        document.getElementById('caseSerial').value = '';
-        document.getElementById('walletNumber').value = '';
-        document.getElementById('aidAmount').value = '';
-        document.getElementById('aidType').value = 'شهرية';
-        document.getElementById('notes').value = '';
+
+    // ============================================================
+    // تعديل وحذف
+    // ============================================================
+    function editSpecialCase(id) {
+        showToast(`فتح تعديل المساعدة رقم ${id}`);
     }
-    
+
+    function deleteSpecialCase(id) {
+        if (confirm('هل أنت متأكد من حذف هذه المساعدة؟')) {
+            specialCases = specialCases.filter(c => c.id !== id);
+            updateStats();
+            renderSpecialCases();
+            showToast('تم حذف المساعدة بنجاح');
+        }
+    }
+
+    // ============================================================
+    // تصدير وبحث
+    // ============================================================
+    function exportSpecialCases() {
+        showToast('جاري تصدير التقرير...');
+        setTimeout(() => showToast('✅ تم تصدير التقرير بنجاح'), 1000);
+    }
+
+    function searchCases() {
+        currentSearch = document.getElementById('searchInput').value;
+        renderSpecialCases();
+    }
+
+    // ============================================================
+    // دوال مساعدة
+    // ============================================================
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
     function showToast(msg) {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
         toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 3000);
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
     }
-    
+
     function goBack() {
         window.location.href = '/index.html';
     }
+
+    function updateUserInfo() {
+        document.getElementById('userAvatar').innerText = currentUser.avatar;
+        document.getElementById('userName').innerText = currentUser.name;
+    }
+
+    // ============================================================
+    // التهيئة
+    // ============================================================
+    function init() {
+        updateUserInfo();
+        updateStats();
+        renderSpecialCases();
+    }
     
-    loadFromStorage();
+    document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>

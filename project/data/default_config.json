@@ -1,0 +1,131 @@
+{
+  "version": "2.0.0",
+  "systemName": "نظام إدارة البحث الاجتماعي",
+  "orgName": "جمعية الرحمة الخيرية",
+  "orgReg": "986 لسنة 2005",
+  "orgAddress": "شبرا الخيمة - مساكن حجازي",
+  "orgPhone": "01111878692",
+  
+  "boardOfDirectors": {
+    "chairman": "شعبان علي إبراهيم أبو العلا",
+    "secretary": "ناصر سيد إبراهيم أبو العلا",
+    "treasurer": "سعود محمد هاني"
+  },
+  
+  "researchers": [
+    { "id": "ali", "name": "علي", "gender": "male", "custodyStart": 601, "custodyEnd": 800 },
+    { "id": "ashraf", "name": "أشرف", "gender": "male", "custodyStart": 801, "custodyEnd": 1000 },
+    { "id": "beshra", "name": "بشرى", "gender": "female", "custodyStart": 1, "custodyEnd": 200 },
+    { "id": "aya", "name": "آية", "gender": "female", "custodyStart": 201, "custodyEnd": 400 },
+    { "id": "reham", "name": "ريهام", "gender": "female", "custodyStart": 401, "custodyEnd": 600 }
+  ],
+  
+  "categories": [
+    { "id": "shobra", "name": "شبرا", "serialStart": 1, "serialEnd": 750, "paymentDays": "1-7" },
+    { "id": "nahda", "name": "النهضة", "serialStart": 751, "serialEnd": 1000, "paymentDays": "1-4" },
+    { "id": "disabled", "name": "معاقين", "serialStart": 1, "serialEnd": 200, "paymentDays": "1-7" },
+    { "id": "company", "name": "الشركة", "serialStart": 1, "serialEnd": 100, "paymentDays": "1-4" }
+  ],
+  
+  "grants": {
+    "ramadan": { "name": "قماش رمضان", "defaultAmount": 200, "type": "both" },
+    "eidFitr": { "name": "عيد الفطر", "defaultAmount": 150, "type": "cash" },
+    "eidAdha": { "name": "عيد الأضحى", "defaultAmount": 200, "type": "cash" },
+    "study": { "name": "منحة الدراسة", "defaultAmount": 300, "type": "cash" }
+  },
+  
+  "fabricSettings": {
+    "maxMetersPerFamily": 12,
+    "malePiece": 3,
+    "femalePiece": 3,
+    "pants": 1.5,
+    "shirt": 1.5,
+    "minAge": 3
+  },
+  
+  "attendance": {
+    "workStart": "08:00",
+    "workEndMale": "17:00",
+    "workEndFemale": "16:00",
+    "mealAllowance": 10,
+    "transportAllowance": {
+      "shobra": 15,
+      "nahda": 20
+    }
+  },
+  
+  "paymentSchedule": {
+    "shobra": { "startDay": 1, "endDay": 7 },
+    "nahda": { "startDay": 1, "endDay": 4 },
+    "disabled": { "startDay": 1, "endDay": 7 },
+    "company": { "startDay": 1, "endDay": 4 }
+  },
+  
+  "telegram": {
+    "mainBotToken": "7204378934:AAEhAOi0f5fDdWqoMe7YGrsuxl5hev-w_Yk",
+    "keeperBotToken": "7443426622:AAFbPKjJ0fSweZxHxpglopgdg6hyWkLJgs8",
+    "adminId": 2130979393,
+    "groupId": -1001639560426,
+    "reminderTime": "13:00",
+    "reminderStartDaysBefore": 7
+  },
+  
+  "sync": {
+    "managerUrl": "http://192.168.1.101:3000",
+    "syncInterval": 60000,
+    "thresholds": { "warningDays": 3, "staleDays": 10 }
+  },
+  
+  "backup": {
+    "autoBackup": true,
+    "maxBackups": 7,
+    "backupIntervalHours": 24,
+    "teraboxEnabled": false
+  },
+  
+  "printing": {
+    "defaultPrinter": null,
+    "pageMargin": 15,
+    "paperSize": "A4",
+    "orientation": "portrait"
+  },
+  
+  "aiPersonality": {
+    "name": "عارف",
+    "gender": "male",
+    "voice": "male1",
+    "greetings": {
+      "morning": "صباح الخير يا مدير",
+      "evening": "مساء الخير",
+      "default": "السلام عليكم"
+    }
+  },
+  
+  "systemConfig": {
+    "theme": "dark",
+    "fontSize": "medium",
+    "itemsPerPage": 10,
+    "language": "ar",
+    "notifications": {
+      "newCase": true,
+      "pendingReview": true,
+      "birthday": true
+    }
+  },
+  
+  "cardsConfig": {
+    "cards": [
+      { "id": 1, "name": "مقدمة البحث", "file": "cards/1.html", "enabled": true, "order": 1 },
+      { "id": 2, "name": "البيانات الديموغرافية", "file": "cards/2.html", "enabled": true, "order": 2 },
+      { "id": 3, "name": "تعريف الأسرة", "file": "cards/3.html", "enabled": true, "order": 3 },
+      { "id": 4, "name": "بيانات الفرد", "file": "cards/4.html", "enabled": true, "order": 4 },
+      { "id": 5, "name": "الدخل والمصروفات", "file": "cards/5.html", "enabled": true, "order": 5 },
+      { "id": 6, "name": "تقرير الباحث", "file": "cards/6.html", "enabled": true, "order": 6 },
+      { "id": 7, "name": "التقرير الذكي", "file": "cards/7.html", "enabled": true, "order": 7 },
+      { "id": 8, "name": "توثيق المتبرع", "file": "cards/8.html", "enabled": true, "order": 8 }
+    ]
+  },
+  
+  "createdAt": "2026-04-06T00:00:00.000Z",
+  "updatedAt": "2026-04-06T00:00:00.000Z"
+}

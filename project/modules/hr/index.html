@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة الموظفين - نظام إدارة البحث الاجتماعي</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --bg-primary: #0F1117;
             --bg-secondary: #1A1D27;
@@ -18,7 +23,9 @@
             --warning: #F59E0B;
             --danger: #F87171;
             --gold: #F5C842;
+            --transition: all 0.3s ease;
         }
+
         [data-theme="light"] {
             --bg-primary: #F8FAFC;
             --bg-secondary: #FFFFFF;
@@ -27,13 +34,17 @@
             --text-primary: #1E293B;
             --text-secondary: #64748B;
         }
+
         body {
             font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             direction: rtl;
             min-height: 100vh;
+            transition: var(--transition);
         }
+
+        /* Header */
         .header {
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
@@ -43,7 +54,11 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
+
         .back-btn {
             display: flex;
             align-items: center;
@@ -55,8 +70,14 @@
             cursor: pointer;
             font-size: 14px;
             color: var(--text-primary);
+            transition: var(--transition);
         }
-        .back-btn:hover { border-color: var(--accent); transform: translateX(-4px); }
+
+        .back-btn:hover {
+            border-color: var(--accent);
+            transform: translateX(-4px);
+        }
+
         .page-title {
             font-size: 20px;
             font-weight: 700;
@@ -65,7 +86,13 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .user-area { display: flex; align-items: center; gap: 15px; }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -77,21 +104,43 @@
             font-weight: bold;
             font-size: 18px;
         }
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             padding: 24px;
         }
+
         .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 20px;
             text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
         }
-        .stat-card .value { font-size: 32px; font-weight: 800; color: var(--accent); }
-        .stat-card .label { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Actions Bar */
         .actions-bar {
             display: flex;
             gap: 12px;
@@ -99,6 +148,7 @@
             padding: 0 24px;
             margin-bottom: 24px;
         }
+
         .action-btn {
             display: flex;
             align-items: center;
@@ -111,10 +161,26 @@
             font-size: 14px;
             font-weight: 500;
             color: var(--text-primary);
+            transition: var(--transition);
         }
-        .action-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .action-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
-        .search-bar { padding: 0 24px; margin-bottom: 24px; }
+
+        .action-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            padding: 0 24px;
+            margin-bottom: 24px;
+        }
+
         .search-input {
             width: 100%;
             max-width: 400px;
@@ -125,7 +191,13 @@
             color: var(--text-primary);
             font-size: 14px;
         }
-        .table-container { padding: 0 24px; overflow-x: auto; }
+
+        /* Table */
+        .table-container {
+            padding: 0 24px;
+            overflow-x: auto;
+        }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -133,6 +205,7 @@
             border-radius: 16px;
             overflow: hidden;
         }
+
         .data-table th {
             text-align: right;
             padding: 15px;
@@ -142,21 +215,74 @@
             font-size: 13px;
             border-bottom: 1px solid var(--border);
         }
+
         .data-table td {
             padding: 12px 15px;
             border-bottom: 1px solid var(--border);
             font-size: 14px;
         }
-        .data-table tr:hover { background: var(--bg-secondary); }
-        .role-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: rgba(79,142,247,0.15); color: var(--accent); }
-        .status-badge-active { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: rgba(46,202,171,0.15); color: var(--success); }
-        .status-badge-inactive { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: rgba(248,113,113,0.15); color: var(--danger); }
-        .action-icons { display: flex; gap: 12px; }
-        .action-icon { cursor: pointer; font-size: 18px; transition: all 0.3s ease; }
-        .action-icon:hover { transform: scale(1.1); }
-        .view-icon { color: var(--success); }
-        .edit-icon { color: var(--accent); }
-        .delete-icon { color: var(--danger); }
+
+        .data-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Badges */
+        .role-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(79, 142, 247, 0.15);
+            color: var(--accent);
+        }
+
+        .status-badge-active {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(46, 202, 171, 0.15);
+            color: var(--success);
+        }
+
+        .status-badge-inactive {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(248, 113, 113, 0.15);
+            color: var(--danger);
+        }
+
+        /* Action Icons */
+        .action-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-icon {
+            cursor: pointer;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .action-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .view-icon {
+            color: var(--success);
+        }
+
+        .edit-icon {
+            color: var(--accent);
+        }
+
+        .delete-icon {
+            color: var(--danger);
+        }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -169,7 +295,11 @@
             align-items: center;
             justify-content: center;
         }
-        .modal.active { display: flex; }
+
+        .modal.active {
+            display: flex;
+        }
+
         .modal-content {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
@@ -180,10 +310,30 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-close { cursor: pointer; font-size: 20px; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: var(--text-secondary); }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 10px 12px;
@@ -193,11 +343,41 @@
             color: var(--text-primary);
             font-size: 14px;
         }
-        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-        .btn { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; border: none; }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-secondary { background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); }
-        .btn-danger { background: var(--danger); color: white; }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -209,7 +389,14 @@
             padding: 12px 24px;
             display: none;
             z-index: 1000;
+            animation: slideUp 0.3s ease;
         }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
         @media (max-width: 768px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .actions-bar { justify-content: center; }
@@ -228,17 +415,40 @@
 </div>
 
 <div class="stats-grid">
-    <div class="stat-card"><div class="value" id="totalEmployees">0</div><div class="label">إجمالي الموظفين</div></div>
-    <div class="stat-card"><div class="value" id="activeEmployees">0</div><div class="label">نشطين</div></div>
-    <div class="stat-card"><div class="value" id="todayAttendance">0</div><div class="label">حضور اليوم</div></div>
-    <div class="stat-card"><div class="value" id="pendingLeaves">0</div><div class="label">طلبات إجازة</div></div>
+    <div class="stat-card" onclick="filterEmployees('all')">
+        <div class="value" id="totalEmployees">0</div>
+        <div class="label">إجمالي الموظفين</div>
+    </div>
+    <div class="stat-card" onclick="filterEmployees('active')">
+        <div class="value" id="activeEmployees">0</div>
+        <div class="label">نشطين</div>
+    </div>
+    <div class="stat-card" onclick="goToAttendance()">
+        <div class="value" id="todayAttendance">0</div>
+        <div class="label">حضور اليوم</div>
+    </div>
+    <div class="stat-card" onclick="goToLeaveRequests()">
+        <div class="value" id="pendingLeaves">0</div>
+        <div class="label">طلبات إجازة</div>
+    </div>
 </div>
 
 <div class="actions-bar">
-    <button class="action-btn primary" onclick="openAddEmployeeModal()"><span>➕</span> موظف جديد</button>
-    <button class="action-btn" onclick="openAttendanceModal()"><span>📋</span> تسجيل حضور</button>
-    <button class="action-btn" onclick="openLeaveRequestModal()"><span>📅</span> طلب إجازة</button>
-    <button class="action-btn" onclick="exportHRReport()"><span>📊</span> تقرير</button>
+    <button class="action-btn primary" onclick="openAddEmployeeModal()">
+        <span>➕</span> موظف جديد
+    </button>
+    <button class="action-btn" onclick="goToAttendance()">
+        <span>📋</span> تسجيل حضور
+    </button>
+    <button class="action-btn" onclick="goToLeaveRequests()">
+        <span>📅</span> طلب إجازة
+    </button>
+    <button class="action-btn" onclick="goToSalaries()">
+        <span>💰</span> المرتبات
+    </button>
+    <button class="action-btn" onclick="exportHRReport()">
+        <span>📊</span> تقرير
+    </button>
 </div>
 
 <div class="search-bar">
@@ -247,66 +457,119 @@
 
 <div class="table-container">
     <table class="data-table">
-        <thead><tr><th>#</th><th>الاسم</th><th>القسم</th><th>المنصب</th><th>رقم الهاتف</th><th>الحالة</th><th>الإجراءات</th></tr></thead>
-        <tbody id="employeesTableBody"><tr><td colspan="7" style="text-align:center;">جاري التحميل...</td></tr></tbody>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>الاسم</th>
+                <th>القسم</th>
+                <th>المنصب</th>
+                <th>رقم الهاتف</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody id="employeesTableBody">
+            <tr><td colspan="7" style="text-align:center;">جاري التحميل...<\/td><\/tr>
+        </tbody>
     </table>
 </div>
 
+<!-- Modal إضافة موظف -->
 <div id="addEmployeeModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header"><h3>➕ موظف جديد</h3><span class="modal-close" onclick="closeModal('addEmployeeModal')">✕</span></div>
-        <div class="form-group"><label>الاسم الكامل</label><input type="text" id="empName" placeholder="الاسم الكامل"></div>
-        <div class="form-group"><label>القسم</label><select id="empDepartment"><option value="حالات">حالات</option><option value="حسابات">حسابات</option><option value="HR">HR</option><option value="إدارة">إدارة</option></select></div>
-        <div class="form-group"><label>المنصب</label><input type="text" id="empPosition" placeholder="المنصب"></div>
-        <div class="form-group"><label>رقم الهاتف</label><input type="tel" id="empPhone" placeholder="رقم الهاتف"></div>
-        <div class="form-group"><label>تاريخ التعيين</label><input type="date" id="empHireDate"></div>
-        <div class="form-group"><label>المرتب الأساسي</label><input type="number" id="empSalary" placeholder="المرتب الأساسي"></div>
-        <div class="modal-buttons"><button class="btn btn-primary" onclick="saveEmployee()">حفظ</button><button class="btn btn-secondary" onclick="closeModal('addEmployeeModal')">إلغاء</button></div>
+        <div class="modal-header">
+            <h3>➕ موظف جديد</h3>
+            <span class="modal-close" onclick="closeModal('addEmployeeModal')">✕</span>
+        </div>
+        <div class="form-group">
+            <label>الاسم الكامل</label>
+            <input type="text" id="empName" placeholder="الاسم الكامل">
+        </div>
+        <div class="form-group">
+            <label>القسم</label>
+            <select id="empDepartment">
+                <option value="حالات">حالات</option>
+                <option value="حسابات">حسابات</option>
+                <option value="HR">HR</option>
+                <option value="إدارة">إدارة</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>المنصب</label>
+            <input type="text" id="empPosition" placeholder="المنصب">
+        </div>
+        <div class="form-group">
+            <label>رقم الهاتف</label>
+            <input type="tel" id="empPhone" placeholder="رقم الهاتف">
+        </div>
+        <div class="form-group">
+            <label>تاريخ التعيين</label>
+            <input type="date" id="empHireDate">
+        </div>
+        <div class="form-group">
+            <label>المرتب الأساسي</label>
+            <input type="number" id="empSalary" placeholder="المرتب الأساسي">
+        </div>
+        <div class="modal-buttons">
+            <button class="btn btn-primary" onclick="saveEmployee()">حفظ</button>
+            <button class="btn btn-secondary" onclick="closeModal('addEmployeeModal')">إلغاء</button>
+        </div>
     </div>
 </div>
 
+<!-- Modal تعديل موظف -->
 <div id="editEmployeeModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header"><h3>✏️ تعديل موظف</h3><span class="modal-close" onclick="closeModal('editEmployeeModal')">✕</span></div>
+        <div class="modal-header">
+            <h3>✏️ تعديل موظف</h3>
+            <span class="modal-close" onclick="closeModal('editEmployeeModal')">✕</span>
+        </div>
         <input type="hidden" id="editEmpId">
-        <div class="form-group"><label>الاسم الكامل</label><input type="text" id="editEmpName"></div>
-        <div class="form-group"><label>القسم</label><select id="editEmpDepartment"><option value="حالات">حالات</option><option value="حسابات">حسابات</option><option value="HR">HR</option><option value="إدارة">إدارة</option></select></div>
-        <div class="form-group"><label>المنصب</label><input type="text" id="editEmpPosition"></div>
-        <div class="form-group"><label>رقم الهاتف</label><input type="tel" id="editEmpPhone"></div>
-        <div class="form-group"><label>المرتب الأساسي</label><input type="number" id="editEmpSalary"></div>
-        <div class="form-group"><label>الحالة</label><select id="editEmpStatus"><option value="نشط">نشط</option><option value="غير نشط">غير نشط</option></select></div>
-        <div class="modal-buttons"><button class="btn btn-primary" onclick="updateEmployee()">حفظ</button><button class="btn btn-secondary" onclick="closeModal('editEmployeeModal')">إلغاء</button></div>
-    </div>
-</div>
-
-<div id="attendanceModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3>📋 تسجيل حضور وانصراف</h3><span class="modal-close" onclick="closeModal('attendanceModal')">✕</span></div>
-        <div class="form-group"><label>اختر الموظف</label><select id="attendanceEmployee"></select></div>
-        <div class="form-group"><label>التاريخ</label><input type="date" id="attendanceDate"></div>
-        <div class="form-group"><label>وقت الحضور</label><input type="time" id="attendanceCheckIn"></div>
-        <div class="form-group"><label>وقت الانصراف</label><input type="time" id="attendanceCheckOut"></div>
-        <div class="form-group"><label>الحالة</label><select id="attendanceStatus"><option value="حضور">حضور</option><option value="غياب">غياب</option><option value="إجازة">إجازة</option><option value="تأخير">تأخير</option></select></div>
-        <div class="modal-buttons"><button class="btn btn-primary" onclick="saveAttendance()">حفظ</button><button class="btn btn-secondary" onclick="closeModal('attendanceModal')">إلغاء</button></div>
-    </div>
-</div>
-
-<div id="leaveRequestModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><h3>📅 طلب إجازة</h3><span class="modal-close" onclick="closeModal('leaveRequestModal')">✕</span></div>
-        <div class="form-group"><label>الموظف</label><select id="leaveEmployee"></select></div>
-        <div class="form-group"><label>نوع الإجازة</label><select id="leaveType"><option value="سنوية">سنوية</option><option value="مرضية">مرضية</option><option value="عارضة">عارضة</option></select></div>
-        <div class="form-group"><label>من تاريخ</label><input type="date" id="leaveStart"></div>
-        <div class="form-group"><label>إلى تاريخ</label><input type="date" id="leaveEnd"></div>
-        <div class="form-group"><label>سبب الإجازة</label><textarea id="leaveReason" rows="3" placeholder="سبب الإجازة"></textarea></div>
-        <div class="modal-buttons"><button class="btn btn-primary" onclick="submitLeaveRequest()">إرسال</button><button class="btn btn-secondary" onclick="closeModal('leaveRequestModal')">إلغاء</button></div>
+        <div class="form-group">
+            <label>الاسم الكامل</label>
+            <input type="text" id="editEmpName">
+        </div>
+        <div class="form-group">
+            <label>القسم</label>
+            <select id="editEmpDepartment">
+                <option value="حالات">حالات</option>
+                <option value="حسابات">حسابات</option>
+                <option value="HR">HR</option>
+                <option value="إدارة">إدارة</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>المنصب</label>
+            <input type="text" id="editEmpPosition">
+        </div>
+        <div class="form-group">
+            <label>رقم الهاتف</label>
+            <input type="tel" id="editEmpPhone">
+        </div>
+        <div class="form-group">
+            <label>المرتب الأساسي</label>
+            <input type="number" id="editEmpSalary">
+        </div>
+        <div class="form-group">
+            <label>الحالة</label>
+            <select id="editEmpStatus">
+                <option value="نشط">نشط</option>
+                <option value="غير نشط">غير نشط</option>
+            </select>
+        </div>
+        <div class="modal-buttons">
+            <button class="btn btn-primary" onclick="updateEmployee()">حفظ</button>
+            <button class="btn btn-secondary" onclick="closeModal('editEmployeeModal')">إلغاء</button>
+        </div>
     </div>
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
-    let currentUser = { id: 1, name: "سيد راشد", role: "admin", avatar: "👑" };
+    // ============================================================
+    // بيانات تجريبية
+    // ============================================================
     let employees = [
         { id: 1, name: "بشرى أحمد", department: "حالات", position: "باحث", phone: "01012345678", hireDate: "2022-01-15", salary: 3500, status: "نشط" },
         { id: 2, name: "أشرف محمد", department: "حالات", position: "باحث", phone: "01123456789", hireDate: "2022-02-10", salary: 3800, status: "نشط" },
@@ -314,22 +577,50 @@
         { id: 4, name: "آية عبد المنعم", department: "حالات", position: "باحثة", phone: "01512345678", hireDate: "2022-01-20", salary: 3400, status: "نشط" },
         { id: 5, name: "ريهام صابر", department: "حالات", position: "باحثة", phone: "01098765432", hireDate: "2022-02-25", salary: 3500, status: "غير نشط" }
     ];
+
+    let currentUser = { id: 1, name: "سيد راشد", role: "admin", avatar: "👑" };
+    let currentFilter = "all";
     let currentSearch = "";
 
+    // ============================================================
+    // تحديث الإحصائيات
+    // ============================================================
     function updateStats() {
-        let total = employees.length;
-        let active = employees.filter(e => e.status === "نشط").length;
+        const total = employees.length;
+        const active = employees.filter(e => e.status === "نشط").length;
+        const todayAttendance = Math.floor(Math.random() * total) + 1; // مؤقت
+        const pendingLeaves = Math.floor(Math.random() * 5); // مؤقت
+        
         document.getElementById('totalEmployees').innerText = total;
         document.getElementById('activeEmployees').innerText = active;
-        document.getElementById('todayAttendance').innerText = Math.floor(Math.random() * total) + 1;
-        document.getElementById('pendingLeaves').innerText = Math.floor(Math.random() * 5);
+        document.getElementById('todayAttendance').innerText = todayAttendance;
+        document.getElementById('pendingLeaves').innerText = pendingLeaves;
     }
 
+    // ============================================================
+    // عرض الموظفين
+    // ============================================================
     function renderEmployees() {
         let filtered = employees;
-        if (currentSearch) filtered = employees.filter(e => e.name.toLowerCase().includes(currentSearch.toLowerCase()));
-        let tbody = document.getElementById('employeesTableBody');
-        if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">لا توجد موظفين</td></tr>'; return; }
+        
+        // تطبيق الفلتر
+        if (currentFilter === 'active') {
+            filtered = employees.filter(e => e.status === "نشط");
+        } else if (currentFilter === 'inactive') {
+            filtered = employees.filter(e => e.status === "غير نشط");
+        }
+        
+        // تطبيق البحث
+        if (currentSearch) {
+            filtered = filtered.filter(e => e.name.toLowerCase().includes(currentSearch.toLowerCase()));
+        }
+        
+        const tbody = document.getElementById('employeesTableBody');
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">لا توجد موظفين<\/td><\/tr>';
+            return;
+        }
+        
         tbody.innerHTML = filtered.map((e, idx) => `
             <tr>
                 <td>${idx + 1}</td>
@@ -342,37 +633,76 @@
                     <span class="action-icon view-icon" onclick="viewEmployee(${e.id})" title="عرض">👁️</span>
                     <span class="action-icon edit-icon" onclick="openEditEmployeeModal(${e.id})" title="تعديل">✏️</span>
                     <span class="action-icon delete-icon" onclick="deleteEmployee(${e.id})" title="حذف">🗑️</span>
-                </td>
+                <\/td>
             </tr>
         `).join('');
     }
 
+    // ============================================================
+    // الفلتر والبحث
+    // ============================================================
+    function filterEmployees(type) {
+        currentFilter = type;
+        renderEmployees();
+        updateStats();
+    }
+
+    function searchEmployees() {
+        currentSearch = document.getElementById('searchInput').value;
+        renderEmployees();
+    }
+
+    // ============================================================
+    // إضافة موظف
+    // ============================================================
     function openAddEmployeeModal() {
         document.getElementById('empName').value = '';
         document.getElementById('empDepartment').value = 'حالات';
         document.getElementById('empPosition').value = '';
         document.getElementById('empPhone').value = '';
-        document.getElementById('empHireDate').value = new Date().toISOString().slice(0,10);
+        document.getElementById('empHireDate').value = new Date().toISOString().slice(0, 10);
         document.getElementById('empSalary').value = '';
         document.getElementById('addEmployeeModal').classList.add('active');
     }
 
     function saveEmployee() {
-        let name = document.getElementById('empName').value.trim();
-        let department = document.getElementById('empDepartment').value;
-        let position = document.getElementById('empPosition').value.trim();
-        let phone = document.getElementById('empPhone').value.trim();
-        let hireDate = document.getElementById('empHireDate').value;
-        let salary = parseFloat(document.getElementById('empSalary').value);
-        if (!name || !position || !phone) { showToast('الرجاء ملء جميع الحقول'); return; }
-        let newId = Math.max(...employees.map(e => e.id), 0) + 1;
-        employees.push({ id: newId, name, department, position, phone, hireDate, salary, status: "نشط" });
-        updateStats(); renderEmployees(); closeModal('addEmployeeModal'); showToast('تم إضافة الموظف بنجاح');
+        const name = document.getElementById('empName').value.trim();
+        const department = document.getElementById('empDepartment').value;
+        const position = document.getElementById('empPosition').value.trim();
+        const phone = document.getElementById('empPhone').value.trim();
+        const hireDate = document.getElementById('empHireDate').value;
+        const salary = parseFloat(document.getElementById('empSalary').value);
+        
+        if (!name || !position || !phone) {
+            showToast('الرجاء ملء جميع الحقول');
+            return;
+        }
+        
+        const newId = Math.max(...employees.map(e => e.id), 0) + 1;
+        employees.push({
+            id: newId,
+            name,
+            department,
+            position,
+            phone,
+            hireDate,
+            salary,
+            status: "نشط"
+        });
+        
+        updateStats();
+        renderEmployees();
+        closeModal('addEmployeeModal');
+        showToast('تم إضافة الموظف بنجاح');
     }
 
+    // ============================================================
+    // تعديل موظف
+    // ============================================================
     function openEditEmployeeModal(id) {
-        let e = employees.find(e => e.id === id);
+        const e = employees.find(e => e.id === id);
         if (!e) return;
+        
         document.getElementById('editEmpId').value = e.id;
         document.getElementById('editEmpName').value = e.name;
         document.getElementById('editEmpDepartment').value = e.department;
@@ -380,13 +710,15 @@
         document.getElementById('editEmpPhone').value = e.phone;
         document.getElementById('editEmpSalary').value = e.salary;
         document.getElementById('editEmpStatus').value = e.status;
+        
         document.getElementById('editEmployeeModal').classList.add('active');
     }
 
     function updateEmployee() {
-        let id = parseInt(document.getElementById('editEmpId').value);
-        let index = employees.findIndex(e => e.id === id);
+        const id = parseInt(document.getElementById('editEmpId').value);
+        const index = employees.findIndex(e => e.id === id);
         if (index === -1) return;
+        
         employees[index] = {
             ...employees[index],
             name: document.getElementById('editEmpName').value,
@@ -396,41 +728,83 @@
             salary: parseFloat(document.getElementById('editEmpSalary').value),
             status: document.getElementById('editEmpStatus').value
         };
-        updateStats(); renderEmployees(); closeModal('editEmployeeModal'); showToast('تم تحديث الموظف');
+        
+        updateStats();
+        renderEmployees();
+        closeModal('editEmployeeModal');
+        showToast('تم تحديث الموظف');
     }
 
-    function viewEmployee(id) { showToast(`عرض بيانات الموظف رقم ${id}`); }
-    function deleteEmployee(id) { if (confirm('حذف هذا الموظف؟')) { employees = employees.filter(e => e.id !== id); updateStats(); renderEmployees(); showToast('تم حذف الموظف'); } }
-    function searchEmployees() { currentSearch = document.getElementById('searchInput').value; renderEmployees(); }
-
-    function openAttendanceModal() {
-        let select = document.getElementById('attendanceEmployee');
-        select.innerHTML = employees.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
-        document.getElementById('attendanceDate').value = new Date().toISOString().slice(0,10);
-        document.getElementById('attendanceCheckIn').value = '09:00';
-        document.getElementById('attendanceCheckOut').value = '17:00';
-        document.getElementById('attendanceStatus').value = 'حضور';
-        document.getElementById('attendanceModal').classList.add('active');
+    // ============================================================
+    // عرض وحذف
+    // ============================================================
+    function viewEmployee(id) {
+        showToast(`عرض بيانات الموظف رقم ${id}`);
     }
-    function saveAttendance() { showToast('تم تسجيل الحضور'); closeModal('attendanceModal'); }
 
-    function openLeaveRequestModal() {
-        let select = document.getElementById('leaveEmployee');
-        select.innerHTML = employees.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
-        document.getElementById('leaveStart').value = new Date().toISOString().slice(0,10);
-        document.getElementById('leaveEnd').value = new Date().toISOString().slice(0,10);
-        document.getElementById('leaveReason').value = '';
-        document.getElementById('leaveRequestModal').classList.add('active');
+    function deleteEmployee(id) {
+        if (confirm('هل أنت متأكد من حذف هذا الموظف؟')) {
+            employees = employees.filter(e => e.id !== id);
+            updateStats();
+            renderEmployees();
+            showToast('تم حذف الموظف');
+        }
     }
-    function submitLeaveRequest() { showToast('تم إرسال طلب الإجازة'); closeModal('leaveRequestModal'); }
 
-    function exportHRReport() { showToast('جاري تصدير التقرير...'); setTimeout(() => showToast('✅ تم تصدير التقرير'), 1500); }
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-    function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
-    function goBack() { window.location.href = '/index.html'; }
-    function updateUserInfo() { document.getElementById('userAvatar').innerText = currentUser.avatar; document.getElementById('userName').innerText = currentUser.name; }
+    // ============================================================
+    // التنقل إلى الصفحات الأخرى
+    // ============================================================
+    function goToAttendance() {
+        window.location.href = '/modules/hr/attendance.html';
+    }
 
-    function init() { updateUserInfo(); updateStats(); renderEmployees(); }
+    function goToLeaveRequests() {
+        window.location.href = '/modules/hr/leaves.html';
+    }
+
+    function goToSalaries() {
+        window.location.href = '/modules/hr/salaries.html';
+    }
+
+    function exportHRReport() {
+        showToast('جاري تصدير التقرير...');
+        setTimeout(() => showToast('✅ تم تصدير التقرير'), 1500);
+    }
+
+    // ============================================================
+    // دوال مساعدة
+    // ============================================================
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    function goBack() {
+        window.location.href = '/index.html';
+    }
+
+    function updateUserInfo() {
+        document.getElementById('userAvatar').innerText = currentUser.avatar;
+        document.getElementById('userName').innerText = currentUser.name;
+    }
+
+    // ============================================================
+    // التهيئة
+    // ============================================================
+    function init() {
+        updateUserInfo();
+        updateStats();
+        renderEmployees();
+    }
+    
     document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>

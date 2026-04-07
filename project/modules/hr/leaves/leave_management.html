@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الإجازات - نظام إدارة البحث الاجتماعي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0F1117;
+            --bg-secondary: #1A1D27;
+            --bg-card: #1A1D27;
+            --border: #2E3250;
+            --text-primary: #E8EBF4;
+            --text-secondary: #6B7280;
+            --accent: #4F8EF7;
+            --success: #2DD4BF;
+            --warning: #F59E0B;
+            --danger: #F87171;
+            --gold: #F5C842;
+            --info: #17a2b8;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            border-color: var(--accent);
+            transform: translateX(-4px);
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-badge {
+            background: var(--danger);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 24px 24px 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #0F1117;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: #0F1117;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 0 24px 24px 24px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .status-pending {
+            color: var(--warning);
+        }
+
+        .status-approved {
+            color: var(--success);
+        }
+
+        .status-rejected {
+            color: var(--danger);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: none;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <button class="back-btn" onclick="goBack()"><span>←</span> العودة</button>
+    <div class="page-title">📅 إدارة الإجازات</div>
+    <div class="user-area">
+        <div class="admin-badge" id="adminBadge" style="display:none;">👑 للمدير فقط</div>
+        <div class="user-avatar" id="userAvatar">👤</div>
+        <div class="user-name" id="userName"></div>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="value" id="totalRequests">0</div>
+        <div class="label">إجمالي الطلبات</div>
+    </div>
+    <div class="stat-card">
+        <div class="value" id="pendingRequests">0</div>
+        <div class="label">قيد المراجعة</div>
+    </div>
+    <div class="stat-card">
+        <div class="value" id="approvedRequests">0</div>
+        <div class="label">موافق</div>
+    </div>
+    <div class="stat-card">
+        <div class="value" id="rejectedRequests">0</div>
+        <div class="label">مرفوض</div>
+    </div>
+</div>
+
+<!-- تقديم طلب إجازة جديد -->
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">📝 طلب إجازة جديد</div>
+    </div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>الموظف</label>
+            <select id="leaveEmployee">
+                <option value="">-- اختر موظف --</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>نوع الإجازة</label>
+            <select id="leaveType">
+                <option value="سنوية">سنوية</option>
+                <option value="مرضية">مرضية</option>
+                <option value="عارضة">عارضة</option>
+                <option value="مدفوعة">مدفوعة</option>
+            </select>
+        </div>
+    </div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>من تاريخ</label>
+            <input type="date" id="leaveStart">
+        </div>
+        <div class="form-group">
+            <label>إلى تاريخ</label>
+            <input type="date" id="leaveEnd">
+        </div>
+    </div>
+    <div class="form-group">
+        <label>سبب الإجازة</label>
+        <textarea id="leaveReason" rows="3" placeholder="سبب الإجازة"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="submitLeaveRequest()">📤 إرسال الطلب</button>
+</div>
+
+<!-- قائمة الطلبات -->
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>الموظف</th>
+                <th>نوع الإجازة</th>
+                <th>من تاريخ</th>
+                <th>إلى تاريخ</th>
+                <th>المدة (أيام)</th>
+                <th>السبب</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody id="leaveRequestsTable">
+            <tr><td colspan="9" style="text-align:center;">جاري التحميل...<\/td><\/tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    // ============================================================
+    // بيانات تجريبية
+    // ============================================================
+    let employees = [
+        { id: 1, name: "أحمد محمد", department: "حالات", leaveBalance: 21, active: true },
+        { id: 2, name: "بشرى أحمد", department: "حالات", leaveBalance: 21, active: true },
+        { id: 3, name: "أشرف محمد", department: "حالات", leaveBalance: 21, active: true },
+        { id: 4, name: "آية عبد المنعم", department: "حالات", leaveBalance: 21, active: true },
+        { id: 5, name: "ريهام صابر", department: "حالات", leaveBalance: 21, active: true }
+    ];
+    
+    let leaveRequests = [
+        { id: 1, employeeId: 1, employeeName: "أحمد محمد", type: "سنوية", startDate: "2026-04-10", endDate: "2026-04-12", reason: "إجازة عائلية", status: "pending", submittedAt: "2026-04-01" },
+        { id: 2, employeeId: 2, employeeName: "بشرى أحمد", type: "مرضية", startDate: "2026-04-05", endDate: "2026-04-06", reason: "وعكة صحية", status: "approved", submittedAt: "2026-04-01" },
+        { id: 3, employeeId: 3, employeeName: "أشرف محمد", type: "عارضة", startDate: "2026-04-15", endDate: "2026-04-15", reason: "ظرف طارئ", status: "pending", submittedAt: "2026-04-02" }
+    ];
+    
+    let currentUser = { role: "admin", name: "سيد راشد", avatar: "👑" };
+    
+    // ============================================================
+    // دوال مساعدة
+    // ============================================================
+    function loadUserRole() {
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{"role":"admin","name":"سيد راشد","avatar":"👑"}');
+        currentUser = user;
+        const isAdmin = user.role === 'admin';
+        const adminBadge = document.getElementById('adminBadge');
+        if (adminBadge) adminBadge.style.display = isAdmin ? 'inline-block' : 'none';
+        document.getElementById('userAvatar').innerText = user.avatar || '👤';
+        document.getElementById('userName').innerText = user.name || 'مدير';
+    }
+    
+    function loadFromStorage() {
+        const saved = localStorage.getItem('hr_leave_requests');
+        if (saved) leaveRequests = JSON.parse(saved);
+        updateStats();
+        renderLeaveRequests();
+        loadEmployeeSelect();
+    }
+    
+    function saveToStorage() {
+        localStorage.setItem('hr_leave_requests', JSON.stringify(leaveRequests));
+    }
+    
+    function loadEmployeeSelect() {
+        const select = document.getElementById('leaveEmployee');
+        const activeEmployees = employees.filter(e => e.active);
+        select.innerHTML = '<option value="">-- اختر موظف --</option>' + 
+            activeEmployees.map(emp => `<option value="${emp.id}">${emp.name} (رصيد: ${emp.leaveBalance} يوم)</option>`).join('');
+    }
+    
+    function updateStats() {
+        const total = leaveRequests.length;
+        const pending = leaveRequests.filter(r => r.status === 'pending').length;
+        const approved = leaveRequests.filter(r => r.status === 'approved').length;
+        const rejected = leaveRequests.filter(r => r.status === 'rejected').length;
+        
+        document.getElementById('totalRequests').innerText = total;
+        document.getElementById('pendingRequests').innerText = pending;
+        document.getElementById('approvedRequests').innerText = approved;
+        document.getElementById('rejectedRequests').innerText = rejected;
+    }
+    
+    function calculateDays(startDate, endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        return diffDays;
+    }
+    
+    function renderLeaveRequests() {
+        const tbody = document.getElementById('leaveRequestsTable');
+        const isAdmin = currentUser.role === 'admin';
+        
+        if (leaveRequests.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">لا توجد طلبات<\/td><\/tr>';
+            return;
+        }
+        
+        const statusText = { pending: '⏳ قيد المراجعة', approved: '✅ موافق', rejected: '❌ مرفوض' };
+        const statusClass = { pending: 'status-pending', approved: 'status-approved', rejected: 'status-rejected' };
+        
+        tbody.innerHTML = leaveRequests.map((req, idx) => {
+            const days = calculateDays(req.startDate, req.endDate);
+            return `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${req.employeeName}</td>
+                    <td>${req.type}</td>
+                    <td>${req.startDate}</td>
+                    <td>${req.endDate}</td>
+                    <td>${days} يوم</td>
+                    <td style="max-width:200px; white-space:normal;">${req.reason || '—'}<\/td>
+                    <td class="${statusClass[req.status]}">${statusText[req.status]}<\/td>
+                    <td class="action-icons">
+                        ${isAdmin && req.status === 'pending' ? `
+                            <button class="btn btn-success" onclick="approveLeave(${req.id})" style="padding:4px 8px;">✅ موافقة</button>
+                            <button class="btn btn-danger" onclick="rejectLeave(${req.id})" style="padding:4px 8px;">❌ رفض</button>
+                        ` : '—'}
+                    <\/td>
+                </tr>
+            `;
+        }).join('');
+    }
+    
+    // ============================================================
+    // تقديم طلب إجازة
+    // ============================================================
+    function submitLeaveRequest() {
+        const employeeId = parseInt(document.getElementById('leaveEmployee').value);
+        const type = document.getElementById('leaveType').value;
+        const startDate = document.getElementById('leaveStart').value;
+        const endDate = document.getElementById('leaveEnd').value;
+        const reason = document.getElementById('leaveReason').value;
+        
+        if (!employeeId || !startDate || !endDate) {
+            showToast('الرجاء اختيار الموظف وتحديد الفترة');
+            return;
+        }
+        
+        const employee = employees.find(e => e.id === employeeId);
+        if (!employee) return;
+        
+        const days = calculateDays(startDate, endDate);
+        
+        if (type === 'سنوية' && days > employee.leaveBalance) {
+            showToast(`رصيد الإجازات غير كافٍ (المتبقي: ${employee.leaveBalance} يوم)`);
+            return;
+        }
+        
+        const newId = leaveRequests.length > 0 ? Math.max(...leaveRequests.map(r => r.id)) + 1 : 1;
+        leaveRequests.push({
+            id: newId,
+            employeeId: employeeId,
+            employeeName: employee.name,
+            type: type,
+            startDate: startDate,
+            endDate: endDate,
+            reason: reason,
+            status: 'pending',
+            submittedAt: new Date().toISOString().slice(0, 10)
+        });
+        
+        saveToStorage();
+        updateStats();
+        renderLeaveRequests();
+        clearLeaveForm();
+        showToast('✅ تم إرسال طلب الإجازة');
+    }
+    
+    function clearLeaveForm() {
+        document.getElementById('leaveEmployee').value = '';
+        document.getElementById('leaveType').value = 'سنوية';
+        document.getElementById('leaveStart').value = '';
+        document.getElementById('leaveEnd').value = '';
+        document.getElementById('leaveReason').value = '';
+    }
+    
+    // ============================================================
+    // الموافقة والرفض (للمدير فقط)
+    // ============================================================
+    function approveLeave(id) {
+        if (currentUser.role !== 'admin') {
+            showToast('هذه الخاصية متاحة للمدير فقط');
+            return;
+        }
+        
+        const request = leaveRequests.find(r => r.id === id);
+        if (!request) return;
+        
+        const days = calculateDays(request.startDate, request.endDate);
+        const employee = employees.find(e => e.id === request.employeeId);
+        
+        if (request.type === 'سنوية' && employee) {
+            employee.leaveBalance -= days;
+            localStorage.setItem('hr_employees', JSON.stringify(employees));
+        }
+        
+        request.status = 'approved';
+        saveToStorage();
+        updateStats();
+        renderLeaveRequests();
+        showToast(`✅ تمت الموافقة على إجازة ${request.employeeName}`);
+    }
+    
+    function rejectLeave(id) {
+        if (currentUser.role !== 'admin') {
+            showToast('هذه الخاصية متاحة للمدير فقط');
+            return;
+        }
+        
+        const request = leaveRequests.find(r => r.id === id);
+        if (!request) return;
+        
+        request.status = 'rejected';
+        saveToStorage();
+        updateStats();
+        renderLeaveRequests();
+        showToast(`❌ تم رفض إجازة ${request.employeeName}`);
+    }
+    
+    // ============================================================
+    // دوال مساعدة
+    // ============================================================
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+    
+    function goBack() {
+        window.location.href = '/modules/hr/index.html';
+    }
+    
+    // ============================================================
+    // التهيئة
+    // ============================================================
+    function init() {
+        loadUserRole();
+        loadFromStorage();
+    }
+    
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

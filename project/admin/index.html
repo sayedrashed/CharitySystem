@@ -19,6 +19,7 @@
             --text-primary: #E8EBF4;
             --text-secondary: #6B7280;
             --accent: #4F8EF7;
+            --accent-hover: #3b7ae0;
             --success: #2DD4BF;
             --warning: #F59E0B;
             --danger: #F87171;
@@ -44,6 +45,7 @@
             transition: var(--transition);
         }
 
+        /* Header */
         .header {
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
@@ -56,6 +58,13 @@
             position: sticky;
             top: 0;
             z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .logo-area h1 {
@@ -72,6 +81,7 @@
             font-size: 11px;
             color: var(--text-secondary);
             margin-top: 4px;
+            width: 100%;
         }
 
         .user-area {
@@ -109,6 +119,16 @@
             font-size: 18px;
         }
 
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -143,6 +163,7 @@
             margin-top: 8px;
         }
 
+        /* Admin Grid */
         .admin-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -181,6 +202,7 @@
             color: var(--text-secondary);
         }
 
+        /* قسم إدارة الصور */
         .images-section {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -198,6 +220,78 @@
             border-bottom: 1px solid var(--border);
         }
 
+        .ai-avatar-area {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .avatar-preview {
+            text-align: center;
+        }
+
+        .avatar-preview .avatar-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent);
+            background: var(--bg-primary);
+            margin-bottom: 10px;
+        }
+
+        .avatar-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #0F1117;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        /* جدول الباحثين */
         .researchers-table {
             width: 100%;
             border-collapse: collapse;
@@ -220,24 +314,33 @@
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
+            border: 2px solid var(--accent);
         }
 
-        .btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            border: none;
-            transition: var(--transition);
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
         }
 
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-secondary { background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); }
-        .btn-success { background: var(--success); color: #0F1117; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-sm { padding: 4px 12px; font-size: 12px; }
+        .status-success {
+            background: rgba(46,202,171,0.15);
+            color: var(--success);
+        }
 
+        .status-warning {
+            background: rgba(245,166,35,0.15);
+            color: var(--warning);
+        }
+
+        .status-danger {
+            background: rgba(248,113,113,0.15);
+            color: var(--danger);
+        }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -251,15 +354,17 @@
             justify-content: center;
         }
 
-        .modal.active { display: flex; }
+        .modal.active {
+            display: flex;
+        }
 
         .modal-content {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 24px;
-            width: 700px;
-            max-width: 95vw;
+            width: 500px;
+            max-width: 90%;
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -274,6 +379,13 @@
         .modal-close {
             cursor: pointer;
             font-size: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
         }
 
         .form-group {
@@ -297,40 +409,7 @@
             font-size: 14px;
         }
 
-        .list-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-
-        .settings-tabs {
-            display: flex;
-            gap: 5px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .settings-tab-btn {
-            padding: 8px 16px;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-        }
-
-        .settings-tab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-        }
-
-        .settings-tab-content { display: none; }
-        .settings-tab-content.active { display: block; }
-
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -342,12 +421,24 @@
             padding: 12px 24px;
             display: none;
             z-index: 1000;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
         @media (max-width: 768px) {
-            .admin-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .list-item { flex-direction: column; align-items: stretch; }
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .researchers-table {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -371,6 +462,7 @@
     </div>
 </div>
 
+<!-- إحصائيات سريعة -->
 <div class="stats-grid">
     <div class="stat-card" onclick="navigateTo('/modules/cases/index.html')">
         <div class="value" id="totalCases">0</div>
@@ -390,38 +482,62 @@
     </div>
 </div>
 
+<!-- إدارة الصور (AI Avatar + Researchers Avatars) -->
 <div class="images-section">
     <div class="section-title">🖼️ إدارة الصور الشخصية</div>
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
-        <div>
-            <div style="font-weight: bold; margin-bottom: 5px;">🤖 المساعد الذكي</div>
-            <img id="aiAvatarPreview" src="https://via.placeholder.com/80?text=AI" style="width:80px; height:80px; border-radius:50%; object-fit:cover;">
-            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('aiAvatarInput').click()" style="margin-top:5px;">تغيير</button>
-            <input type="file" id="aiAvatarInput" accept="image/*" style="display:none;">
+
+    <!-- صورة الذكاء الاصطناعي -->
+    <div class="ai-avatar-area">
+        <div class="avatar-preview">
+            <img id="aiAvatarImg" class="avatar-img" src="https://via.placeholder.com/120?text=AI" alt="صورة المساعد الذكي">
+            <div class="avatar-actions">
+                <button class="btn btn-secondary btn-sm" onclick="openAIAvatarModal()">📁 تغيير الصورة</button>
+                <button class="btn btn-secondary btn-sm" onclick="resetAIAvatar()">↺ افتراضي</button>
+            </div>
         </div>
-        <div>
-            <div style="font-weight: bold; margin-bottom: 5px;">🔊 الصوت</div>
-            <select id="aiVoiceSelect">
-                <option value="male1">ذكر (افتراضي)</option>
-                <option value="male2">ذكر - جهوري</option>
-                <option value="female1">أنثى - ناعم</option>
-                <option value="female2">أنثى - واضح</option>
-            </select>
-            <button class="btn btn-primary btn-sm" onclick="saveAIVoice()" style="margin-top:5px;">حفظ</button>
+        <div style="flex:1">
+            <h4 style="margin-bottom:10px;">🤖 المساعد الذكي: <span id="aiName">عارف</span></h4>
+            <p style="color:var(--text-secondary); font-size:13px;">الصورة تظهر في جميع شاشات النظام وبجانب محادثات المساعد الذكي.</p>
+            <div style="margin-top:10px;">
+                <label>🔊 اختيار الصوت:</label>
+                <select id="aiVoice" onchange="saveAIVoice()" style="margin-right:10px; padding:5px; border-radius:5px;">
+                    <option value="male1">ذكر (افتراضي)</option>
+                    <option value="male2">ذكر - جهوري</option>
+                    <option value="female1">أنثى - ناعم</option>
+                    <option value="female2">أنثى - واضح</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- جدول صور الباحثين -->
+    <div style="margin-top:20px;">
+        <h4 style="margin-bottom:15px;">👥 صور الباحثين (يتم جلبها تلقائياً من تليجرام)</h4>
+        <table class="researchers-table">
+            <thead>
+                <tr><th>الصورة</th><th>الاسم</th><th>معرف التليجرام</th><th>حالة المزامنة</th><th>آخر تحديث</th><th>الإجراءات</th></tr>
+            </thead>
+            <tbody id="researchersTableBody">
+                <tr><td colspan="6" style="text-align:center;">جاري التحميل......</td></tr>
+            </tbody>
+        </table>
+        <div style="margin-top:15px; text-align:center;">
+            <button class="btn btn-primary" onclick="syncAllAvatars()">🔄 مزامنة جميع الصور مع تليجرام</button>
         </div>
     </div>
 </div>
 
+<!-- أدوات المدير -->
 <div class="admin-grid">
     <div class="admin-card" onclick="navigateTo('/modules/settings/index.html')">
         <div class="icon">⚙️</div>
         <div class="title">الإعدادات العامة</div>
         <div class="desc">إعدادات النظام والجمعية</div>
     </div>
-    <div class="admin-card" onclick="openAdvancedSettings()">
-        <div class="icon">📝</div>
-        <div class="title">الإعدادات المتقدمة</div>
-        <div class="desc">تعديل بيانات الجمعية، مجلس الإدارة، الفئات، المنح</div>
+    <div class="admin-card" onclick="openFormBuilder()">
+        <div class="icon">📄</div>
+        <div class="title">قوالب الاستمارات</div>
+        <div class="desc">تعديل قوالب الطباعة (بدون كود)</div>
     </div>
     <div class="admin-card" onclick="navigateTo('/modules/settings/index.html?tab=modules')">
         <div class="icon">🧩</div>
@@ -455,68 +571,41 @@
     </div>
 </div>
 
-<!-- مودال الإعدادات المتقدمة -->
-<div id="advancedSettingsModal" class="modal">
+<!-- Modal تغيير صورة الذكاء الاصطناعي -->
+<div id="aiAvatarModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>⚙️ الإعدادات المتقدمة</h3>
-            <span class="modal-close" onclick="closeModal('advancedSettingsModal')">✕</span>
+            <h3>🖼️ تغيير صورة المساعد الذكي</h3>
+            <span class="modal-close" onclick="closeModal('aiAvatarModal')">✕</span>
         </div>
-        
-        <div class="settings-tabs">
-            <button class="settings-tab-btn active" onclick="switchSettingsTab('org')">🏢 الجمعية</button>
-            <button class="settings-tab-btn" onclick="switchSettingsTab('board')">👑 مجلس الإدارة</button>
-            <button class="settings-tab-btn" onclick="switchSettingsTab('researchers')">👥 الباحثين</button>
-            <button class="settings-tab-btn" onclick="switchSettingsTab('categories')">📂 الفئات</button>
-            <button class="settings-tab-btn" onclick="switchSettingsTab('grants')">🎁 المنح</button>
-            <button class="settings-tab-btn" onclick="switchSettingsTab('ai')">🤖 الذكاء الاصطناعي</button>
+        <div class="form-group">
+            <label>اختر مصدر الصورة:</label>
+            <select id="avatarSource" onchange="toggleAvatarSource()">
+                <option value="local">📁 من مكتبة الصور المحلية</option>
+                <option value="url">🌐 من رابط إنترنت</option>
+                <option value="upload">📤 رفع ملف</option>
+            </select>
         </div>
-        
-        <div id="settingsTabOrg" class="settings-tab-content active">
-            <div class="form-group"><label>اسم الجمعية</label><input type="text" id="settingsOrgName" placeholder="اسم الجمعية"></div>
-            <div class="form-group"><label>رقم الإشهار</label><input type="text" id="settingsOrgReg" placeholder="رقم الإشهار"></div>
-            <div class="form-group"><label>العنوان</label><input type="text" id="settingsOrgAddress" placeholder="العنوان"></div>
-            <div class="form-group"><label>رقم الهاتف</label><input type="text" id="settingsOrgPhone" placeholder="رقم الهاتف"></div>
-            <button class="btn btn-primary" onclick="saveOrgSettings()">💾 حفظ</button>
+        <div id="localSourceDiv" class="form-group">
+            <label>اختر صورة من المكتبة:</label>
+            <select id="localAvatarSelect">
+                <option value="default">الصورة الافتراضية</option>
+                <option value="ai1">🤖 المساعد 1</option>
+                <option value="ai2">🤖 المساعد 2</option>
+                <option value="ai3">🤖 المساعد 3</option>
+            </select>
         </div>
-        
-        <div id="settingsTabBoard" class="settings-tab-content" style="display:none;">
-            <div class="form-group"><label>رئيس مجلس الإدارة</label><input type="text" id="settingsChairman" placeholder="الاسم الكامل"></div>
-            <div class="form-group"><label>الأمين العام</label><input type="text" id="settingsSecretary" placeholder="الاسم الكامل"></div>
-            <div class="form-group"><label>أمين الصندوق</label><input type="text" id="settingsTreasurer" placeholder="الاسم الكامل"></div>
-            <button class="btn btn-primary" onclick="saveBoardSettings()">💾 حفظ</button>
+        <div id="urlSourceDiv" class="form-group" style="display:none;">
+            <label>رابط الصورة:</label>
+            <input type="text" id="avatarUrl" placeholder="https://...">
         </div>
-        
-        <div id="settingsTabResearchers" class="settings-tab-content" style="display:none;">
-            <div id="researchersSettingsList"></div>
-            <button class="btn btn-secondary" onclick="addResearcherSetting()" style="margin-top:10px;">+ إضافة باحث</button>
-            <button class="btn btn-primary" onclick="saveResearchersSettings()" style="margin-top:10px;">💾 حفظ</button>
+        <div id="uploadSourceDiv" class="form-group" style="display:none;">
+            <label>رفع ملف:</label>
+            <input type="file" id="avatarUpload" accept="image/*">
         </div>
-        
-        <div id="settingsTabCategories" class="settings-tab-content" style="display:none;">
-            <div id="categoriesSettingsList"></div>
-            <button class="btn btn-secondary" onclick="addCategorySetting()" style="margin-top:10px;">+ إضافة فئة</button>
-            <button class="btn btn-primary" onclick="saveCategoriesSettings()" style="margin-top:10px;">💾 حفظ</button>
-        </div>
-        
-        <div id="settingsTabGrants" class="settings-tab-content" style="display:none;">
-            <div class="form-group"><label>منحة قماش رمضان (جنيه)</label><input type="number" id="grantRamadan" value="200"></div>
-            <div class="form-group"><label>منحة عيد الفطر (جنيه)</label><input type="number" id="grantEidFitr" value="150"></div>
-            <div class="form-group"><label>منحة عيد الأضحى (جنيه)</label><input type="number" id="grantEidAdha" value="200"></div>
-            <div class="form-group"><label>منحة الدراسة (جنيه)</label><input type="number" id="grantStudy" value="300"></div>
-            <div class="form-group"><label>الحد الأقصى للأمتار (قماش رمضان)</label><input type="number" id="fabricLimit" value="12"></div>
-            <button class="btn btn-primary" onclick="saveGrantsSettings()">💾 حفظ</button>
-        </div>
-        
-        <div id="settingsTabAI" class="settings-tab-content" style="display:none;">
-            <div class="form-group"><label>اسم المساعد الذكي</label><input type="text" id="aiName" value="عارف"></div>
-            <div class="form-group"><label>تحية الصباح</label><input type="text" id="aiGreetingMorning" value="صباح الخير يا مدير"></div>
-            <div class="form-group"><label>تحية المساء</label><input type="text" id="aiGreetingEvening" value="مساء الخير"></div>
-            <button class="btn btn-primary" onclick="saveAISettings()">💾 حفظ</button>
-        </div>
-        
-        <div class="modal-buttons" style="margin-top:20px; display:flex; justify-content:flex-end;">
-            <button class="btn btn-secondary" onclick="closeModal('advancedSettingsModal')">إغلاق</button>
+        <div class="modal-buttons">
+            <button class="btn btn-primary" onclick="saveAIAvatar()">💾 حفظ</button>
+            <button class="btn btn-secondary" onclick="closeModal('aiAvatarModal')">إلغاء</button>
         </div>
     </div>
 </div>
@@ -525,11 +614,32 @@
 
 <script>
     // ============================================================
-    // بيانات تجريبية
+    // بيانات تجريبية - سيتم ربطها بقاعدة البيانات لاحقاً
     // ============================================================
-    let stats = { total: 1250, researchers: 12, special: 15, amount: 243000 };
-    let currentUser = { name: "سيد راشد", avatar: "👑" };
+    let stats = {
+        total: 1250,
+        researchers: 12,
+        special: 15,
+        amount: 243000
+    };
 
+    let researchers = [
+        { id: 1, name: "علي", telegramId: "ali_telegram", avatar: null, synced: true, lastSync: "2026-04-06" },
+        { id: 2, name: "أشرف", telegramId: "ashraf_telegram", avatar: null, synced: true, lastSync: "2026-04-06" },
+        { id: 3, name: "بشرى", telegramId: "boshra_telegram", avatar: null, synced: true, lastSync: "2026-04-06" },
+        { id: 4, name: "آية", telegramId: "aya_telegram", avatar: null, synced: false, lastSync: null },
+        { id: 5, name: "ريهام", telegramId: "reham_telegram", avatar: null, synced: true, lastSync: "2026-04-05" }
+    ];
+
+    let aiConfig = {
+        name: "عارف",
+        avatar: localStorage.getItem('aiAvatar') || null,
+        voice: localStorage.getItem('aiVoice') || 'male1'
+    };
+
+    // ============================================================
+    // تحميل البيانات
+    // ============================================================
     function loadStats() {
         document.getElementById('totalCases').innerText = stats.total.toLocaleString('ar-EG');
         document.getElementById('totalResearchers').innerText = stats.researchers;
@@ -537,203 +647,234 @@
         document.getElementById('totalAmount').innerText = stats.amount.toLocaleString('ar-EG');
     }
 
-    function loadUserInfo() {
-        document.getElementById('userAvatar').innerText = currentUser.avatar;
-        document.getElementById('userName').innerText = currentUser.name;
-    }
-
-    function navigateTo(link) { showToast(`جاري فتح ${link}`); }
-    function logout() { if(confirm('تسجيل الخروج؟')) window.location.href = '/login.html'; }
-    function toggleTheme() { let html = document.documentElement; let newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; html.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); }
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-    function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
-
-    // ============================================================
-    // إعدادات الصوت والصور
-    // ============================================================
-    function saveAIVoice() { localStorage.setItem('aiVoice', document.getElementById('aiVoiceSelect').value); showToast('✅ تم حفظ الصوت'); }
-    document.getElementById('aiAvatarInput').addEventListener('change', function(e) {
-        if(e.target.files[0]) {
-            let reader = new FileReader();
-            reader.onload = function(ev) { document.getElementById('aiAvatarPreview').src = ev.target.result; localStorage.setItem('aiAvatar', ev.target.result); showToast('✅ تم حفظ الصورة'); };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-    let savedAvatar = localStorage.getItem('aiAvatar');
-    if(savedAvatar) document.getElementById('aiAvatarPreview').src = savedAvatar;
-    let savedVoice = localStorage.getItem('aiVoice');
-    if(savedVoice) document.getElementById('aiVoiceSelect').value = savedVoice;
-
-    // ============================================================
-    // الإعدادات المتقدمة
-    // ============================================================
-    let settingsData = {
-        org: { name: '', reg: '', address: '', phone: '' },
-        board: { chairman: '', secretary: '', treasurer: '' },
-        researchers: [],
-        categories: [],
-        grants: { ramadan: 200, eidFitr: 150, eidAdha: 200, study: 300, fabricLimit: 12 },
-        ai: { name: 'عارف', voice: 'male1', greetingMorning: 'صباح الخير يا مدير', greetingEvening: 'مساء الخير' }
-    };
-
-    function loadSettingsFromStorage() {
-        let saved = localStorage.getItem('system_config');
-        if(saved) {
-            let config = JSON.parse(saved);
-            if(config.organization) settingsData.org = config.organization;
-            if(config.board) settingsData.board = config.board;
-            if(config.researchers) settingsData.researchers = Object.values(config.researchers);
-            if(config.categories) settingsData.categories = Object.values(config.categories);
-            if(config.grants) settingsData.grants = config.grants;
-            if(config.aiPersonality) settingsData.ai = config.aiPersonality;
-        } else {
-            settingsData.researchers = [
-                { name: 'علي', gender: 'male', custodyRange: [601,800] },
-                { name: 'أشرف', gender: 'male', custodyRange: [801,1000] },
-                { name: 'بشرى', gender: 'female', custodyRange: [1,200] },
-                { name: 'آية', gender: 'female', custodyRange: [201,400] },
-                { name: 'ريهام', gender: 'female', custodyRange: [401,600] }
-            ];
-            settingsData.categories = [
-                { name: 'شبرا', serialStart: 1, serialEnd: 750, paymentStart: 1, paymentEnd: 7 },
-                { name: 'النهضة', serialStart: 751, serialEnd: 1000, paymentStart: 1, paymentEnd: 4 },
-                { name: 'معاقين', serialStart: 1, serialEnd: 200, paymentStart: 1, paymentEnd: 7 },
-                { name: 'الشركة', serialStart: 1, serialEnd: 100, paymentStart: 1, paymentEnd: 4 }
-            ];
-        }
-        applySettingsToForm();
-    }
-
-    function applySettingsToForm() {
-        document.getElementById('settingsOrgName').value = settingsData.org.name || '';
-        document.getElementById('settingsOrgReg').value = settingsData.org.reg || '';
-        document.getElementById('settingsOrgAddress').value = settingsData.org.address || '';
-        document.getElementById('settingsOrgPhone').value = settingsData.org.phone || '';
-        document.getElementById('settingsChairman').value = settingsData.board.chairman || '';
-        document.getElementById('settingsSecretary').value = settingsData.board.secretary || '';
-        document.getElementById('settingsTreasurer').value = settingsData.board.treasurer || '';
-        document.getElementById('grantRamadan').value = settingsData.grants.ramadan?.defaultAmount || 200;
-        document.getElementById('grantEidFitr').value = settingsData.grants.eidFitr?.defaultAmount || 150;
-        document.getElementById('grantEidAdha').value = settingsData.grants.eidAdha?.defaultAmount || 200;
-        document.getElementById('grantStudy').value = settingsData.grants.study?.defaultAmount || 300;
-        document.getElementById('fabricLimit').value = settingsData.grants.ramadan?.fabricLimit || 12;
-        document.getElementById('aiName').value = settingsData.ai.name || 'عارف';
-        document.getElementById('aiGreetingMorning').value = settingsData.ai.greetings?.morning || 'صباح الخير يا مدير';
-        document.getElementById('aiGreetingEvening').value = settingsData.ai.greetings?.evening || 'مساء الخير';
-        renderResearchersSettings();
-        renderCategoriesSettings();
-    }
-
-    function renderResearchersSettings() {
-        let container = document.getElementById('researchersSettingsList');
-        if(!container) return;
-        container.innerHTML = settingsData.researchers.map((r, idx) => `
-            <div class="list-item">
-                <input type="text" value="${r.name}" placeholder="الاسم" style="width:120px;">
-                <select style="width:80px;"><option value="male" ${r.gender==='male'?'selected':''}>ذكر</option><option value="female" ${r.gender==='female'?'selected':''}>أنثى</option></select>
-                <input type="number" value="${r.custodyRange?.[0] || 0}" placeholder="من" style="width:70px;">
-                <input type="number" value="${r.custodyRange?.[1] || 0}" placeholder="إلى" style="width:70px;">
-                <button class="btn btn-danger btn-sm" onclick="removeResearcherSetting(${idx})">🗑️</button>
-            </div>
+    function loadResearchersTable() {
+        const tbody = document.getElementById('researchersTableBody');
+        tbody.innerHTML = researchers.map(r => `
+            <tr>
+                <td><img class="researcher-avatar-sm" src="${r.avatar || 'https://via.placeholder.com/50?text=' + r.name.charAt(0)}" onerror="this.src='https://via.placeholder.com/50?text=${r.name.charAt(0)}'"></td>
+                <td>${r.name}</td>
+                <td>${r.telegramId || '—'}</td>
+                <td><span class="status-badge ${r.synced ? 'status-success' : 'status-warning'}">${r.synced ? '✅ محدثة' : '⚠️ لم يتم العثور'}</span></td>
+                <td>${r.lastSync || '—'}</td>
+                <td>
+                    <button class="btn btn-secondary btn-sm" onclick="syncResearcherAvatar(${r.id})">🔄 تحديث</button>
+                    <button class="btn btn-secondary btn-sm" onclick="uploadResearcherAvatar(${r.id})">📤 رفع يدوي</button>
+                </td>
+            </tr>
         `).join('');
     }
 
-    function renderCategoriesSettings() {
-        let container = document.getElementById('categoriesSettingsList');
-        if(!container) return;
-        container.innerHTML = settingsData.categories.map((c, idx) => `
-            <div class="list-item">
-                <input type="text" value="${c.name}" placeholder="الاسم" style="width:100px;">
-                <input type="number" value="${c.serialStart}" placeholder="م.ع من" style="width:80px;">
-                <input type="number" value="${c.serialEnd}" placeholder="م.ع إلى" style="width:80px;">
-                <input type="number" value="${c.paymentStart}" placeholder="صرف من" style="width:70px;">
-                <input type="number" value="${c.paymentEnd}" placeholder="صرف إلى" style="width:70px;">
-                <button class="btn btn-danger btn-sm" onclick="removeCategorySetting(${idx})">🗑️</button>
-            </div>
-        `).join('');
+    function loadAIConfig() {
+        document.getElementById('aiName').innerText = aiConfig.name;
+        document.getElementById('aiVoice').value = aiConfig.voice;
+        if (aiConfig.avatar) {
+            document.getElementById('aiAvatarImg').src = aiConfig.avatar;
+        }
     }
 
-    function removeResearcherSetting(idx) { settingsData.researchers.splice(idx,1); renderResearchersSettings(); }
-    function removeCategorySetting(idx) { settingsData.categories.splice(idx,1); renderCategoriesSettings(); }
-    function addResearcherSetting() { settingsData.researchers.push({ name:'باحث جديد', gender:'male', custodyRange:[0,0] }); renderResearchersSettings(); }
-    function addCategorySetting() { settingsData.categories.push({ name:'فئة جديدة', serialStart:0, serialEnd:0, paymentStart:1, paymentEnd:7 }); renderCategoriesSettings(); }
+    // ============================================================
+    // دوال الذكاء الاصطناعي (AI Avatar)
+    // ============================================================
+    function openAIAvatarModal() {
+        document.getElementById('aiAvatarModal').classList.add('active');
+        toggleAvatarSource();
+    }
 
-    function saveOrgSettings() {
-        settingsData.org = { name: document.getElementById('settingsOrgName').value, reg: document.getElementById('settingsOrgReg').value, address: document.getElementById('settingsOrgAddress').value, phone: document.getElementById('settingsOrgPhone').value };
-        saveAllSettings(); showToast('✅ تم حفظ بيانات الجمعية');
+    function toggleAvatarSource() {
+        const source = document.getElementById('avatarSource').value;
+        document.getElementById('localSourceDiv').style.display = source === 'local' ? 'block' : 'none';
+        document.getElementById('urlSourceDiv').style.display = source === 'url' ? 'block' : 'none';
+        document.getElementById('uploadSourceDiv').style.display = source === 'upload' ? 'block' : 'none';
     }
-    function saveBoardSettings() {
-        settingsData.board = { chairman: document.getElementById('settingsChairman').value, secretary: document.getElementById('settingsSecretary').value, treasurer: document.getElementById('settingsTreasurer').value };
-        saveAllSettings(); showToast('✅ تم حفظ بيانات مجلس الإدارة');
+
+    function saveAIAvatar() {
+        const source = document.getElementById('avatarSource').value;
+        let newAvatar = null;
+
+        if (source === 'local') {
+            const selected = document.getElementById('localAvatarSelect').value;
+            if (selected === 'default') newAvatar = null;
+            else newAvatar = `assets/avatars/${selected}.png`;
+        } else if (source === 'url') {
+            newAvatar = document.getElementById('avatarUrl').value;
+        } else if (source === 'upload') {
+            const file = document.getElementById('avatarUpload').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newAvatar = e.target.result;
+                    aiConfig.avatar = newAvatar;
+                    localStorage.setItem('aiAvatar', newAvatar);
+                    document.getElementById('aiAvatarImg').src = newAvatar;
+                    showToast('✅ تم حفظ صورة المساعد الذكي');
+                };
+                reader.readAsDataURL(file);
+                closeModal('aiAvatarModal');
+                return;
+            }
+        }
+
+        if (newAvatar !== undefined) {
+            aiConfig.avatar = newAvatar;
+            localStorage.setItem('aiAvatar', newAvatar);
+            if (newAvatar) document.getElementById('aiAvatarImg').src = newAvatar;
+            else document.getElementById('aiAvatarImg').src = 'https://via.placeholder.com/120?text=AI';
+            showToast('✅ تم حفظ صورة المساعد الذكي');
+        }
+        closeModal('aiAvatarModal');
     }
-    function saveResearchersSettings() {
-        let containers = document.querySelectorAll('#researchersSettingsList .list-item');
-        settingsData.researchers = [];
-        containers.forEach(c => {
-            let inputs = c.querySelectorAll('input');
-            let select = c.querySelector('select');
-            settingsData.researchers.push({ name: inputs[0]?.value || '', gender: select?.value || 'male', custodyRange: [parseInt(inputs[1]?.value)||0, parseInt(inputs[2]?.value)||0] });
-        });
-        saveAllSettings(); showToast('✅ تم حفظ بيانات الباحثين');
+
+    function resetAIAvatar() {
+        aiConfig.avatar = null;
+        localStorage.removeItem('aiAvatar');
+        document.getElementById('aiAvatarImg').src = 'https://via.placeholder.com/120?text=AI';
+        showToast('↺ تم استعادة الصورة الافتراضية');
     }
-    function saveCategoriesSettings() {
-        let containers = document.querySelectorAll('#categoriesSettingsList .list-item');
-        settingsData.categories = [];
-        containers.forEach(c => {
-            let inputs = c.querySelectorAll('input');
-            settingsData.categories.push({ name: inputs[0]?.value || '', serialStart: parseInt(inputs[1]?.value)||0, serialEnd: parseInt(inputs[2]?.value)||0, paymentStart: parseInt(inputs[3]?.value)||1, paymentEnd: parseInt(inputs[4]?.value)||7 });
-        });
-        saveAllSettings(); showToast('✅ تم حفظ بيانات الفئات');
+
+    function saveAIVoice() {
+        const voice = document.getElementById('aiVoice').value;
+        aiConfig.voice = voice;
+        localStorage.setItem('aiVoice', voice);
+        showToast('✅ تم حفظ إعدادات الصوت');
     }
-    function saveGrantsSettings() {
-        settingsData.grants = {
-            ramadan: { defaultAmount: parseInt(document.getElementById('grantRamadan').value), fabricLimit: parseInt(document.getElementById('fabricLimit').value) },
-            eidFitr: { defaultAmount: parseInt(document.getElementById('grantEidFitr').value) },
-            eidAdha: { defaultAmount: parseInt(document.getElementById('grantEidAdha').value) },
-            study: { defaultAmount: parseInt(document.getElementById('grantStudy').value) }
+
+    // ============================================================
+    // دوال مزامنة صور الباحثين
+    // ============================================================
+    async function syncAllAvatars() {
+        showToast('⏳ جاري مزامنة الصور مع تليجرام...');
+        setTimeout(() => {
+            researchers.forEach(r => {
+                r.synced = true;
+                r.lastSync = new Date().toISOString().slice(0,10);
+                r.avatar = `https://randomuser.me/api/portraits/${r.name === 'بشرى' || r.name === 'آية' || r.name === 'ريهام' ? 'women' : 'men'}/${Math.floor(Math.random()*50)}.jpg`;
+            });
+            loadResearchersTable();
+            showToast('✅ تم مزامنة جميع الصور بنجاح');
+        }, 2000);
+    }
+
+    async function syncResearcherAvatar(id) {
+        const researcher = researchers.find(r => r.id === id);
+        if (!researcher) return;
+        showToast(`⏳ جاري تحديث صورة ${researcher.name}...`);
+        setTimeout(() => {
+            researcher.synced = true;
+            researcher.lastSync = new Date().toISOString().slice(0,10);
+            researcher.avatar = `https://randomuser.me/api/portraits/${researcher.name === 'بشرى' || researcher.name === 'آية' || researcher.name === 'ريهام' ? 'women' : 'men'}/${Math.floor(Math.random()*50)}.jpg`;
+            loadResearchersTable();
+            showToast(`✅ تم تحديث صورة ${researcher.name}`);
+        }, 1000);
+    }
+
+    function uploadResearcherAvatar(id) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const researcher = researchers.find(r => r.id === id);
+                    if (researcher) {
+                        researcher.avatar = ev.target.result;
+                        researcher.synced = false;
+                        researcher.lastSync = new Date().toISOString().slice(0,10);
+                        loadResearchersTable();
+                        showToast(`✅ تم رفع صورة ${researcher.name} يدوياً`);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
         };
-        saveAllSettings(); showToast('✅ تم حفظ إعدادات المنح');
-    }
-    function saveAISettings() {
-        settingsData.ai = { name: document.getElementById('aiName').value, greetings: { morning: document.getElementById('aiGreetingMorning').value, evening: document.getElementById('aiGreetingEvening').value } };
-        saveAllSettings(); showToast('✅ تم حفظ إعدادات الذكاء الاصطناعي');
-    }
-    function saveAllSettings() {
-        let fullConfig = { organization: settingsData.org, board: settingsData.board, researchers: {}, categories: {}, grants: settingsData.grants, aiPersonality: settingsData.ai };
-        settingsData.researchers.forEach(r => { fullConfig.researchers[r.name?.toLowerCase() || r.name] = r; });
-        settingsData.categories.forEach(c => { fullConfig.categories[c.name] = c; });
-        localStorage.setItem('system_config', JSON.stringify(fullConfig));
-    }
-    function openAdvancedSettings() { loadSettingsFromStorage(); document.getElementById('advancedSettingsModal').classList.add('active'); }
-    function switchSettingsTab(tab) {
-        document.querySelectorAll('.settings-tab-content').forEach(el => el.style.display = 'none');
-        document.getElementById(`settingsTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).style.display = 'block';
-        document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+        input.click();
     }
 
-    window.openAdvancedSettings = openAdvancedSettings;
-    window.switchSettingsTab = switchSettingsTab;
-    window.saveOrgSettings = saveOrgSettings;
-    window.saveBoardSettings = saveBoardSettings;
-    window.saveResearchersSettings = saveResearchersSettings;
-    window.saveCategoriesSettings = saveCategoriesSettings;
-    window.saveGrantsSettings = saveGrantsSettings;
-    window.saveAISettings = saveAISettings;
-    window.addResearcherSetting = addResearcherSetting;
-    window.addCategorySetting = addCategorySetting;
-    window.removeResearcherSetting = removeResearcherSetting;
-    window.removeCategorySetting = removeCategorySetting;
-    window.saveAIVoice = saveAIVoice;
+    // ============================================================
+    // دوال التنقل - تم إصلاحها ✅
+    // ============================================================
+    function navigateTo(link) {
+        showToast(`جاري فتح ${link}`);
+        window.location.href = link;
+    }
+
+    function openFormBuilder() {
+        showToast('جاري فتح مصنع البطاقات...');
+        // window.location.href = '/modules/form_builder/index.html';
+    }
+
+    function logout() {
+        if (confirm('هل تريد تسجيل الخروج؟')) {
+            localStorage.removeItem('currentUser');
+            showToast('جاري تسجيل الخروج...');
+            setTimeout(() => {
+                window.location.href = '/login.html';
+            }, 1000);
+        }
+    }
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.querySelector('.theme-toggle').textContent = newTheme === 'light' ? '🌙' : '☀️';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    function loadUserInfo() {
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{"name":"سيد راشد","avatar":"👑"}');
+        document.getElementById('userAvatar').innerText = user.avatar || '👑';
+        document.getElementById('userName').innerText = user.name || 'سيد راشد';
+    }
 
     function loadTheme() {
-        let savedTheme = localStorage.getItem('theme') || 'dark';
+        const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
     }
 
-    function init() { loadUserInfo(); loadStats(); loadTheme(); }
+    // ============================================================
+    // التهيئة
+    // ============================================================
+    function init() {
+        loadUserInfo();
+        loadStats();
+        loadResearchersTable();
+        loadAIConfig();
+        loadTheme();
+    }
+
     init();
+
+    // تصدير الدوال للنطاق العام
+    window.openAIAvatarModal = openAIAvatarModal;
+    window.closeModal = closeModal;
+    window.toggleAvatarSource = toggleAvatarSource;
+    window.saveAIAvatar = saveAIAvatar;
+    window.resetAIAvatar = resetAIAvatar;
+    window.saveAIVoice = saveAIVoice;
+    window.syncAllAvatars = syncAllAvatars;
+    window.syncResearcherAvatar = syncResearcherAvatar;
+    window.uploadResearcherAvatar = uploadResearcherAvatar;
+    window.navigateTo = navigateTo;
+    window.openFormBuilder = openFormBuilder;
+    window.logout = logout;
+    window.toggleTheme = toggleTheme;
 </script>
 
 </body>

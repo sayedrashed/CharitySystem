@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقارير الأداء - نظام إدارة البحث الاجتماعي</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0F1117; --bg-secondary: #1A1D27; --bg-card: #1A1D27;
+            --border: #2E3250; --text-primary: #E8EBF4; --text-secondary: #6B7280;
+            --accent: #4F8EF7; --success: #2DD4BF; --warning: #F59E0B; --danger: #F87171; --gold: #F5C842;
+        }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            direction: rtl;
+            min-height: 100vh;
+        }
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        .back-btn:hover { border-color: var(--accent); transform: translateX(-4px); }
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card .value { font-size: 28px; font-weight: 800; color: var(--accent); }
+        .stat-card .label { font-size: 12px; color: var(--text-secondary); margin-top: 5px; }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-title { font-size: 18px; font-weight: 700; color: var(--gold); }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-success { background: var(--success); color: #0F1117; }
+        .table-container { overflow-x: auto; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table th { background: var(--bg-secondary); color: var(--text-secondary); font-weight: 600; }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill { height: 100%; background: var(--success); transition: width 0.3s; }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <button class="back-btn" onclick="goBack()"><span>←</span> العودة</button>
+    <div class="page-title">📊 تقارير الأداء</div>
+</div>
+
+<div class="container">
+    <div class="stats-grid">
+        <div class="stat-card"><div class="value" id="totalResearchers">0</div><div class="label">إجمالي الباحثين</div></div>
+        <div class="stat-card"><div class="value" id="totalCases">0</div><div class="label">إجمالي الحالات</div></div>
+        <div class="stat-card"><div class="value" id="completionRate">0%</div><div class="label">نسبة الإنجاز</div></div>
+        <div class="stat-card"><div class="value" id="avgTime">0</div><div class="label">متوسط وقت الإنجاز (يوم)</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">👥 أداء الباحثين</div>
+            <button class="btn btn-success" onclick="exportReport()">📊 تصدير التقرير</button>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr><th>#</th><th>الباحث</th><th>الحالات</th><th>مكتملة</th><th>نسبة الإنجاز</th><th>متوسط التقييم</th></tr>
+                </thead>
+                <tbody id="researchersTable">
+                    <tr><td colspan="6" style="text-align:center;">جاري التحميل...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    let researchers = [
+        { name: "علي", cases: 200, completed: 185, rating: 4.8 },
+        { name: "أشرف", cases: 200, completed: 178, rating: 4.6 },
+        { name: "بشرى", cases: 200, completed: 192, rating: 4.9 },
+        { name: "آية", cases: 200, completed: 170, rating: 4.5 },
+        { name: "ريهام", cases: 200, completed: 188, rating: 4.7 }
+    ];
+
+    function renderReport() {
+        const tbody = document.getElementById('researchersTable');
+        let totalCases = 0, totalCompleted = 0;
+        
+        tbody.innerHTML = researchers.map((r, idx) => {
+            const percent = (r.completed / r.cases * 100).toFixed(1);
+            totalCases += r.cases;
+            totalCompleted += r.completed;
+            return `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${r.name}</td>
+                    <td>${r.cases}</td>
+                    <td>${r.completed}</td>
+                    <td>
+                        ${percent}%
+                        <div class="progress-bar"><div class="progress-fill" style="width: ${percent}%;"></div></div>
+                    </td>
+                    <td>${r.rating}/5.0</td>
+                </tr>
+            `;
+        }).join('');
+        
+        const totalPercent = (totalCompleted / totalCases * 100).toFixed(1);
+        document.getElementById('totalResearchers').innerText = researchers.length;
+        document.getElementById('totalCases').innerText = totalCases;
+        document.getElementById('completionRate').innerText = totalPercent + '%';
+        document.getElementById('avgTime').innerText = Math.floor(Math.random() * 20) + 5;
+    }
+
+    function exportReport() {
+        let csv = 'الباحث,الحالات,مكتملة,نسبة الإنجاز,التقييم\n';
+        researchers.forEach(r => {
+            const percent = (r.completed / r.cases * 100).toFixed(1);
+            csv += `${r.name},${r.cases},${r.completed},${percent}%,${r.rating}\n`;
+        });
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `performance_report_${new Date().toISOString().slice(0,10)}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast('📊 تم تصدير التقرير');
+    }
+
+    function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
+    function goBack() { window.location.href = '/admin/index.html'; }
+    renderReport();
+</script>
+</body>
+</html>
